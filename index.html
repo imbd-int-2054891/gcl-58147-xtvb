@@ -1,0 +1,1910 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Contratos de Locação</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Contratos">
+<meta name="theme-color" content="#1a2d6b">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  --primario:   #1a2d6b;
+  --primario2:  #243a8a;
+  --destaque:   #c8192e;
+  --destaque2:  #e02040;
+  --fundo:      #f0f4fb;
+  --fundo2:     #dde6f7;
+  --fundo3:     #c8d8f0;
+  --branco:     #fff;
+  --cinza:      #6a7590;
+  --texto:      #1a2d6b;
+  --texto2:     #2e4080;
+  --verde:      #2e7d32;
+  --amarelo-dk: #bf6000;
+  --vermelho:   #c62828;
+  --azul:       #1565c0;
+  --sombra:     0 2px 16px rgba(26,45,107,0.10);
+  --sombra2:    0 6px 32px rgba(26,45,107,0.18);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+header {
+  background: var(--primario);
+  padding: 0 32px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(26,45,107,0.30);
+}
+
+.icon-badge {
+  width: 40px; height: 40px;
+  background: var(--destaque);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0;
+}
+
+header h1 {
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  font-size: 1.15rem;
+  letter-spacing: 0.3px;
+  font-weight: 700;
+}
+
+header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px; }
+
+.versao {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--destaque);
+  vertical-align: middle;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 6px;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 28px 24px 130px; }
+
+.section {
+  background: var(--branco);
+  border: 1px solid var(--fundo3);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: var(--sombra);
+}
+
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px;
+  background: var(--fundo2);
+  border-bottom: 1px solid var(--fundo3);
+  cursor: pointer;
+  user-select: none;
+}
+
+.section-header:hover { background: var(--fundo3); }
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primario);
+  flex: 1;
+}
+
+.section-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--destaque);
+  flex-shrink: 0;
+}
+
+.toggle-icon { font-size: 16px; color: var(--primario); transition: transform 0.2s; }
+.section.collapsed .toggle-icon { transform: rotate(-90deg); }
+
+.section-body { padding: 20px 22px; display: grid; gap: 14px; }
+.section.collapsed .section-body { display: none; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.col-span-2 { grid-column: span 2; }
+.col-span-3 { grid-column: span 3; }
+.col-span-4 { grid-column: span 4; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--texto2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.field input:not([type="checkbox"]), .field select, .field textarea {
+  padding: 9px 12px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  background: var(--fundo);
+  color: var(--texto);
+  outline: none;
+  transition: border 0.18s, background 0.18s;
+  width: 100%;
+}
+
+.field input:not([type="checkbox"]):focus, .field select:focus, .field textarea:focus {
+  border-color: var(--primario);
+  background: #fff;
+}
+
+.field textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+
+.campo-dica {
+  font-size: 0.72rem;
+  color: var(--cinza);
+  font-style: italic;
+  margin-top: -2px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--fundo3);
+  margin: 6px 0;
+  grid-column: 1 / -1;
+}
+
+.sublabel {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--destaque);
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  border-top: 1px dashed var(--fundo3);
+  padding-top: 14px;
+}
+
+.section-body > .sublabel:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+
+.btn-gerar {
+  flex: 2;
+  min-width: 220px;
+  padding: 15px;
+  background: var(--primario);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.btn-gerar:hover { background: var(--primario2); }
+.btn-gerar:active { transform: scale(0.98); }
+
+.btn-secundario {
+  flex: 1;
+  min-width: 170px;
+  padding: 15px;
+  background: #fff;
+  color: var(--primario);
+  border: 1.5px solid var(--primario);
+  border-radius: 10px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.btn-secundario:hover { background: var(--fundo2); }
+.btn-secundario:active { transform: scale(0.98); }
+
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--verde);
+  color: white;
+  padding: 13px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: var(--sombra2);
+  display: none;
+  font-size: 0.9rem;
+  z-index: 100;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.contract-id-bar {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--fundo2);
+  border: 1px solid var(--fundo3);
+  color: var(--primario);
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.contract-id-bar input {
+  background: #fff;
+  border: 1.5px solid var(--primario);
+  border-radius: 8px;
+  color: var(--primario);
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Source Sans 3', sans-serif;
+  width: 160px;
+}
+
+.contract-id-bar input::placeholder { color: var(--cinza); }
+.contract-id-bar input:focus { outline: none; border-color: var(--destaque); }
+.contract-id-label { font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; font-size: 0.75rem; }
+
+.confirm-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+  background: var(--fundo);
+  color: var(--texto2);
+  transition: all 0.15s;
+  user-select: none;
+  width: fit-content;
+  max-width: 100%;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.confirm-pill input[type="checkbox"] {
+  accent-color: var(--primario);
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: none;
+}
+.confirm-pill:hover { border-color: var(--primario2); }
+.confirm-pill.marcada {
+  background: var(--fundo2);
+  border-color: var(--primario);
+  color: var(--primario);
+}
+
+.field.confirmavel input.campo-erro {
+  border-color: var(--destaque) !important;
+  background: #fdecec !important;
+}
+.field.confirmavel input.campo-confirmado {
+  background: var(--fundo2);
+  color: var(--cinza);
+}
+.field.confirmavel input.campo-erro + .confirm-pill {
+  border-color: var(--destaque);
+}
+
+.field input.campo-erro, .field select.campo-erro, .field textarea.campo-erro {
+  border-color: var(--destaque) !important;
+  background: #fdecec !important;
+}
+
+.opcoes-grupo { display: flex; gap: 8px; flex-wrap: wrap; }
+.opcao-btn {
+  padding: 9px 16px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 8px;
+  background: var(--fundo);
+  color: var(--texto2);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+  text-align: center;
+  flex: 1;
+  min-width: 60px;
+}
+.opcao-btn:hover { border-color: var(--primario2); }
+.opcao-btn.selecionada {
+  background: var(--primario);
+  border-color: var(--primario);
+  color: #fff;
+}
+.opcao-btn.erro { border-color: var(--destaque); }
+
+.barra-fixa {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: var(--branco);
+  border-top: 1px solid var(--fundo3);
+  box-shadow: 0 -4px 20px rgba(26,45,107,0.12);
+  padding: 12px 20px;
+  z-index: 90;
+}
+.barra-conteudo {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.barra-botoes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.aviso-pendencias {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--destaque);
+}
+.aviso-pendencias.completo { color: var(--verde); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="icon-badge">📋</div>
+  <div>
+    <h1>Gerador de Contratos de Locação <span class="versao">v19</span></h1>
+    <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="contract-id-bar">
+    <span class="contract-id-label">🔑 Nº do Contrato:</span>
+    <input type="text" id="contractId" value="" placeholder="Ex.: L.26.050">
+  </div>
+
+  <!-- IMÓVEL -->
+  <div class="section" id="sec-imovel">
+    <div class="section-header" onclick="toggleSection('sec-imovel')">
+      <div class="section-dot"></div>
+      <span class="section-title">🏠 Imóvel Locado</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-4">
+      <div class="field col-span-4"><label>Rua e nº</label><input id="imv_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+      <div class="field"><label>Bairro</label><input id="imv_bairro" value="" placeholder="Ex.: Centro"></div>
+      <div class="field"><label>Município/UF</label><input id="imv_cidade" value="" placeholder="Ex.: Monte Mor/SP"></div>
+      <div class="field"><label>CEP</label><input id="imv_cep" value="" placeholder="Ex.: 13190-000"></div>
+      <div class="field confirmavel col-span-2"><label>Matrícula</label>
+        <input id="imv_matricula" value="" placeholder="Ex.: 3.150 - CRI de Monte Mor/SP" oninput="handleConfirmavelInput('imv_matricula')">
+        <label class="confirm-pill" id="imv_matricula_pill"><input type="checkbox" id="imv_matricula_naotem" onchange="handleNaoTemChange('imv_matricula')"> Não tenho esse dado</label>
+      </div>
+      <div class="field col-span-2 confirmavel"><label>Inscrição Cadastral</label>
+        <input id="imv_inscricao" value="" placeholder="Ex.: 99.99.99.01234.01.0000" oninput="handleConfirmavelInput('imv_inscricao')">
+        <label class="confirm-pill" id="imv_inscricao_pill"><input type="checkbox" id="imv_inscricao_naotem" onchange="handleNaoTemChange('imv_inscricao')"> Não tenho esse dado</label>
+      </div>
+      <div class="field confirmavel col-span-2"><label>UC (CPFL)</label>
+        <input id="imv_uc" value="" placeholder="Ex.: 28586182" oninput="handleConfirmavelInput('imv_uc')">
+        <label class="confirm-pill" id="imv_uc_pill"><input type="checkbox" id="imv_uc_naotem" onchange="handleNaoTemChange('imv_uc')"> Não tenho esse dado</label>
+      </div>
+      <div class="field confirmavel col-span-2"><label>RGI / Fornecimento (SABESP)</label>
+        <input id="imv_rgi" value="" placeholder="Ex.: 534139973 (Fornecimento)" oninput="handleConfirmavelInput('imv_rgi')">
+        <label class="confirm-pill" id="imv_rgi_pill"><input type="checkbox" id="imv_rgi_naotem" onchange="handleNaoTemChange('imv_rgi')"> Não tenho esse dado</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCADORES -->
+  <div class="section" id="sec-locadores">
+    <div class="section-header" onclick="toggleSection('sec-locadores')">
+      <div class="section-dot"></div>
+      <span class="section-title">🏡 Locadores</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-4">
+      <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="lcd_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+      <div class="field"><label>Bairro</label><input id="lcd_bairro" value="" placeholder="Ex.: Centro"></div>
+      <div class="field"><label>Município/UF</label><input id="lcd_cidade" value="" placeholder="Ex.: Monte Mor/SP"></div>
+
+      <div class="field"><label>Nº de Locadores</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="num_lcd" data-valor="1" onclick="selecionarOpcao('num_lcd','1',toggleLcd2)">1</div>
+          <div class="opcao-btn" data-for="num_lcd" data-valor="2" onclick="selecionarOpcao('num_lcd','2',toggleLcd2)">2</div>
+        </div>
+        <input type="hidden" id="num_lcd" value="">
+      </div>
+      <div class="field" id="lcd-casados-field" style="display:none">
+        <label>Casados entre si?</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="lcd_casados" data-valor="Sim" onclick="selecionarOpcao('lcd_casados','Sim',function(){aplicarCasados('lcd');})">Sim</div>
+          <div class="opcao-btn" data-for="lcd_casados" data-valor="Não" onclick="selecionarOpcao('lcd_casados','Não',function(){aplicarCasados('lcd');})">Não</div>
+        </div>
+        <input type="hidden" id="lcd_casados" value="">
+      </div>
+      <div class="field" id="lcd-regime-field" style="display:none">
+        <label>Regime de Casamento</label>
+        <select id="lcd_regime">
+          <option value="" selected disabled>Selecione...</option>
+          <option value="Separação Total de Bens">Separação Total de Bens</option>
+          <option value="Comunhão Universal de Bens">Comunhão Universal de Bens</option>
+          <option value="Comunhão Parcial de Bens">Comunhão Parcial de Bens</option>
+        </select>
+      </div>
+      <div class="field" id="lcd-data-casamento-field" style="display:none">
+        <label>Data do Casamento</label>
+        <input id="lcd_data_casamento" value="" placeholder="Ex.: 01/01/2001">
+      </div>
+
+      <div id="lcd1-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" style="margin-bottom:8px">Locador 1</div>
+        <div class="grid-4" style="gap:10px">
+          <div class="field"><label>Sexo</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="lcd1_sexo" data-valor="Masculino" onclick="selecionarOpcao('lcd1_sexo','Masculino',function(){montarEstadoCivil('lcd1');})">Masculino</div>
+              <div class="opcao-btn" data-for="lcd1_sexo" data-valor="Feminino" onclick="selecionarOpcao('lcd1_sexo','Feminino',function(){montarEstadoCivil('lcd1');})">Feminino</div>
+            </div>
+            <input type="hidden" id="lcd1_sexo" value="">
+          </div>
+          <div class="field col-span-3"><label>Nome Completo</label><input id="lcd1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
+          <div class="field"><label>Estado Civil</label><select id="lcd1_ec"></select></div>
+          <div class="field"><label>Profissão</label><input id="lcd1_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>RG</label><input id="lcd1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_rg_naotem_pill"><input type="checkbox" id="lcd1_rg_naotem" onchange="handleRgNaoTem(&quot;lcd1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>CPF</label><input id="lcd1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd1&quot;)" inputmode="numeric"></div>
+          <div class="field"><label>Telefone</label><input id="lcd1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
+          <div class="field"><label>E-mail</label><input id="lcd1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+        </div>
+      </div>
+
+      <div id="lcd2-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" style="margin-bottom:8px">Locador 2</div>
+        <div class="grid-4" style="gap:10px">
+          <div class="field"><label>Sexo</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="lcd2_sexo" data-valor="Masculino" onclick="selecionarOpcao('lcd2_sexo','Masculino',function(){montarEstadoCivil('lcd2');})">Masculino</div>
+              <div class="opcao-btn" data-for="lcd2_sexo" data-valor="Feminino" onclick="selecionarOpcao('lcd2_sexo','Feminino',function(){montarEstadoCivil('lcd2');})">Feminino</div>
+            </div>
+            <input type="hidden" id="lcd2_sexo" value="">
+          </div>
+          <div class="field col-span-3"><label>Nome Completo</label><input id="lcd2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
+          <div class="field"><label>Estado Civil</label><select id="lcd2_ec"></select></div>
+          <div class="field"><label>Profissão</label><input id="lcd2_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>CPF</label><input id="lcd2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd2&quot;)" inputmode="numeric"></div>
+          <div class="field"><label>Telefone</label><input id="lcd2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
+          <div class="field"><label>E-mail</label><input id="lcd2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DADOS DO CONTRATO -->
+  <div class="section" id="sec-contrato">
+    <div class="section-header" onclick="toggleSection('sec-contrato')">
+      <div class="section-dot"></div>
+      <span class="section-title">📄 Dados do Contrato</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-4">
+      <div class="field"><label>Prazo (meses)</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="prazo" data-valor="30 (Trinta)" onclick="selecionarOpcao('prazo','30 (Trinta)')">30 (Trinta)</div>
+          <div class="opcao-btn" data-for="prazo" data-valor="60 (Sessenta)" onclick="selecionarOpcao('prazo','60 (Sessenta)')">60 (Sessenta)</div>
+        </div>
+        <input type="hidden" id="prazo" value="">
+      </div>
+      <div class="field"><label>Início</label>
+        <input id="inicio" value="" placeholder="Ex.: 10 de Março de 2020">
+      </div>
+      <div class="field"><label>Término</label>
+        <input id="termino" value="" placeholder="Ex.: 10 de Março de 2020">
+      </div>
+      <div class="field"><label>Dia de Vencimento</label>
+        <input id="vencimento" value="" placeholder="Ex.: 10 (dez)">
+      </div>
+
+      <div class="field col-span-2"><label>Valor R$</label>
+        <input id="valor" value="" placeholder="Ex.: 900,00">
+      </div>
+      <div class="field col-span-2"><label>Valor por Extenso</label>
+        <input id="valor_extenso" value="" placeholder="Ex.: Um Mil e Quinhentos Reais">
+      </div>
+
+      <div class="field col-span-2"><label>Fins</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="fins" data-valor="RESIDENCIAIS" onclick="selecionarOpcao('fins','RESIDENCIAIS',toggleLct2)">Residenciais</div>
+          <div class="opcao-btn" data-for="fins" data-valor="COMERCIAIS" onclick="selecionarOpcao('fins','COMERCIAIS',toggleLct2)">Comerciais</div>
+        </div>
+        <input type="hidden" id="fins" value="">
+      </div>
+      <div class="field col-span-2"><label>Data do Contrato</label>
+        <input id="data_contrato" value="" placeholder="Ex.: 10 de Março de 2020">
+      </div>
+    </div>
+  </div>
+
+  <!-- ENCARGOS -->
+  <div class="section" id="sec-encargos">
+    <div class="section-header" onclick="toggleSection('sec-encargos')">
+      <div class="section-dot"></div>
+      <span class="section-title">⚡ Encargos</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-2">
+      <div class="field"><label>Água e Energia</label>
+        <select id="enc_agua">
+          <option value="" selected disabled>Selecione...</option>
+          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
+          <option value="Não se aplica">Não se aplica</option>
+          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
+        </select>
+      </div>
+      <div class="field"><label>Gás</label>
+        <select id="enc_gas">
+          <option value="" selected disabled>Selecione...</option>
+          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
+          <option value="Não se aplica">Não se aplica</option>
+          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
+        </select>
+      </div>
+      <div class="field"><label>Condomínio</label>
+        <select id="enc_condominio">
+          <option value="" selected disabled>Selecione...</option>
+          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
+          <option value="Não se aplica">Não se aplica</option>
+          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
+        </select>
+      </div>
+      <div class="field"><label>IPTU</label>
+        <select id="enc_iptu">
+          <option value="" selected disabled>Selecione...</option>
+          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
+          <option value="Não se aplica">Não se aplica</option>
+          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCATÁRIOS -->
+  <div class="section" id="sec-locatarios">
+    <div class="section-header" onclick="toggleSection('sec-locatarios')">
+      <div class="section-dot"></div>
+      <span class="section-title">🔑 Locatários</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-4">
+      <div id="lct-endereco-block" style="display:none;grid-column:1/-1">
+        <div class="grid-4" style="gap:14px">
+          <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="lct_rua_com" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+          <div class="field"><label>Bairro</label><input id="lct_bairro_com" value="" placeholder="Ex.: Centro"></div>
+          <div class="field"><label>Município/UF</label><input id="lct_cidade_com" value="" placeholder="Ex.: Monte Mor/SP"></div>
+        </div>
+      </div>
+
+      <div class="field"><label>Nº de Locatários</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="num_lct" data-valor="1" onclick="selecionarOpcao('num_lct','1',toggleLct2)">1</div>
+          <div class="opcao-btn" data-for="num_lct" data-valor="2" onclick="selecionarOpcao('num_lct','2',toggleLct2)">2</div>
+        </div>
+        <input type="hidden" id="num_lct" value="">
+      </div>
+      <div class="field" id="lct-casados-field" style="display:none">
+        <label>Casados entre si?</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="lct_casados" data-valor="Sim" onclick="selecionarOpcao('lct_casados','Sim',function(){aplicarCasados('lct');})">Sim</div>
+          <div class="opcao-btn" data-for="lct_casados" data-valor="Não" onclick="selecionarOpcao('lct_casados','Não',function(){aplicarCasados('lct');})">Não</div>
+        </div>
+        <input type="hidden" id="lct_casados" value="">
+      </div>
+      <div class="field" id="lct-regime-field" style="display:none">
+        <label>Regime de Casamento</label>
+        <select id="lct_regime">
+          <option value="" selected disabled>Selecione...</option>
+          <option value="Separação Total de Bens">Separação Total de Bens</option>
+          <option value="Comunhão Universal de Bens">Comunhão Universal de Bens</option>
+          <option value="Comunhão Parcial de Bens">Comunhão Parcial de Bens</option>
+        </select>
+      </div>
+      <div class="field" id="lct-data-casamento-field" style="display:none">
+        <label>Data do Casamento</label>
+        <input id="lct_data_casamento" value="" placeholder="Ex.: 01/01/2001">
+      </div>
+
+      <div id="lct1-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" style="margin-bottom:8px">Locatário 1</div>
+        <div class="grid-4" style="gap:10px">
+          <div class="field"><label>Sexo</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="lct1_sexo" data-valor="Masculino" onclick="selecionarOpcao('lct1_sexo','Masculino',function(){montarEstadoCivil('lct1');})">Masculino</div>
+              <div class="opcao-btn" data-for="lct1_sexo" data-valor="Feminino" onclick="selecionarOpcao('lct1_sexo','Feminino',function(){montarEstadoCivil('lct1');})">Feminino</div>
+            </div>
+            <input type="hidden" id="lct1_sexo" value="">
+          </div>
+          <div class="field col-span-3"><label>Nome Completo</label><input id="lct1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
+          <div class="field"><label>Estado Civil</label><select id="lct1_ec"></select></div>
+          <div class="field"><label>Profissão</label><input id="lct1_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>RG</label><input id="lct1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_rg_naotem_pill"><input type="checkbox" id="lct1_rg_naotem" onchange="handleRgNaoTem(&quot;lct1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>CPF</label><input id="lct1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct1&quot;)" inputmode="numeric"></div>
+          <div class="field"><label>Telefone</label><input id="lct1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
+          <div class="field"><label>E-mail</label><input id="lct1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+        </div>
+      </div>
+
+      <div id="lct2-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" style="margin-bottom:8px">Locatário 2</div>
+        <div class="grid-4" style="gap:10px">
+          <div class="field"><label>Sexo</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="lct2_sexo" data-valor="Masculino" onclick="selecionarOpcao('lct2_sexo','Masculino',function(){montarEstadoCivil('lct2');})">Masculino</div>
+              <div class="opcao-btn" data-for="lct2_sexo" data-valor="Feminino" onclick="selecionarOpcao('lct2_sexo','Feminino',function(){montarEstadoCivil('lct2');})">Feminino</div>
+            </div>
+            <input type="hidden" id="lct2_sexo" value="">
+          </div>
+          <div class="field col-span-3"><label>Nome Completo</label><input id="lct2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
+          <div class="field"><label>Estado Civil</label><select id="lct2_ec"></select></div>
+          <div class="field"><label>Profissão</label><input id="lct2_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>CPF</label><input id="lct2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct2&quot;)" inputmode="numeric"></div>
+          <div class="field"><label>Telefone</label><input id="lct2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
+          <div class="field"><label>E-mail</label><input id="lct2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GARANTIA -->
+  <div class="section" id="sec-garantia">
+    <div class="section-header" onclick="toggleSection('sec-garantia')">
+      <div class="section-dot"></div>
+      <span class="section-title">🔒 Garantia</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-4">
+      <div class="field">
+        <label>Tipo de Garantia</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="garantia" data-valor="FIADOR" onclick="selecionarOpcao('garantia','FIADOR',toggleGarantia)">Fiador</div>
+          <div class="opcao-btn" data-for="garantia" data-valor="CAUÇÃO" onclick="selecionarOpcao('garantia','CAUÇÃO',toggleGarantia)">Caução</div>
+        </div>
+        <input type="hidden" id="garantia" value="">
+      </div>
+
+      <div id="caucao-fields" style="display:none;grid-column:1/-1">
+        <div class="grid-4" style="gap:14px">
+          <div class="field"><label>Valor R$</label>
+            <input id="caucao_valor" value="" placeholder="Ex.: 6.000,00 (Padrão = 3x Valor Aluguel)">
+          </div>
+          <div class="field"><label>Valor por Extenso</label>
+            <input id="caucao_extenso" value="" placeholder="Ex.: Seis Mil Reais">
+          </div>
+          <div class="field"><label>Banco</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="caucao_banco" data-valor="BB" onclick="selecionarOpcao('caucao_banco','BB',atualizarPlaceholderConta)">Banco do Brasil (BB)</div>
+              <div class="opcao-btn" data-for="caucao_banco" data-valor="CEF" onclick="selecionarOpcao('caucao_banco','CEF',atualizarPlaceholderConta)">Caixa Econômica Federal (CEF)</div>
+            </div>
+            <input type="hidden" id="caucao_banco" value="">
+          </div>
+          <div class="field"><label>Conta Bancária</label>
+            <input id="caucao_conta" value="" placeholder="Escolha o banco ao lado" oninput="formatarContaCaucao(this)" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+
+      <div id="imgrt-fields-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" id="imgrt-label" style="margin-bottom:8px">Imóvel Garantia (Fiador)</div>
+        <div class="grid-4" style="gap:14px">
+          <div class="field col-span-4" id="imgrt-desc-field">
+            <label>Descrição do Imóvel</label>
+            <input id="imgrt_descricao" value="">
+            <span class="campo-dica">Ex.: UM LOTE DE TERRENO sob nº 10 da Quadra "A", bem como suas benfeitorias — ou — UM PRÉDIO RESIDENCIAL, bem como seu respectivo terreno (Lote 10 Quadra "A")</span>
+          </div>
+          <div class="field col-span-2" id="imgrt-rua-field"><label>Rua e nº</label><input id="imgrt_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+          <div class="field" id="imgrt-bairro-field"><label>Bairro / Município-UF</label><input id="imgrt_bairro_cidade" value="" placeholder="Ex.: Centro - Monte Mor/SP"></div>
+          <div class="field" id="imgrt-mat-field"><label>Matrícula</label><input id="imgrt_matricula" value="" placeholder="Ex.: 10.500 do CRI de Monte Mor/SP"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIADORES -->
+  <div class="section" id="sec-fiadores" style="display:none">
+    <div class="section-header" onclick="toggleSection('sec-fiadores')">
+      <div class="section-dot"></div>
+      <span class="section-title">🤝 Fiadores</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-4">
+      <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="fdr_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+      <div class="field"><label>Bairro</label><input id="fdr_bairro" value="" placeholder="Ex.: Centro"></div>
+      <div class="field"><label>Município/UF</label><input id="fdr_cidade" value="" placeholder="Ex.: Monte Mor/SP"></div>
+
+      <div class="field"><label>Nº de Fiadores</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="num_fdr" data-valor="1" onclick="selecionarOpcao('num_fdr','1',toggleFdr2)">1</div>
+          <div class="opcao-btn" data-for="num_fdr" data-valor="2" onclick="selecionarOpcao('num_fdr','2',toggleFdr2)">2</div>
+        </div>
+        <input type="hidden" id="num_fdr" value="">
+      </div>
+      <div class="field" id="fdr-casados-field" style="display:none">
+        <label>Casados entre si?</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="fdr_casados" data-valor="Sim" onclick="selecionarOpcao('fdr_casados','Sim',function(){aplicarCasados('fdr');})">Sim</div>
+          <div class="opcao-btn" data-for="fdr_casados" data-valor="Não" onclick="selecionarOpcao('fdr_casados','Não',function(){aplicarCasados('fdr');})">Não</div>
+        </div>
+        <input type="hidden" id="fdr_casados" value="">
+      </div>
+      <div class="field" id="fdr-regime-field" style="display:none">
+        <label>Regime de Casamento</label>
+        <select id="fdr_regime">
+          <option value="" selected disabled>Selecione...</option>
+          <option value="Separação Total de Bens">Separação Total de Bens</option>
+          <option value="Comunhão Universal de Bens">Comunhão Universal de Bens</option>
+          <option value="Comunhão Parcial de Bens">Comunhão Parcial de Bens</option>
+        </select>
+      </div>
+      <div class="field" id="fdr-data-casamento-field" style="display:none">
+        <label>Data do Casamento</label>
+        <input id="fdr_data_casamento" value="" placeholder="Ex.: 01/01/2001">
+      </div>
+
+      <div id="fdr1-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" style="margin-bottom:8px">Fiador 1</div>
+        <div class="grid-4" style="gap:10px">
+          <div class="field"><label>Sexo</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="fdr1_sexo" data-valor="Masculino" onclick="selecionarOpcao('fdr1_sexo','Masculino',function(){montarEstadoCivil('fdr1');})">Masculino</div>
+              <div class="opcao-btn" data-for="fdr1_sexo" data-valor="Feminino" onclick="selecionarOpcao('fdr1_sexo','Feminino',function(){montarEstadoCivil('fdr1');})">Feminino</div>
+            </div>
+            <input type="hidden" id="fdr1_sexo" value="">
+          </div>
+          <div class="field col-span-3"><label>Nome Completo</label><input id="fdr1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
+          <div class="field"><label>Estado Civil</label><select id="fdr1_ec"></select></div>
+          <div class="field"><label>Profissão</label><input id="fdr1_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>RG</label><input id="fdr1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_rg_naotem_pill"><input type="checkbox" id="fdr1_rg_naotem" onchange="handleRgNaoTem(&quot;fdr1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>CPF</label><input id="fdr1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr1&quot;)" inputmode="numeric"></div>
+          <div class="field"><label>Telefone</label><input id="fdr1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
+          <div class="field"><label>E-mail</label><input id="fdr1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+        </div>
+      </div>
+
+      <div id="fdr2-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" style="margin-bottom:8px">Fiador 2</div>
+        <div class="grid-4" style="gap:10px">
+          <div class="field"><label>Sexo</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="fdr2_sexo" data-valor="Masculino" onclick="selecionarOpcao('fdr2_sexo','Masculino',function(){montarEstadoCivil('fdr2');})">Masculino</div>
+              <div class="opcao-btn" data-for="fdr2_sexo" data-valor="Feminino" onclick="selecionarOpcao('fdr2_sexo','Feminino',function(){montarEstadoCivil('fdr2');})">Feminino</div>
+            </div>
+            <input type="hidden" id="fdr2_sexo" value="">
+          </div>
+          <div class="field col-span-3"><label>Nome Completo</label><input id="fdr2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
+          <div class="field"><label>Estado Civil</label><select id="fdr2_ec"></select></div>
+          <div class="field"><label>Profissão</label><input id="fdr2_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>CPF</label><input id="fdr2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr2&quot;)" inputmode="numeric"></div>
+          <div class="field"><label>Telefone</label><input id="fdr2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
+          <div class="field"><label>E-mail</label><input id="fdr2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OBSERVAÇÕES -->
+  <div class="section" id="sec-obs">
+    <div class="section-header" onclick="toggleSection('sec-obs')">
+      <div class="section-dot"></div>
+      <span class="section-title">📝 Observações Gerais</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="field"><label>Observações no Contrato</label><textarea id="observacoes"></textarea></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="barra-fixa">
+  <div class="barra-conteudo">
+    <div class="aviso-pendencias" id="avisoPendencias">Carregando...</div>
+    <div class="barra-botoes">
+      <button class="btn-secundario" onclick="salvarProgresso()">💾 Salvar Rascunho</button>
+      <button class="btn-secundario" onclick="document.getElementById('inputCarregarRascunho').click()">📂 Carregar Rascunho</button>
+      <input type="file" id="inputCarregarRascunho" accept="application/json,.json" style="display:none" onchange="carregarProgresso(this)">
+      <button class="btn-secundario" onclick="document.getElementById('inputImportarPDF').click()">📄 Importar PDF</button>
+      <input type="file" id="inputImportarPDF" accept="application/pdf,.pdf" style="display:none" onchange="importarPDF(this)">
+      <button class="btn-gerar" onclick="gerarExcel()">⬇ Gerar Excel — Contratos Locação</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ Excel gerado com sucesso!</div>
+
+<script>
+// === Grupos de opção única em formato de botão (clicável, permite desclicar) ===
+// Usa um <input type="hidden"> para guardar o valor real (compatível com o resto do código)
+function selecionarOpcao(hiddenId, valor, callback) {
+  const hidden = document.getElementById(hiddenId);
+  const novoValor = hidden.value === valor ? '' : valor; // clicar de novo desmarca
+  hidden.value = novoValor;
+
+  document.querySelectorAll('.opcao-btn[data-for="' + hiddenId + '"]').forEach(btn => {
+    btn.classList.toggle('selecionada', btn.dataset.valor === novoValor);
+    btn.classList.remove('erro');
+  });
+
+  if (typeof callback === 'function') callback();
+  atualizarAvisoPendencias();
+}
+
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+function toggleGarantia() {
+  const g = document.getElementById('garantia').value;
+  document.getElementById('imgrt-fields-block').style.display = g === 'FIADOR' ? 'block' : 'none';
+  document.getElementById('caucao-fields').style.display = g === 'CAUÇÃO' ? 'block' : 'none';
+  document.getElementById('sec-fiadores').style.display = g === 'FIADOR' ? '' : 'none';
+  atualizarAvisoPendencias();
+}
+
+// Atualiza o exemplo da Conta Bancária de acordo com o banco escolhido na Caução
+function atualizarPlaceholderConta() {
+  const banco = document.getElementById('caucao_banco').value;
+  const input = document.getElementById('caucao_conta');
+  if (banco === 'CEF') {
+    input.placeholder = 'Ex.: 000.750.000.000-0';
+  } else if (banco === 'BB') {
+    input.placeholder = 'Ex.: 100.200-3';
+  } else {
+    input.placeholder = 'Escolha o banco ao lado';
+  }
+  formatarContaCaucao(input);
+  atualizarAvisoPendencias();
+}
+
+// Monta o texto completo da conta bancária da Caução para exportar ao Excel
+// === Formatação automática (a pessoa digita só números) ===
+// Telefone: (19) 9.9999-9999
+function formatarTelefone(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 11);
+  let out = '';
+  if (v.length > 0) out += '(' + v.slice(0, 2);
+  if (v.length >= 2) out += ') ';
+  if (v.length > 2) out += v.slice(2, 3);
+  if (v.length > 3) out += '.' + v.slice(3, 7);
+  if (v.length > 7) out += '-' + v.slice(7, 11);
+  el.value = out;
+}
+
+// RG: 00.000.000-0
+function formatarRG(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 9);
+  let out = '';
+  if (v.length > 0) out += v.slice(0, 2);
+  if (v.length > 2) out += '.' + v.slice(2, 5);
+  if (v.length > 5) out += '.' + v.slice(5, 8);
+  if (v.length > 8) out += '-' + v.slice(8, 9);
+  el.value = out;
+}
+
+// CPF: 000.000.000-00
+function formatarCPF(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 11);
+  let out = '';
+  if (v.length > 0) out += v.slice(0, 3);
+  if (v.length > 3) out += '.' + v.slice(3, 6);
+  if (v.length > 6) out += '.' + v.slice(6, 9);
+  if (v.length > 9) out += '-' + v.slice(9, 11);
+  el.value = out;
+}
+
+// Conta Bancária da Caução: formato muda conforme o banco escolhido
+// Banco do Brasil (BB): 000.000-0  |  Caixa Econômica Federal (CEF): 000.000.000.000-0
+function formatarContaCaucao(el) {
+  const banco = document.getElementById('caucao_banco').value;
+  if (banco === 'BB') {
+    const v = el.value.replace(/\D/g, '').slice(0, 7);
+    let out = '';
+    if (v.length > 0) out += v.slice(0, 3);
+    if (v.length > 3) out += '.' + v.slice(3, 6);
+    if (v.length > 6) out += '-' + v.slice(6, 7);
+    el.value = out;
+  } else if (banco === 'CEF') {
+    const v = el.value.replace(/\D/g, '').slice(0, 13);
+    let out = '';
+    if (v.length > 0) out += v.slice(0, 3);
+    if (v.length > 3) out += '.' + v.slice(3, 6);
+    if (v.length > 6) out += '.' + v.slice(6, 9);
+    if (v.length > 9) out += '.' + v.slice(9, 12);
+    if (v.length > 12) out += '-' + v.slice(12, 13);
+    el.value = out;
+  }
+}
+
+// === "Não tem RG" ===
+// Quando marcado, o campo de RG é preenchido com o texto fixo "(Não Tem RG)"
+function handleRgNaoTem(prefixo) {
+  const chk = document.getElementById(prefixo + '_rg_naotem');
+  const pill = document.getElementById(prefixo + '_rg_naotem_pill');
+  const rgInput = document.getElementById(prefixo + '_rg');
+  if (chk.checked) {
+    rgInput.value = '(Não Tem RG)';
+    rgInput.readOnly = true;
+    rgInput.classList.add('campo-confirmado');
+    rgInput.classList.remove('campo-erro');
+    if (pill) pill.classList.add('marcada');
+  } else {
+    rgInput.value = '';
+    rgInput.readOnly = false;
+    rgInput.classList.remove('campo-confirmado');
+    if (pill) pill.classList.remove('marcada');
+  }
+  atualizarAvisoPendencias();
+}
+
+// Mantém o texto fixo no campo de RG caso "Não tem RG" esteja marcado (chamado ao digitar no CPF)
+function sincronizarRG(prefixo) {
+  const chk = document.getElementById(prefixo + '_rg_naotem');
+  if (chk && chk.checked) {
+    document.getElementById(prefixo + '_rg').value = '(Não Tem RG)';
+  }
+}
+
+function contaCaucaoCompleta() {
+  const banco = document.getElementById('caucao_banco').value;
+  const conta = v('caucao_conta');
+  if (banco === 'CEF') return 'Caixa Econômica Federal, Ag. 1227 - conta ' + conta;
+  if (banco === 'BB') return 'Banco do Brasil (BB), Ag. 2324-8 - conta ' + conta;
+  return conta;
+}
+
+function toggleLcd2() {
+  const n = document.getElementById('num_lcd').value;
+  document.getElementById('lcd1-block').style.display = (n === '1' || n === '2') ? 'block' : 'none';
+  document.getElementById('lcd2-block').style.display = n === '2' ? 'block' : 'none';
+
+  const campoCasados = document.getElementById('lcd-casados-field');
+  if (campoCasados) campoCasados.style.display = n === '2' ? '' : 'none';
+
+  // Se deixou de ter 2 locadores, zera a pergunta "Casados entre si?" e destrava o Estado Civil
+  if (n !== '2') {
+    document.getElementById('lcd_casados').value = '';
+    document.querySelectorAll('.opcao-btn[data-for="lcd_casados"]').forEach(btn => btn.classList.remove('selecionada'));
+    aplicarCasados('lcd');
+  }
+
+  atualizarAvisoPendencias();
+}
+
+// Mostra/esconde Regime e Data de Casamento, e trava o Estado Civil dos 2 Locadores/Locatários
+// automaticamente em Casado/Casada quando eles são casados entre si
+// grupo: 'lcd' (Locadores) ou 'lct' (Locatários)
+function aplicarCasados(grupo) {
+  const casados = document.getElementById(grupo + '_casados').value;
+  document.getElementById(grupo + '-regime-field').style.display = casados === 'Sim' ? '' : 'none';
+  document.getElementById(grupo + '-data-casamento-field').style.display = casados === 'Sim' ? '' : 'none';
+  montarEstadoCivil(grupo + '1');
+  montarEstadoCivil(grupo + '2');
+  atualizarAvisoPendencias();
+}
+
+function toggleLct2() {
+  const n = document.getElementById('num_lct').value;
+  document.getElementById('lct1-block').style.display = (n === '1' || n === '2') ? 'block' : 'none';
+  document.getElementById('lct2-block').style.display = n === '2' ? 'block' : 'none';
+
+  const campoCasados = document.getElementById('lct-casados-field');
+  if (campoCasados) campoCasados.style.display = n === '2' ? '' : 'none';
+
+  if (n !== '2') {
+    document.getElementById('lct_casados').value = '';
+    document.querySelectorAll('.opcao-btn[data-for="lct_casados"]').forEach(btn => btn.classList.remove('selecionada'));
+    aplicarCasados('lct');
+  }
+
+  const fins = document.getElementById('fins').value;
+  document.getElementById('lct-endereco-block').style.display = fins === 'COMERCIAIS' ? 'block' : 'none';
+  atualizarAvisoPendencias();
+}
+
+function toggleFdr2() {
+  const n = document.getElementById('num_fdr').value;
+  document.getElementById('fdr1-block').style.display = (n === '1' || n === '2') ? 'block' : 'none';
+  document.getElementById('fdr2-block').style.display = n === '2' ? 'block' : 'none';
+
+  const campoCasados = document.getElementById('fdr-casados-field');
+  if (campoCasados) campoCasados.style.display = n === '2' ? '' : 'none';
+
+  if (n !== '2') {
+    document.getElementById('fdr_casados').value = '';
+    document.querySelectorAll('.opcao-btn[data-for="fdr_casados"]').forEach(btn => btn.classList.remove('selecionada'));
+    aplicarCasados('fdr');
+  }
+
+  atualizarAvisoPendencias();
+}
+
+// === Estado Civil dinâmico (muda para as formas femininas quando Sexo = Feminino) ===
+const EC_MASCULINO = ['Solteiro', 'Casado', 'Separado', 'Divorciado', 'Viúvo'];
+const EC_FEMININO  = ['Solteira', 'Casada', 'Separada', 'Divorciada', 'Viúva'];
+
+function montarEstadoCivil(prefixo) {
+  const sexoEl = document.getElementById(prefixo + '_sexo');
+  const ecEl = document.getElementById(prefixo + '_ec');
+  if (!sexoEl || !ecEl) return;
+
+  const feminino = sexoEl.value === 'Feminino';
+  const lista = feminino ? EC_FEMININO : EC_MASCULINO;
+  const listaOposta = feminino ? EC_MASCULINO : EC_FEMININO;
+
+  // Se já havia uma opção selecionada (na lista oposta), mantém o mesmo estado civil,
+  // só traduzindo para a forma correspondente ao novo sexo
+  const idxAtual = listaOposta.indexOf(ecEl.value);
+  let manter = idxAtual >= 0 ? lista[idxAtual] : (lista.includes(ecEl.value) ? ecEl.value : '');
+
+  // Se os 2 Locadores/Locatários são casados entre si, o Estado Civil vira automaticamente
+  // Casado/Casada (conforme o sexo) e fica travado, sem poder trocar
+  const grupo = prefixo.slice(0, 3); // 'lcd' ou 'lct'
+  const casadosEl = document.getElementById(grupo + '_casados');
+  const travarCasado = (prefixo === grupo + '1' || prefixo === grupo + '2') && casadosEl && casadosEl.value === 'Sim';
+  if (travarCasado) manter = feminino ? 'Casada' : 'Casado';
+
+  ecEl.innerHTML = '<option value="" ' + (manter ? '' : 'selected') + ' disabled>Selecione...</option>' +
+    lista.map(op => `<option value="${op}"${op === manter ? ' selected' : ''}>${op}</option>`).join('');
+
+  ecEl.disabled = travarCasado;
+
+  atualizarAvisoPendencias();
+}
+
+// === Campos com "Não tenho esse dado" (Matrícula, Inscrição Cadastral, UC, RGI) ===
+// Cada um começa vazio (mostrando um exemplo em cinza dentro do campo).
+// Só recebem o texto padrão (N/A) se a pessoa marcar "Não tenho esse dado".
+const CAMPOS_CONFIRMAVEIS = {
+  imv_matricula: { padrao: 'xxx - CRI de XXXX/SP', label: 'Matrícula' },
+  imv_inscricao: { padrao: 'XX.XX.XX.0XXX.01.0000', label: 'Inscrição Cadastral' },
+  imv_uc:        { padrao: 'XXX', label: 'UC (CPFL)' },
+  imv_rgi:       { padrao: 'XXX', label: 'RGI / Fornecimento (SABESP)' },
+};
+
+// Chamado enquanto a pessoa digita
+function handleConfirmavelInput(id) {
+  const input = document.getElementById(id);
+  input.classList.remove('campo-erro');
+  atualizarAvisoPendencias();
+}
+
+// Chamado ao marcar/desmarcar "Não tenho esse dado"
+function handleNaoTemChange(id) {
+  const cfg = CAMPOS_CONFIRMAVEIS[id];
+  const input = document.getElementById(id);
+  const chk = document.getElementById(id + '_naotem');
+  const pill = document.getElementById(id + '_pill');
+  if (chk.checked) {
+    input.value = cfg.padrao;
+    input.readOnly = true;
+    input.classList.add('campo-confirmado');
+    input.classList.remove('campo-erro');
+    pill.classList.add('marcada');
+  } else {
+    input.value = '';
+    input.readOnly = false;
+    input.classList.remove('campo-confirmado');
+    pill.classList.remove('marcada');
+  }
+  atualizarAvisoPendencias();
+}
+
+// === Lista de campos obrigatórios, considerando o que está visível/aplicável no momento ===
+function obterCamposObrigatorios() {
+  const lista = [];
+  const add = (id, label) => lista.push({ id, label });
+
+  add('contractId', 'Nº do Contrato');
+  add('imv_rua', 'Imóvel — Rua e nº');
+  add('imv_bairro', 'Imóvel — Bairro');
+  add('imv_cidade', 'Imóvel — Município/UF');
+  add('imv_cep', 'Imóvel — CEP');
+  add('imv_matricula', 'Matrícula');
+  add('imv_inscricao', 'Inscrição Cadastral');
+  add('imv_uc', 'UC (CPFL)');
+  add('imv_rgi', 'RGI / Fornecimento (SABESP)');
+  add('data_contrato', 'Data do Contrato');
+  add('prazo', 'Prazo');
+  add('fins', 'Fins (Residencial/Comercial)');
+  add('inicio', 'Início da Locação');
+  add('termino', 'Término da Locação');
+  add('valor', 'Valor R$');
+  add('valor_extenso', 'Valor por Extenso');
+  add('vencimento', 'Dia de Vencimento');
+  add('enc_agua', 'Encargos — Água e Energia');
+  add('enc_gas', 'Encargos — Gás');
+  add('enc_condominio', 'Encargos — Condomínio');
+  add('enc_iptu', 'Encargos — IPTU');
+
+  const garantia = document.getElementById('garantia').value;
+  add('garantia', 'Tipo de Garantia');
+  if (garantia === 'CAUÇÃO') {
+    add('caucao_valor', 'Caução — Valor R$');
+    add('caucao_extenso', 'Caução — Valor por Extenso');
+    add('caucao_banco', 'Caução — Banco');
+    add('caucao_conta', 'Caução — Conta Bancária');
+  } else {
+    add('imgrt_descricao', 'Imóvel Garantia — Descrição');
+    add('imgrt_rua', 'Imóvel Garantia — Rua e nº');
+    add('imgrt_bairro_cidade', 'Imóvel Garantia — Bairro/Município-UF');
+    add('imgrt_matricula', 'Imóvel Garantia — Matrícula');
+  }
+
+  add('num_lcd', 'Nº de Locadores');
+  add('lcd_rua', 'Locadores — Endereço (Rua e nº)');
+  add('lcd_bairro', 'Locadores — Bairro');
+  add('lcd_cidade', 'Locadores — Município/UF');
+  add('lcd1_sexo', 'Locador 1 — Sexo');
+  add('lcd1_nome', 'Locador 1 — Nome Completo');
+  add('lcd1_ec', 'Locador 1 — Estado Civil');
+  add('lcd1_prof', 'Locador 1 — Profissão');
+  add('lcd1_rg', 'Locador 1 — RG');
+  add('lcd1_cpf', 'Locador 1 — CPF');
+
+  if (document.getElementById('num_lcd').value === '2') {
+    add('lcd_casados', 'Locadores — Casados entre si?');
+    add('lcd2_sexo', 'Locador 2 — Sexo');
+    add('lcd2_nome', 'Locador 2 — Nome Completo');
+    add('lcd2_ec', 'Locador 2 — Estado Civil');
+    add('lcd2_prof', 'Locador 2 — Profissão');
+    add('lcd2_rg', 'Locador 2 — RG');
+    add('lcd2_cpf', 'Locador 2 — CPF');
+    if (document.getElementById('lcd_casados').value === 'Sim') {
+      add('lcd_regime', 'Locadores — Regime de Casamento');
+      add('lcd_data_casamento', 'Locadores — Data do Casamento');
+    }
+  }
+
+  add('num_lct', 'Nº de Locatários');
+  add('lct1_sexo', 'Locatário 1 — Sexo');
+  add('lct1_nome', 'Locatário 1 — Nome Completo');
+  add('lct1_ec', 'Locatário 1 — Estado Civil');
+  add('lct1_prof', 'Locatário 1 — Profissão');
+  add('lct1_rg', 'Locatário 1 — RG');
+  add('lct1_cpf', 'Locatário 1 — CPF');
+
+  if (document.getElementById('num_lct').value === '2') {
+    add('lct_casados', 'Locatários — Casados entre si?');
+    add('lct2_sexo', 'Locatário 2 — Sexo');
+    add('lct2_nome', 'Locatário 2 — Nome Completo');
+    add('lct2_ec', 'Locatário 2 — Estado Civil');
+    add('lct2_prof', 'Locatário 2 — Profissão');
+    add('lct2_rg', 'Locatário 2 — RG');
+    add('lct2_cpf', 'Locatário 2 — CPF');
+    if (document.getElementById('lct_casados').value === 'Sim') {
+      add('lct_regime', 'Locatários — Regime de Casamento');
+      add('lct_data_casamento', 'Locatários — Data do Casamento');
+    }
+  }
+
+  if (document.getElementById('fins').value === 'COMERCIAIS') {
+    add('lct_rua_com', 'Locatários — Endereço Residencial (Rua e nº)');
+    add('lct_bairro_com', 'Locatários — Endereço Residencial (Bairro)');
+    add('lct_cidade_com', 'Locatários — Endereço Residencial (Município/UF)');
+  }
+
+  if (garantia === 'FIADOR') {
+    add('fdr_rua', 'Fiadores — Endereço (Rua e nº)');
+    add('fdr_bairro', 'Fiadores — Bairro');
+    add('fdr_cidade', 'Fiadores — Município/UF');
+    add('num_fdr', 'Nº de Fiadores');
+    add('fdr1_sexo', 'Fiador 1 — Sexo');
+    add('fdr1_nome', 'Fiador 1 — Nome Completo');
+    add('fdr1_ec', 'Fiador 1 — Estado Civil');
+    add('fdr1_prof', 'Fiador 1 — Profissão');
+    add('fdr1_rg', 'Fiador 1 — RG');
+    add('fdr1_cpf', 'Fiador 1 — CPF');
+
+    if (document.getElementById('num_fdr').value === '2') {
+      add('fdr_casados', 'Fiadores — Casados entre si?');
+      add('fdr2_sexo', 'Fiador 2 — Sexo');
+      add('fdr2_nome', 'Fiador 2 — Nome Completo');
+      add('fdr2_ec', 'Fiador 2 — Estado Civil');
+      add('fdr2_prof', 'Fiador 2 — Profissão');
+      add('fdr2_rg', 'Fiador 2 — RG');
+      add('fdr2_cpf', 'Fiador 2 — CPF');
+    }
+    if (document.getElementById('fdr_casados').value === 'Sim') {
+      add('fdr_regime', 'Fiadores — Regime de Casamento');
+      add('fdr_data_casamento', 'Fiadores — Data do Casamento');
+    }
+  }
+
+  return lista;
+}
+
+// Todos os campos obrigatórios (incluindo os que usam "Não tenho esse dado")
+// são considerados pendentes quando estão vazios
+function calcularPendencias() {
+  const pendentes = [];
+
+  obterCamposObrigatorios().forEach(campo => {
+    const input = document.getElementById(campo.id);
+    if (input && !input.value.trim()) pendentes.push(campo);
+  });
+
+  return pendentes;
+}
+
+// Atualiza a mensagem no rodapé com a contagem de campos pendentes
+function atualizarAvisoPendencias() {
+  const aviso = document.getElementById('avisoPendencias');
+  if (!aviso) return;
+  const pendentes = calcularPendencias();
+  if (pendentes.length === 0) {
+    aviso.textContent = '✅ Todos os campos obrigatórios estão preenchidos';
+    aviso.classList.add('completo');
+  } else {
+    const plural = pendentes.length > 1;
+    aviso.textContent = `⚠ ${pendentes.length} campo${plural ? 's' : ''} obrigatório${plural ? 's' : ''} ainda não preenchido${plural ? 's' : ''}`;
+    aviso.classList.remove('completo');
+  }
+}
+
+// Valida antes de gerar o Excel: bloqueia e avisa quais campos faltam
+function validarAntesDeGerar() {
+  const pendentes = calcularPendencias();
+
+  // limpa erros anteriores
+  document.querySelectorAll('.campo-erro').forEach(el => el.classList.remove('campo-erro'));
+  document.querySelectorAll('.opcao-btn.erro').forEach(el => el.classList.remove('erro'));
+
+  if (pendentes.length === 0) return true;
+
+  let primeiroInvalido = null;
+  pendentes.forEach(campo => {
+    const input = document.getElementById(campo.id);
+    if (input) {
+      const secao = input.closest('.section');
+      if (secao) secao.classList.remove('collapsed');
+
+      if (input.type === 'hidden') {
+        // campo é um grupo de botões (opcao-btn) — destaca os botões em vez do input escondido
+        const botoes = document.querySelectorAll('.opcao-btn[data-for="' + campo.id + '"]');
+        botoes.forEach(btn => btn.classList.add('erro'));
+        if (!primeiroInvalido && botoes.length) primeiroInvalido = botoes[0];
+      } else {
+        input.classList.add('campo-erro');
+        if (!primeiroInvalido) primeiroInvalido = input;
+      }
+    }
+  });
+
+  const lista = pendentes.map(p => '• ' + p.label).join('\n');
+  alert(`Antes de gerar o Excel, preencha ou confirme ${pendentes.length} campo${pendentes.length > 1 ? 's' : ''}:\n\n${lista}`);
+
+  if (primeiroInvalido) {
+    primeiroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (typeof primeiroInvalido.focus === 'function' && primeiroInvalido.tagName !== 'DIV') primeiroInvalido.focus();
+  }
+  return false;
+}
+
+// Recalcula o aviso sempre que qualquer campo do formulário for alterado
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.querySelector('.container');
+  container.addEventListener('input', (e) => {
+    e.target.classList.remove('campo-erro');
+    atualizarAvisoPendencias();
+  });
+  container.addEventListener('change', (e) => {
+    e.target.classList.remove('campo-erro');
+    atualizarAvisoPendencias();
+  });
+});
+
+function v(id) { return document.getElementById(id)?.value?.trim() || '---'; }
+function vNum(id) { const n = parseInt(document.getElementById(id)?.value); return isNaN(n)?1:n; }
+function nat(sexoVal) { return sexoVal === 'Feminino' ? 'brasileira' : 'brasileiro'; }
+
+function buildDataRow() {
+  const garantia = v('garantia');
+  const isFiador = garantia === 'FIADOR';
+  const nLcd = vNum('num_lcd');
+  const nLct = vNum('num_lct');
+  const nFdr = isFiador ? vNum('num_fdr') : '---';
+  const lcd_casados = nLcd === 2 ? v('lcd_casados') : '---';
+  const lct_casados = nLct === 2 ? v('lct_casados') : '---';
+  const fdr_casados = isFiador && parseInt(nFdr)===2 ? v('fdr_casados') : '---';
+
+  return [
+    v('contractId'),                         // A  - ID
+    v('imv_rua'),                            // B  - Imóvel Rua
+    v('imv_bairro'),                         // C
+    v('imv_cidade'),                         // D
+    v('imv_cep'),                            // E
+    v('imv_matricula'),                      // F
+    v('imv_inscricao'),                      // G
+    v('imv_uc'),                             // H
+    v('imv_rgi'),                            // I
+    v('fins'),                               // J  - Fins
+    v('data_contrato'),                      // K  - Data
+    v('prazo'),                              // L  - Prazo
+    v('inicio'),                             // M  - Início
+    v('termino'),                            // N  - Término
+    v('valor'),                              // O  - Valor R$
+    v('valor_extenso'),                      // P  - Extenso
+    v('vencimento'),                         // Q  - Dia Pgmto
+    v('enc_agua'),                           // R  - Água
+    v('enc_gas'),                            // S  - Gás
+    v('enc_condominio'),                     // T  - Condomínio
+    v('enc_iptu'),                           // U  - IPTU
+    garantia,                                // V  - Garantia
+    isFiador ? '---' : v('caucao_valor'),    // W  - Caução R$
+    isFiador ? '---' : v('caucao_extenso'),  // X
+    isFiador ? '---' : contaCaucaoCompleta(),    // Y
+    isFiador ? v('imgrt_descricao') : '---', // Z  - Imóv Grt Desc
+    isFiador ? v('imgrt_rua') : '---',       // AA
+    isFiador ? v('imgrt_bairro_cidade'):'---',//AB
+    isFiador ? v('imgrt_matricula') : '---', // AC
+    v('lcd1_sexo'),                          // AD - Loc1 Sexo
+    v('lcd1_nome'),                          // AE - Loc1 Nome
+    nat(v('lcd1_sexo')),                     // AF - Loc1 Nac
+    v('lcd1_ec'),                            // AG - Loc1 E.Civil
+    v('lcd1_prof'),                          // AH
+    v('lcd1_rg'),                            // AI
+    v('lcd1_cpf'),                           // AJ
+    v('lcd1_tel'),                           // AK
+    v('lcd1_email'),                         // AL
+    nLcd===2 ? v('lcd2_sexo') : '---',       // AM - Loc2 Sexo
+    nLcd===2 ? v('lcd2_nome') : '---',       // AN
+    nLcd===2 ? nat(v('lcd2_sexo')) : '---',  // AO
+    nLcd===2 ? v('lcd2_ec') : '---',         // AP
+    nLcd===2 ? v('lcd2_prof') : '---',       // AQ
+    nLcd===2 ? v('lcd2_rg') : '---',         // AR
+    nLcd===2 ? v('lcd2_cpf') : '---',        // AS
+    nLcd===2 ? v('lcd2_tel') : '---',        // AT
+    nLcd===2 ? v('lcd2_email') : '---',      // AU
+    v('lcd_rua'),                            // AV - Loc Endereço
+    v('lcd_bairro'),                         // AW
+    v('lcd_cidade'),                         // AX
+    nLcd,                                    // AY - Nº Lcd
+    lcd_casados,                             // AZ - Casados
+    lcd_casados==='Sim' ? v('lcd_regime') : '---',        // BA
+    lcd_casados==='Sim' ? v('lcd_data_casamento') : '---',// BB
+    v('lct1_sexo'),                          // BC - Lct1 Sexo
+    v('lct1_nome'),                          // BD
+    nat(v('lct1_sexo')),                     // BE
+    v('lct1_ec'),                            // BF
+    v('lct1_prof'),                          // BG
+    v('lct1_rg'),                            // BH
+    v('lct1_cpf'),                           // BI
+    v('lct1_tel'),                           // BJ
+    v('lct1_email'),                         // BK
+    nLct===2 ? v('lct2_sexo') : '---',       // BL
+    nLct===2 ? v('lct2_nome') : '---',       // BM
+    nLct===2 ? nat(v('lct2_sexo')) : '---',  // BN
+    nLct===2 ? v('lct2_ec') : '---',         // BO
+    nLct===2 ? v('lct2_prof') : '---',       // BP
+    nLct===2 ? v('lct2_rg') : '---',         // BQ
+    nLct===2 ? v('lct2_cpf') : '---',        // BR
+    nLct===2 ? v('lct2_tel') : '---',        // BS
+    nLct===2 ? v('lct2_email') : '---',      // BT
+    v('fins')==='COMERCIAIS'?v('lct_rua_com'):'---',   // BU - Lct end. comercial
+    v('fins')==='COMERCIAIS'?v('lct_bairro_com'):'---',// BV
+    v('fins')==='COMERCIAIS'?v('lct_cidade_com'):'---',// BW
+    nLct,                                    // BX - Nº Lct
+    lct_casados,                             // BY
+    lct_casados==='Sim' ? v('lct_regime') : '---',        // BZ
+    lct_casados==='Sim' ? v('lct_data_casamento') : '---',// CA
+    isFiador ? v('fdr1_sexo') : '---',       // CB - Fdr1 Sexo
+    isFiador ? v('fdr1_nome') : '---',       // CC
+    isFiador ? nat(v('fdr1_sexo')) : '---',  // CD
+    isFiador ? v('fdr1_ec') : '---',         // CE
+    isFiador ? v('fdr1_prof') : '---',       // CF
+    isFiador ? v('fdr1_rg') : '---',         // CG
+    isFiador ? v('fdr1_cpf') : '---',        // CH
+    isFiador ? v('fdr1_tel') : '---',        // CI
+    isFiador ? v('fdr1_email') : '---',      // CJ
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_sexo') : '---',    // CK
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_nome') : '---',    // CL
+    (isFiador && parseInt(nFdr)===2) ? nat(v('fdr2_sexo')):'---', // CM
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_ec') : '---',      // CN
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_prof') : '---',    // CO
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_rg') : '---',      // CP
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_cpf') : '---',     // CQ
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_tel') : '---',     // CR
+    (isFiador && parseInt(nFdr)===2) ? v('fdr2_email') : '---',   // CS
+    isFiador ? v('fdr_rua') : '---',         // CT - Fdr Endereço
+    isFiador ? v('fdr_bairro') : '---',      // CU
+    isFiador ? v('fdr_cidade') : '---',      // CV
+    isFiador ? nFdr : '---',                 // CW - Nº Fdr
+    fdr_casados,                             // CX
+    fdr_casados==='Sim' ? v('fdr_regime') : '---',         // CY
+    fdr_casados==='Sim' ? v('fdr_data_casamento') : '---', // CZ
+    v('observacoes'),                        // DA - Obs
+  ];
+}
+
+function gerarExcel() {
+  if (!validarAntesDeGerar()) return;
+
+  const wb = XLSX.utils.book_new();
+
+  // === Headers row 1 (section labels) ===
+  const hdr1 = new Array(105).fill('');
+  hdr1[0] = 'Nº Contrato';
+  hdr1[1] = 'IMÓVEL';
+  hdr1[9] = 'DADOS DO CONTRATO';
+  hdr1[17] = 'ENCARGOS';
+  hdr1[21] = 'GARANTIA';
+  hdr1[25] = 'IMÓVEL GARANTIA';
+  hdr1[29] = 'LOCADORES';
+  hdr1[47] = 'END. LOCADORES';
+  hdr1[50] = 'CASAMENTO LCD';
+  hdr1[54] = 'LOCATÁRIOS';
+  hdr1[72] = 'END. LOCATÁRIOS';
+  hdr1[75] = 'CASAMENTO LCT';
+  hdr1[79] = 'FIADORES';
+  hdr1[97] = 'END. FIADORES';
+  hdr1[100] = 'CASAMENTO FDR';
+  hdr1[104] = 'OBS';
+
+  // === Headers row 2 (sub-labels) ===
+  const hdr2 = new Array(105).fill('');
+  hdr2[0] = 'ID';
+  hdr2[1] = 'Endereço Imóvel';
+  hdr2[5] = 'Dados Cadastrais';
+  hdr2[9] = 'Utilização'; hdr2[10]='Data Contrato'; hdr2[11]='Prazo'; hdr2[12]='Início'; hdr2[13]='Término';
+  hdr2[14]='Valor R$'; hdr2[15]='Valor Extenso'; hdr2[16]='Dia Pgmto';
+  hdr2[17]='Água/Energia'; hdr2[18]='Gás'; hdr2[19]='Condomínio'; hdr2[20]='IPTU';
+  hdr2[21]='Tipo'; hdr2[22]='Caução R$'; hdr2[23]='Caução Extenso'; hdr2[24]='Conta';
+  hdr2[25]='Desc.'; hdr2[26]='Rua e nº'; hdr2[27]='Bairro/Mun-UF'; hdr2[28]='Matrícula';
+  hdr2[29]='Locador 1'; hdr2[38]='Locador 2';
+  hdr2[47]='Rua e nº'; hdr2[48]='Bairro'; hdr2[49]='Mun/UF'; hdr2[50]='Nº Locs'; hdr2[51]='Casados?'; hdr2[52]='Regime'; hdr2[53]='Data Casam.';
+  hdr2[54]='Locatário 1'; hdr2[63]='Locatário 2';
+  hdr2[72]='Rua e nº'; hdr2[73]='Bairro'; hdr2[74]='Mun/UF'; hdr2[75]='Nº Lcts'; hdr2[76]='Casados?'; hdr2[77]='Regime'; hdr2[78]='Data Casam.';
+  hdr2[79]='Fiador 1'; hdr2[88]='Fiador 2';
+  hdr2[97]='Rua e nº'; hdr2[98]='Bairro'; hdr2[99]='Mun/UF'; hdr2[100]='Nº Fdrs'; hdr2[101]='Casados?'; hdr2[102]='Regime'; hdr2[103]='Data Casam.';
+  hdr2[104]='Observações';
+
+  // === Headers row 3 (field names) ===
+  const hdr3 = [
+    'Nº Contrato',
+    'Rua e nº','Bairro','Município/UF','CEP','Matrícula','Ins. Cad.','UC','RGI',
+    'Fins','Data','Prazo','Início','Término','R$','Extenso','Dia Pgmto',
+    'Água/Energia','Gás','Condomínio','IPTU',
+    'Garantia','Caução R$','Caução Ext.','Conta',
+    'Desc. Imóv.','Rua e nº','Bairro/Mun','Matrícula',
+    'Sexo','Nome','Nac.','Est.Civil','Profissão','RG','CPF','Tel','E-mail',
+    'Sexo','Nome','Nac.','Est.Civil','Profissão','RG','CPF','Tel','E-mail',
+    'Rua e nº','Bairro','Mun/UF','Nº Lcd','Casados','Regime','Data Casam.',
+    'Sexo','Nome','Nac.','Est.Civil','Profissão','RG','CPF','Tel','E-mail',
+    'Sexo','Nome','Nac.','Est.Civil','Profissão','RG','CPF','Tel','E-mail',
+    'Rua e nº','Bairro','Mun/UF','Nº Lct','Casados','Regime','Data Casam.',
+    'Sexo','Nome','Nac.','Est.Civil','Profissão','RG','CPF','Tel','E-mail',
+    'Sexo','Nome','Nac.','Est.Civil','Profissão','RG','CPF','Tel','E-mail',
+    'Rua e nº','Bairro','Mun/UF','Nº Fdr','Casados','Regime','Data Casam.',
+    'Observações'
+  ];
+
+  const dataRow = buildDataRow();
+
+  // Put headers at rows 7-9, data at row 10 (matching original structure)
+  const aoaData = [
+    [], [], [], [], [], [], // rows 1-6 empty
+    hdr1,                   // row 7
+    hdr2,                   // row 8
+    hdr3,                   // row 9
+    dataRow,                // row 10
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(aoaData);
+
+  // Style column widths
+  ws['!cols'] = [{ wch: 12 }];
+  for (let i = 1; i < 105; i++) ws['!cols'].push({ wch: 18 });
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Contratos Locação');
+
+  const contractId = document.getElementById('contractId').value || 'contrato';
+  XLSX.writeFile(wb, `Contratos_Locacao_${contractId}.xlsx`);
+
+  mostrarToast('✅ Excel gerado com sucesso!');
+}
+
+// Mostra uma mensagem temporária no canto da tela (reaproveitado por Excel, Salvar e Carregar Rascunho)
+function mostrarToast(mensagem) {
+  const toast = document.getElementById('toast');
+  toast.textContent = mensagem;
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+// ==========================================================
+// SALVAR / CARREGAR RASCUNHO (arquivo .json)
+// Permite guardar o preenchimento parcial e continuar depois
+// ==========================================================
+
+const CAMPOS_ESTADO_CIVIL = ['lcd1_ec', 'lcd2_ec', 'lct1_ec', 'lct2_ec', 'fdr1_ec', 'fdr2_ec'];
+
+// Recolhe o valor atual de todo campo com id dentro do formulário
+function coletarDadosFormulario() {
+  const dados = {};
+  document.querySelectorAll('.container input[id], .container select[id], .container textarea[id]').forEach(el => {
+    dados[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+  return dados;
+}
+
+function salvarProgresso() {
+  const dados = coletarDadosFormulario();
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const nomeBase = (document.getElementById('contractId').value || 'contrato').replace(/[^\w.-]+/g, '_');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Rascunho_${nomeBase}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  mostrarToast('💾 Rascunho salvo com sucesso!');
+}
+
+function carregarProgresso(inputFile) {
+  const arquivo = inputFile.files[0];
+  if (!arquivo) return;
+
+  const leitor = new FileReader();
+  leitor.onload = function (e) {
+    try {
+      const dados = JSON.parse(e.target.result);
+      aplicarDadosFormulario(dados);
+      mostrarToast('📂 Rascunho carregado com sucesso!');
+    } catch (err) {
+      alert('Não foi possível ler este arquivo. Verifique se é um rascunho válido gerado por este app.');
+    }
+  };
+  leitor.readAsText(arquivo);
+  inputFile.value = ''; // permite carregar o mesmo arquivo de novo, se precisar
+}
+
+// Aplica os dados carregados de volta em todos os campos do formulário
+function aplicarDadosFormulario(dados) {
+  // 1ª etapa: preenche todos os campos, exceto os selects de Estado Civil
+  // (cujas opções são geradas dinamicamente e só existem depois do Sexo ser aplicado)
+  Object.keys(dados).forEach(id => {
+    if (CAMPOS_ESTADO_CIVIL.includes(id)) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!dados[id];
+    else el.value = dados[id];
+  });
+
+  // 2ª etapa: recalcula tudo que depende do que acabou de ser carregado
+  // (mostra/esconde blocos, reconstrói Estado Civil com base no Sexo, trava campos "casados entre si")
+  toggleGarantia();
+  toggleLcd2();
+  toggleLct2();
+  toggleFdr2();
+  aplicarCasados('lcd');
+  aplicarCasados('lct');
+  aplicarCasados('fdr');
+  atualizarPlaceholderConta();
+
+  // 3ª etapa: agora que os selects de Estado Civil já foram reconstruídos, aplica o valor salvo
+  CAMPOS_ESTADO_CIVIL.forEach(id => {
+    if (dados[id] !== undefined && document.getElementById(id)) {
+      document.getElementById(id).value = dados[id];
+    }
+  });
+
+  // 4ª etapa: reaplica o visual "selecionado" de todos os botões de opção (1/2, Sexo, Sim/Não, Fins, etc.)
+  document.querySelectorAll('.opcao-btn').forEach(btn => {
+    const hidden = document.getElementById(btn.dataset.for);
+    btn.classList.toggle('selecionada', !!hidden && btn.dataset.valor === hidden.value);
+  });
+
+  // 5ª etapa: reaplica o estado visual (travado/confirmado) dos campos com "Não tenho esse dado" e "Não tem RG"
+  ['imv_matricula', 'imv_inscricao', 'imv_uc', 'imv_rgi'].forEach(id => {
+    const chk = document.getElementById(id + '_naotem');
+    const pill = document.getElementById(id + '_pill');
+    const input = document.getElementById(id);
+    if (!chk || !input) return;
+    input.readOnly = chk.checked;
+    input.classList.toggle('campo-confirmado', chk.checked);
+    if (pill) pill.classList.toggle('marcada', chk.checked);
+  });
+
+  ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(p => {
+    const chk = document.getElementById(p + '_rg_naotem');
+    const pill = document.getElementById(p + '_rg_naotem_pill');
+    const input = document.getElementById(p + '_rg');
+    if (!chk || !input) return;
+    input.readOnly = chk.checked;
+    input.classList.toggle('campo-confirmado', chk.checked);
+    if (pill) pill.classList.toggle('marcada', chk.checked);
+  });
+
+  atualizarAvisoPendencias();
+}
+
+// ==========================================================
+// IMPORTAR PDF
+// Lê um PDF (por exemplo, exportado por outros apps seus) e tenta
+// preencher os campos automaticamente. Foi calibrado para 2 formatos:
+//  (A) PDFs com campos de formulário reais (AcroForm) — extração exata
+//  (B) PDFs "achatados" (texto/imagem) — reconhecimento por rótulos
+//      (Nome:, Profissão:, Telefone:, E-mail:, Est. civil: etc.),
+//      inclusive quando Locatário/Fiador 1 e 2 aparecem lado a lado.
+// Sempre revise os dados preenchidos antes de gerar o Excel.
+// ==========================================================
+
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+async function importarPDF(inputFile) {
+  const arquivo = inputFile.files[0];
+  if (!arquivo) return;
+
+  try {
+    const buffer = await arquivo.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+
+    let dados = {};
+    const camposForm = await pdf.getFieldObjects();
+
+    if (camposForm && Object.keys(camposForm).length > 0) {
+      // (A) PDF com campos de formulário reais — extração exata, sem heurística
+      dados = mapearCamposAcroForm(camposForm);
+    } else {
+      // (B) PDF achatado — extrai o texto (detectando colunas) e reconhece por rótulos
+      const texto = await extrairTextoComColunas(pdf);
+      dados = mapearTextoPDF(texto);
+    }
+
+    const qtd = Object.keys(dados).length;
+    if (qtd > 0) {
+      aplicarDadosFormulario(dados);
+      reformatarCamposImportados(dados);
+      mostrarToast(`📄 PDF importado: ${qtd} campo(s) reconhecido(s). Revise os dados!`);
+    } else {
+      alert('O PDF foi lido, mas nenhum campo conhecido foi reconhecido automaticamente. Você pode preencher manualmente, ou me mandar esse PDF de exemplo para eu calibrar melhor o reconhecimento.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Não foi possível ler este PDF. Ele pode estar protegido, ser uma imagem escaneada (sem texto selecionável), ou em um formato não reconhecido.');
+  }
+  inputFile.value = '';
+}
+
+// --- (A) Extração exata via campos de formulário (AcroForm) ---
+function valorCampoPDF(campos, nome) {
+  const arr = campos[nome];
+  if (!arr) return undefined;
+  const entry = arr.find(e => e.value !== undefined);
+  return entry ? entry.value : undefined;
+}
+
+function mapearCamposAcroForm(campos) {
+  const dados = {};
+  const norm = (t) => (t || '').toString().replace(/\(a\)|\(o\)/gi, '').trim();
+  const marcado = (nome) => { const v = valorCampoPDF(campos, nome); return v === true || v === 'Yes' || v === 'On'; };
+  const txt = (nome) => {
+    const v = valorCampoPDF(campos, nome);
+    return (v !== undefined && v !== null && String(v).trim() !== '') ? String(v).trim() : null;
+  };
+  let v;
+
+  if (v = txt('f1_imovel_endereco')) dados.imv_rua = v;
+  if (v = txt('f2_imovel_valor')) dados.valor = v;
+  if (v = txt('f3_imovel_data_inicio')) dados.inicio = v;
+  if (marcado('f4_utilizacao_residencial')) dados.fins = 'RESIDENCIAIS';
+  else if (marcado('f5_utilizacao_comercial')) dados.fins = 'COMERCIAIS';
+  if (v = txt('f6_proprietario_nome')) dados.lcd1_nome = v.toUpperCase();
+
+  if (v = txt('f8_loc1_nome')) dados.lct1_nome = v.toUpperCase();
+  if (v = txt('f9_loc1_estado_civil_txt')) dados.lct1_ec = norm(v);
+  if (v = txt('f10_loc1_profissao')) dados.lct1_prof = v;
+  if (v = txt('f11_loc1_tel')) dados.lct1_tel = v;
+  if (v = txt('f12_loc1_email')) dados.lct1_email = v;
+
+  if (v = txt('f13_loc2_nome')) dados.lct2_nome = v.toUpperCase();
+  if (v = txt('f14_loc2_estado_civil_txt')) dados.lct2_ec = norm(v);
+  if (v = txt('f15_loc2_profissao')) dados.lct2_prof = v;
+  if (v = txt('f16_loc2_tel')) dados.lct2_tel = v;
+  if (v = txt('f17_loc2_email')) dados.lct2_email = v;
+
+  if (v = txt('f24_fiador1_nome')) dados.fdr1_nome = v.toUpperCase();
+  if (v = txt('f25_fiador1_estado_civil_txt')) dados.fdr1_ec = norm(v);
+  if (v = txt('f26_fiador1_profissao')) dados.fdr1_prof = v;
+  if (v = txt('f27_fiador1_tel')) dados.fdr1_tel = v;
+  if (v = txt('f28_fiador1_email')) dados.fdr1_email = v;
+
+  if (v = txt('f29_fiador2_nome')) dados.fdr2_nome = v.toUpperCase();
+  if (v = txt('f30_fiador2_estado_civil_txt')) dados.fdr2_ec = norm(v);
+  if (v = txt('f31_fiador2_profissao')) dados.fdr2_prof = v;
+  if (v = txt('f32_fiador2_tel')) dados.fdr2_tel = v;
+  if (v = txt('f33_fiador2_email')) dados.fdr2_email = v;
+
+  if (v = txt('f42_dia_pagamento')) dados.vencimento = v;
+  if (v = txt('f43_observacoes')) dados.observacoes = v;
+
+  if (dados.lct2_nome) dados.num_lct = '2'; else if (dados.lct1_nome) dados.num_lct = '1';
+  if (dados.fdr1_nome) { dados.garantia = 'FIADOR'; dados.num_fdr = dados.fdr2_nome ? '2' : '1'; }
+
+  return dados;
+}
+
+// --- (B) Extração de texto de PDFs "achatados", detectando colunas ---
+// Agrupa o texto por linha (mesma altura) e, dentro de cada linha, separa
+// em "colunas" sempre que houver um espaço horizontal grande entre um
+// texto e o próximo — assim "Nome: X     Nome: Y" lado a lado vira duas
+// linhas separadas em vez de uma só, evitando que a extração misture os dois.
+async function extrairTextoComColunas(pdf) {
+  let textoFinal = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const pagina = await pdf.getPage(i);
+    const conteudo = await pagina.getTextContent();
+    const linhas = {};
+    conteudo.items.forEach(item => {
+      const y = Math.round(item.transform[5]);
+      if (!linhas[y]) linhas[y] = [];
+      linhas[y].push(item);
+    });
+    const ys = Object.keys(linhas).map(Number).sort((a, b) => b - a);
+    ys.forEach(y => {
+      const itens = linhas[y].slice().sort((a, b) => a.transform[4] - b.transform[4]);
+      const segmentos = [];
+      let atual = '';
+      let fimAnterior = null;
+      itens.forEach(item => {
+        const inicio = item.transform[4];
+        if (fimAnterior !== null && (inicio - fimAnterior) > 25) {
+          segmentos.push(atual.trim());
+          atual = '';
+        }
+        atual += item.str + ' ';
+        fimAnterior = inicio + (item.width || 0);
+      });
+      if (atual.trim()) segmentos.push(atual.trim());
+      textoFinal += segmentos.join('\n') + '\n';
+    });
+  }
+  return textoFinal;
+}
+
+function buscarNoPDF(regex, texto) {
+  const m = texto.match(regex);
+  return m && m[1] ? m[1].trim().replace(/\s{2,}/g, ' ') : null;
+}
+
+// Encontra TODAS as ocorrências de um rótulo no texto, na ordem em que aparecem.
+// Como Locatário/Fiador 1 e 2 sempre aparecem nessa ordem no documento,
+// a 1ª ocorrência de "Nome:" é sempre a pessoa 1, a 2ª é a pessoa 2, etc.
+function todasOcorrenciasPDF(regexBase, texto) {
+  const re = new RegExp(regexBase.source, 'gi');
+  const out = [];
+  let m;
+  while ((m = re.exec(texto)) !== null) {
+    if (m[1]) out.push(m[1].trim());
+    if (re.lastIndex === m.index) re.lastIndex++;
+  }
+  return out;
+}
+
+function mapearTextoPDF(texto) {
+  const dados = {};
+  const norm = (t) => t ? t.replace(/\(a\)|\(o\)/gi, '').trim() : t;
+
+  const uso = buscarNoPDF(/uso:\s*(residencial|comercial)/i, texto) || buscarNoPDF(/utiliza[cç][aã]o[:\s]+(residencial|comercial)/i, texto);
+  if (uso) dados.fins = /resid/i.test(uso) ? 'RESIDENCIAIS' : 'COMERCIAIS';
+
+  const dia = buscarNoPDF(/dia[^\n:]*pagamento[^\n:]*[:\s]+(\d{1,2})/i, texto);
+  if (dia) dados.vencimento = dia;
+
+  // Ordem assumida no documento: Locatário 1, Locatário 2, Fiador 1, Fiador 2
+  const nomes = todasOcorrenciasPDF(/\bnome[:\s]+([^\n]+)/i, texto);
+  const profissoes = todasOcorrenciasPDF(/profiss[aã]o[:\s]+([^\n]+)/i, texto);
+  const telefones = todasOcorrenciasPDF(/telefone[:\s]+([^\n]+)/i, texto);
+  const emails = todasOcorrenciasPDF(/e-?mail[:\s]+([^\n]+)/i, texto);
+  const estadoCivis = todasOcorrenciasPDF(/est\.?\s*civil[:\s]+([^\n]+)/i, texto);
+
+  if (nomes[0]) dados.lct1_nome = nomes[0].toUpperCase();
+  if (nomes[1]) dados.lct2_nome = nomes[1].toUpperCase();
+  if (nomes[2]) dados.fdr1_nome = nomes[2].toUpperCase();
+  if (nomes[3]) dados.fdr2_nome = nomes[3].toUpperCase();
+
+  if (profissoes[0]) dados.lct1_prof = profissoes[0];
+  if (profissoes[1]) dados.lct2_prof = profissoes[1];
+  if (profissoes[2]) dados.fdr1_prof = profissoes[2];
+  if (profissoes[3]) dados.fdr2_prof = profissoes[3];
+
+  if (telefones[0]) dados.lct1_tel = telefones[0];
+  if (telefones[1]) dados.lct2_tel = telefones[1];
+  if (telefones[2]) dados.fdr1_tel = telefones[2];
+  if (telefones[3]) dados.fdr2_tel = telefones[3];
+
+  if (emails[0]) dados.lct1_email = emails[0];
+  if (emails[1]) dados.lct2_email = emails[1];
+  if (emails[2]) dados.fdr1_email = emails[2];
+  if (emails[3]) dados.fdr2_email = emails[3];
+
+  if (estadoCivis[0]) dados.lct1_ec = norm(estadoCivis[0]);
+  if (estadoCivis[1]) dados.lct2_ec = norm(estadoCivis[1]);
+  if (estadoCivis[2]) dados.fdr1_ec = norm(estadoCivis[2]);
+  if (estadoCivis[3]) dados.fdr2_ec = norm(estadoCivis[3]);
+
+  if (dados.lct2_nome) dados.num_lct = '2'; else if (dados.lct1_nome) dados.num_lct = '1';
+  if (dados.fdr1_nome) { dados.garantia = 'FIADOR'; dados.num_fdr = dados.fdr2_nome ? '2' : '1'; }
+
+  return dados;
+}
+
+// Reaplica a máscara (telefone/RG/CPF) nos campos que vieram do PDF com valores "crus"
+function reformatarCamposImportados(dados) {
+  Object.keys(dados).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (/_tel$/.test(id)) formatarTelefone(el);
+    else if (/_rg$/.test(id)) formatarRG(el);
+    else if (/_cpf$/.test(id)) formatarCPF(el);
+  });
+}
+
+
+// Init
+toggleGarantia();
+toggleLcd2();
+toggleLct2();
+toggleFdr2();
+montarEstadoCivil('lcd1');
+montarEstadoCivil('lcd2');
+montarEstadoCivil('lct1');
+montarEstadoCivil('lct2');
+montarEstadoCivil('fdr1');
+montarEstadoCivil('fdr2');
+atualizarAvisoPendencias();
+</script>
+
+</body>
+</html>
