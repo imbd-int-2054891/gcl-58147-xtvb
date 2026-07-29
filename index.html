@@ -493,7 +493,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v22</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v23</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -2098,14 +2098,31 @@ async function carregarCadastroContratos() {
   cadastroCarregandoPromise = (async () => {
     const status = document.getElementById('busca_cadastro_status');
     if (typeof XLSX === 'undefined') {
-      if (status) { status.textContent = '⚠️ Não foi possível carregar o cadastro — busca desativada.'; status.classList.add('erro'); }
+      if (status) { status.textContent = '⚠️ A biblioteca de planilhas não carregou (verifique sua conexão) — busca desativada.'; status.classList.add('erro'); }
       cadastroDados = [];
       return cadastroDados;
     }
     try {
-      const resp = await fetch(CADASTRO_URL, { headers: { 'X-App-Key': CADASTRO_APP_KEY } });
-      if (!resp.ok) throw new Error('resposta não OK');
+      let resp;
+      try {
+        resp = await fetch(CADASTRO_URL, { headers: { 'X-App-Key': CADASTRO_APP_KEY } });
+      } catch (erroRede) {
+        // fetch() lança TypeError quando é bloqueio de CORS ou falha de rede/DNS
+        throw new Error('Não consegui nem chegar no endereço do cadastro (CADASTRO_URL). Isso costuma ser CORS (o Worker não libera esse domínio) ou o endereço estar errado/fora do ar.');
+      }
+      if (resp.status === 401 || resp.status === 403) {
+        throw new Error(`O Worker respondeu ${resp.status} (acesso negado) — o CADASTRO_APP_KEY está errado ou não é o esperado por esse Worker.`);
+      }
+      if (resp.status === 404) {
+        throw new Error('O Worker respondeu 404 — o CADASTRO_URL parece não existir ou não é o Worker certo para este cadastro.');
+      }
+      if (!resp.ok) {
+        throw new Error(`O Worker respondeu com erro (status ${resp.status}).`);
+      }
       const buffer = await resp.arrayBuffer();
+      if (!buffer || buffer.byteLength === 0) {
+        throw new Error('O Worker respondeu, mas devolveu um arquivo vazio.');
+      }
       const wb = XLSX.read(buffer, { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const linhas = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
@@ -2165,15 +2182,28 @@ async function carregarCadastroContratos() {
       return cadastroDados;
     } catch (e) {
       console.error(e);
-      if (status) { status.textContent = '⚠️ Não foi possível carregar o cadastro — busca desativada.'; status.classList.add('erro'); }
-      cadastroDados = [];
-      return cadastroDados;
+      if (status) {
+        status.innerHTML = '⚠️ ' + escapeHtmlBusca(e.message || 'Não foi possível carregar o cadastro.') +
+          ' <a href="#" onclick="tentarCarregarCadastroNovamente(); return false;" style="color:inherit;text-decoration:underline;font-weight:700;">Tentar novamente</a>';
+        status.classList.add('erro');
+      }
+      cadastroDados = null; // permite tentar de novo (não trava em [] definitivo)
+      cadastroCarregandoPromise = null;
+      return [];
     }
   })();
 
   return cadastroCarregandoPromise;
 }
 carregarCadastroContratos(); // dispara o carregamento em segundo plano, sem travar o app
+
+function tentarCarregarCadastroNovamente() {
+  const status = document.getElementById('busca_cadastro_status');
+  if (status) { status.textContent = 'Carregando cadastro...'; status.classList.remove('erro'); }
+  cadastroDados = null;
+  cadastroCarregandoPromise = null;
+  carregarCadastroContratos();
+}
 
 let buscaCadastroResultadosAtuais = [];
 
