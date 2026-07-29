@@ -364,6 +364,105 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 }
 .opcao-btn.erro { border-color: var(--destaque); }
 
+.busca-cadastro-card {
+  background: var(--branco);
+  border: 1px solid var(--fundo3);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  padding: 18px 22px;
+  box-shadow: var(--sombra);
+}
+
+.busca-cadastro-titulo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primario);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.busca-cadastro-sub {
+  font-size: 0.78rem;
+  color: var(--cinza);
+  margin-bottom: 12px;
+}
+
+.busca-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.categoria-btn {
+  padding: 7px 14px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 20px;
+  background: var(--fundo);
+  color: var(--texto2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+}
+.categoria-btn:hover { border-color: var(--primario2); }
+.categoria-btn.selecionada {
+  background: var(--primario);
+  border-color: var(--primario);
+  color: #fff;
+}
+
+.busca-cadastro-input-wrap { position: relative; }
+
+.busca-cadastro-input-wrap input {
+  padding: 11px 14px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  background: var(--fundo);
+  color: var(--texto);
+  width: 100%;
+  outline: none;
+  transition: border 0.18s, background 0.18s;
+}
+.busca-cadastro-input-wrap input:focus { border-color: var(--primario); background: #fff; }
+
+.busca-cadastro-status {
+  font-size: 0.78rem;
+  color: var(--cinza);
+  margin-top: 6px;
+}
+.busca-cadastro-status.erro { color: var(--destaque); }
+
+.busca-cadastro-resultados {
+  display: none;
+  margin-top: 8px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.busca-resultado-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--fundo3);
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--texto);
+  transition: background 0.12s;
+}
+.busca-resultado-item:last-child { border-bottom: none; }
+.busca-resultado-item:hover { background: var(--fundo2); }
+.busca-resultado-item strong { color: var(--primario); }
+.busca-resultado-sub { display: block; font-size: 0.75rem; color: var(--cinza); margin-top: 2px; }
+.busca-resultado-vazio { padding: 14px; text-align: center; color: var(--cinza); font-size: 0.85rem; }
+
 .barra-fixa {
   position: fixed; left: 0; right: 0; bottom: 0;
   background: var(--branco);
@@ -394,7 +493,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v20</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v22</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -404,6 +503,26 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="contract-id-bar">
     <span class="contract-id-label">🔑 Nº do Contrato:</span>
     <input type="text" id="contractId" value="" placeholder="Ex.: L.26.050">
+  </div>
+
+  <div class="busca-cadastro-card">
+    <div class="busca-cadastro-titulo">🔍 Buscar no Cadastro</div>
+    <div class="busca-cadastro-sub">Escolha o que você quer preencher automaticamente e busque pelo Nº do imóvel, endereço ou nome:</div>
+
+    <div class="busca-categorias" id="buscaCategorias">
+      <div class="categoria-btn selecionada" data-categoria="IMOVEL" onclick="this.classList.toggle('selecionada')">🏠 Imóvel</div>
+      <div class="categoria-btn selecionada" data-categoria="LOCADOR" onclick="this.classList.toggle('selecionada')">🏡 Locador</div>
+      <div class="categoria-btn selecionada" data-categoria="LOCATARIO" onclick="this.classList.toggle('selecionada')">🔑 Locatário</div>
+      <div class="categoria-btn selecionada" data-categoria="ENCARGOS" onclick="this.classList.toggle('selecionada')">⚡ Encargos</div>
+      <div class="categoria-btn selecionada" data-categoria="GARANTIA" onclick="this.classList.toggle('selecionada')">🛡️ Garantia</div>
+      <div class="categoria-btn selecionada" data-categoria="FIADORES" onclick="this.classList.toggle('selecionada')">🤝 Fiadores</div>
+    </div>
+
+    <div class="busca-cadastro-input-wrap">
+      <input type="text" id="busca_cadastro" placeholder="Ex.: código do imóvel, endereço, nome do locador ou locatário..." autocomplete="off">
+      <div class="busca-cadastro-resultados" id="busca_cadastro_resultados"></div>
+    </div>
+    <div class="busca-cadastro-status" id="busca_cadastro_status">Carregando cadastro...</div>
   </div>
 
   <!-- IMÓVEL -->
@@ -1894,6 +2013,240 @@ function reformatarCamposImportados(dados) {
   });
 }
 
+
+// ==========================================================
+// BUSCAR NO CADASTRO (repositório privado, via Worker Cloudflare)
+// Reaproveita a mesma ideia do outro app: em vez de acessar o
+// repositório privado direto, o app busca num Worker (Cloudflare) que
+// guarda o token de acesso do lado do servidor — o token nunca aparece
+// aqui no código. O cadastro considerado aqui é o histórico de
+// contratos já gerados por este mesmo app (mesma ordem de colunas do
+// Excel que o botão "Gerar Excel" produz).
+//
+// IMPORTANTE: ajuste CADASTRO_URL e CADASTRO_APP_KEY para apontar para
+// o Worker/token corretos do repositório onde esse histórico fica.
+// ==========================================================
+const CADASTRO_URL = 'https://cadastro-locacao-proxy.linyston.workers.dev';
+const CADASTRO_APP_KEY = 'Mf6Kk3ETaMxnByTedXyReWaZMktMcwKG';
+
+// Mapeia, na ordem exata usada em buildDataRow(), cada coluna do Excel
+// para o id do campo do formulário (null = coluna derivada/ignorada na importação)
+const COLUNAS_CADASTRO = [
+  null, // A  - Nº Contrato (não é reimportado: cada contrato novo deve ter seu próprio número)
+  'imv_rua', 'imv_bairro', 'imv_cidade', 'imv_cep', 'imv_matricula', 'imv_inscricao', 'imv_uc', 'imv_rgi', // B-I
+  'fins', 'data_contrato', 'prazo', 'inicio', 'termino', 'valor', 'valor_extenso', 'vencimento', // J-Q
+  'enc_agua', 'enc_gas', 'enc_condominio', 'enc_iptu', // R-U
+  'garantia', 'caucao_valor', 'caucao_extenso', 'caucao_conta_completa', // V-Y (Y tratado à parte)
+  'imgrt_descricao', 'imgrt_rua', 'imgrt_bairro_cidade', 'imgrt_matricula', // Z-AC
+  'lcd1_sexo', 'lcd1_nome', null, 'lcd1_ec', 'lcd1_prof', 'lcd1_rg', 'lcd1_cpf', 'lcd1_tel', 'lcd1_email', // AD-AL
+  'lcd2_sexo', 'lcd2_nome', null, 'lcd2_ec', 'lcd2_prof', 'lcd2_rg', 'lcd2_cpf', 'lcd2_tel', 'lcd2_email', // AM-AU
+  'lcd_rua', 'lcd_bairro', 'lcd_cidade', 'num_lcd', 'lcd_casados', 'lcd_regime', 'lcd_data_casamento', // AV-BB
+  'lct1_sexo', 'lct1_nome', null, 'lct1_ec', 'lct1_prof', 'lct1_rg', 'lct1_cpf', 'lct1_tel', 'lct1_email', // BC-BK
+  'lct2_sexo', 'lct2_nome', null, 'lct2_ec', 'lct2_prof', 'lct2_rg', 'lct2_cpf', 'lct2_tel', 'lct2_email', // BL-BT
+  'lct_rua_com', 'lct_bairro_com', 'lct_cidade_com', 'num_lct', 'lct_casados', 'lct_regime', 'lct_data_casamento', // BU-CA
+  'fdr1_sexo', 'fdr1_nome', null, 'fdr1_ec', 'fdr1_prof', 'fdr1_rg', 'fdr1_cpf', 'fdr1_tel', 'fdr1_email', // CB-CJ
+  'fdr2_sexo', 'fdr2_nome', null, 'fdr2_ec', 'fdr2_prof', 'fdr2_rg', 'fdr2_cpf', 'fdr2_tel', 'fdr2_email', // CK-CS
+  'fdr_rua', 'fdr_bairro', 'fdr_cidade', 'num_fdr', 'fdr_casados', 'fdr_regime', 'fdr_data_casamento', // CT-CZ
+  'observacoes', // DA
+];
+
+// Quais campos pertencem a cada categoria escolhida nos botões de busca
+const CAMPOS_POR_CATEGORIA = {
+  IMOVEL: ['imv_rua','imv_bairro','imv_cidade','imv_cep','imv_matricula','imv_inscricao','imv_uc','imv_rgi',
+           'fins','data_contrato','prazo','inicio','termino','valor','valor_extenso','vencimento'],
+  LOCADOR: ['lcd1_sexo','lcd1_nome','lcd1_ec','lcd1_prof','lcd1_rg','lcd1_cpf','lcd1_tel','lcd1_email',
+            'lcd2_sexo','lcd2_nome','lcd2_ec','lcd2_prof','lcd2_rg','lcd2_cpf','lcd2_tel','lcd2_email',
+            'lcd_rua','lcd_bairro','lcd_cidade','num_lcd','lcd_casados','lcd_regime','lcd_data_casamento'],
+  LOCATARIO: ['lct1_sexo','lct1_nome','lct1_ec','lct1_prof','lct1_rg','lct1_cpf','lct1_tel','lct1_email',
+              'lct2_sexo','lct2_nome','lct2_ec','lct2_prof','lct2_rg','lct2_cpf','lct2_tel','lct2_email',
+              'lct_rua_com','lct_bairro_com','lct_cidade_com','num_lct','lct_casados','lct_regime','lct_data_casamento'],
+  ENCARGOS: ['enc_agua','enc_gas','enc_condominio','enc_iptu'],
+  GARANTIA: ['garantia','caucao_valor','caucao_extenso','caucao_banco','caucao_conta',
+             'imgrt_descricao','imgrt_rua','imgrt_bairro_cidade','imgrt_matricula'],
+  FIADORES: ['fdr1_sexo','fdr1_nome','fdr1_ec','fdr1_prof','fdr1_rg','fdr1_cpf','fdr1_tel','fdr1_email',
+             'fdr2_sexo','fdr2_nome','fdr2_ec','fdr2_prof','fdr2_rg','fdr2_cpf','fdr2_tel','fdr2_email',
+             'fdr_rua','fdr_bairro','fdr_cidade','num_fdr','fdr_casados','fdr_regime','fdr_data_casamento'],
+};
+
+// Desfaz o texto montado por contaCaucaoCompleta() de volta em banco + número da conta
+// (tolera pequenas variações/erros de digitação no nome do banco, ex: "Branco do Brasil")
+function separarContaCaucao(texto) {
+  if (!texto || texto === '---') return { banco: '', conta: '' };
+  const m = texto.match(/conta\s+([\d.\-]+)\s*$/i);
+  const contaNum = m ? m[1] : '';
+  if (/caixa/i.test(texto)) return { banco: 'CEF', conta: contaNum || texto };
+  if (/brasil/i.test(texto)) return { banco: 'BB', conta: contaNum || texto };
+  return { banco: '', conta: texto };
+}
+
+// Normaliza o Estado Civil vindo do cadastro (que pode estar em minúsculo, ex: "casado")
+// para a forma usada nas listas suspensas do formulário (ex: "Casado")
+function normalizarEstadoCivilCadastro(t) {
+  if (!t) return t;
+  const s = t.replace(/\(a\)|\(o\)/gi, '').trim();
+  if (!s) return s;
+  return s.charAt(0).toLocaleUpperCase('pt-BR') + s.slice(1).toLocaleLowerCase('pt-BR');
+}
+
+let cadastroDados = null;
+let cadastroCarregandoPromise = null;
+
+async function carregarCadastroContratos() {
+  if (cadastroDados) return cadastroDados;
+  if (cadastroCarregandoPromise) return cadastroCarregandoPromise;
+
+  cadastroCarregandoPromise = (async () => {
+    const status = document.getElementById('busca_cadastro_status');
+    if (typeof XLSX === 'undefined') {
+      if (status) { status.textContent = '⚠️ Não foi possível carregar o cadastro — busca desativada.'; status.classList.add('erro'); }
+      cadastroDados = [];
+      return cadastroDados;
+    }
+    try {
+      const resp = await fetch(CADASTRO_URL, { headers: { 'X-App-Key': CADASTRO_APP_KEY } });
+      if (!resp.ok) throw new Error('resposta não OK');
+      const buffer = await resp.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const linhas = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
+
+      const dados = [];
+      // Localiza a linha de cabeçalho "Nº Contrato" (linha 3 do bloco de cabeçalhos) e
+      // começa a ler os dados logo depois dela. Evita depender de um número fixo de
+      // linhas, já que o Excel pode "cortar" linhas em branco do início ao ser salvo.
+      let inicioDados = -1;
+      for (let i = 0; i < linhas.length; i++) {
+        const primeiraCelula = (linhas[i][0] || '').toString().trim().toLowerCase();
+        if (primeiraCelula === 'locação' || primeiraCelula === 'locacao' ||
+            primeiraCelula === 'nº contrato' || primeiraCelula === 'no contrato') { inicioDados = i + 1; break; }
+      }
+      if (inicioDados === -1) inicioDados = 3; // não achou cabeçalho: assume o padrão de 3 linhas de cabeçalho
+
+      for (let i = inicioDados; i < linhas.length; i++) {
+        const row = linhas[i];
+        if (!row || row.every(c => !c)) continue; // linha em branco, ignora
+
+        const campos = {};
+        const CAMPOS_ESTADO_CIVIL_CADASTRO = ['lcd1_ec', 'lcd2_ec', 'lct1_ec', 'lct2_ec', 'fdr1_ec', 'fdr2_ec'];
+        COLUNAS_CADASTRO.forEach((id, idx) => {
+          if (!id) return;
+          let valor = (row[idx] || '').toString().trim();
+          if (!valor || valor === '---' || valor === '???') return;
+          if (CAMPOS_ESTADO_CIVIL_CADASTRO.includes(id)) valor = normalizarEstadoCivilCadastro(valor);
+          campos[id] = valor;
+        });
+
+        // Desfaz o texto da conta bancária da caução em banco + número
+        if (campos.caucao_conta_completa) {
+          const { banco, conta } = separarContaCaucao(campos.caucao_conta_completa);
+          if (banco) campos.caucao_banco = banco;
+          if (conta) campos.caucao_conta = conta;
+          delete campos.caucao_conta_completa;
+        }
+
+        const contractId = (row[0] || '').toString().trim();
+        const enderecoImovel = [row[1], row[2], row[3]].map(v => (v || '').toString().trim()).filter(Boolean).join(', ');
+        const nomeLocador = (row[30] || '').toString().trim();
+        const nomeLocatario = (row[55] || '').toString().trim();
+
+        if (!enderecoImovel && !nomeLocador && !nomeLocatario) continue; // linha sem nada útil
+
+        dados.push({
+          contractId,
+          enderecoImovel,
+          nomeLocador,
+          nomeLocatario,
+          campos,
+        });
+      }
+
+      cadastroDados = dados;
+      if (status) status.textContent = dados.length ? `${dados.length} contrato(s) disponível(is) para busca.` : '⚠️ Cadastro encontrado, mas sem contratos com dados preenchidos.';
+      return cadastroDados;
+    } catch (e) {
+      console.error(e);
+      if (status) { status.textContent = '⚠️ Não foi possível carregar o cadastro — busca desativada.'; status.classList.add('erro'); }
+      cadastroDados = [];
+      return cadastroDados;
+    }
+  })();
+
+  return cadastroCarregandoPromise;
+}
+carregarCadastroContratos(); // dispara o carregamento em segundo plano, sem travar o app
+
+let buscaCadastroResultadosAtuais = [];
+
+function escapeHtmlBusca(s) {
+  return (s || '').toString().replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function renderizarResultadosBusca(itens) {
+  const el = document.getElementById('busca_cadastro_resultados');
+  buscaCadastroResultadosAtuais = itens;
+  if (itens.length === 0) {
+    el.innerHTML = '<div class="busca-resultado-vazio">Nenhum resultado encontrado.</div>';
+  } else {
+    el.innerHTML = itens.map((item, idx) => {
+      const pessoas = [item.nomeLocador, item.nomeLocatario].filter(Boolean).join(' / ');
+      return '<div class="busca-resultado-item" data-idx="' + idx + '">' +
+        '<strong>' + escapeHtmlBusca(item.contractId || '—') + '</strong> — ' + escapeHtmlBusca(item.enderecoImovel || 'Endereço não informado') +
+        (pessoas ? '<span class="busca-resultado-sub">' + escapeHtmlBusca(pessoas) + '</span>' : '') +
+        '</div>';
+    }).join('');
+  }
+  el.style.display = '';
+}
+
+function categoriasSelecionadas() {
+  return [...document.querySelectorAll('#buscaCategorias .categoria-btn.selecionada')].map(b => b.dataset.categoria);
+}
+
+function selecionarResultadoBusca(item) {
+  const categorias = categoriasSelecionadas();
+  if (categorias.length === 0) {
+    alert('Selecione ao menos uma categoria (Imóvel, Locador, Locatário, Encargos, Garantia ou Fiadores) antes de escolher um resultado.');
+    return;
+  }
+
+  const idsPermitidos = new Set();
+  categorias.forEach(cat => (CAMPOS_POR_CATEGORIA[cat] || []).forEach(id => idsPermitidos.add(id)));
+
+  const dadosParaAplicar = {};
+  Object.keys(item.campos).forEach(id => {
+    if (idsPermitidos.has(id)) dadosParaAplicar[id] = item.campos[id];
+  });
+
+  const qtd = Object.keys(dadosParaAplicar).length;
+  aplicarDadosFormulario(dadosParaAplicar);
+  reformatarCamposImportados(dadosParaAplicar);
+
+  document.getElementById('busca_cadastro').value = (item.contractId ? item.contractId + ' — ' : '') + item.enderecoImovel;
+  document.getElementById('busca_cadastro_resultados').style.display = 'none';
+
+  mostrarToast(`🔍 ${qtd} campo(s) preenchido(s) a partir do cadastro (${categorias.length} categoria(s))!`);
+}
+
+document.getElementById('busca_cadastro').addEventListener('input', async function () {
+  const termo = this.value.trim().toLowerCase();
+  const resultadosEl = document.getElementById('busca_cadastro_resultados');
+  if (!termo) { resultadosEl.style.display = 'none'; return; }
+  const dados = await carregarCadastroContratos();
+  const filtrados = dados.filter(item =>
+    (item.contractId || '').toLowerCase().includes(termo) ||
+    (item.enderecoImovel || '').toLowerCase().includes(termo) ||
+    (item.nomeLocador || '').toLowerCase().includes(termo) ||
+    (item.nomeLocatario || '').toLowerCase().includes(termo)
+  ).slice(0, 8);
+  renderizarResultadosBusca(filtrados);
+});
+
+document.getElementById('busca_cadastro_resultados').addEventListener('click', function (e) {
+  const item = e.target.closest('.busca-resultado-item');
+  if (!item) return;
+  const dado = buscaCadastroResultadosAtuais[parseInt(item.dataset.idx, 10)];
+  if (dado) selecionarResultadoBusca(dado);
+});
 
 // Init
 toggleGarantia();
