@@ -327,9 +327,12 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   border-color: var(--destaque) !important;
   background: #fdecec !important;
 }
-.field.confirmavel input.campo-confirmado {
-  background: var(--fundo2);
-  color: var(--cinza);
+.field input.campo-confirmado,
+.field.confirmavel input.campo-confirmado,
+.field input.campo-confirmado[readonly] {
+  background: #e8f7ea !important;
+  border-color: #a8dab1 !important;
+  color: var(--cinza) !important;
 }
 .field.confirmavel input.campo-erro + .confirm-pill {
   border-color: var(--destaque);
@@ -358,11 +361,20 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 }
 .opcao-btn:hover { border-color: var(--primario2); }
 .opcao-btn.selecionada {
-  background: var(--primario);
-  border-color: var(--primario);
+  background: var(--verde);
+  border-color: var(--verde);
   color: #fff;
 }
 .opcao-btn.erro { border-color: var(--destaque); }
+
+.opcao-btn-compacta {
+  padding: 6px 9px;
+  font-size: 0.68rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.25;
+}
 
 .busca-cadastro-card {
   background: var(--branco);
@@ -416,6 +428,85 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   color: #fff;
 }
 
+.btn-calendario {
+  flex-shrink: 0;
+  width: 42px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 8px;
+  background: var(--fundo);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.15s;
+}
+.btn-calendario:hover { border-color: var(--primario); background: #fff; }
+
+.field input[readonly] {
+  background: var(--fundo2) !important;
+  color: var(--texto2);
+  cursor: default;
+}
+
+.chip-atalho {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  padding: 4px 10px;
+  margin-top: 4px;
+  border: 1.5px dashed var(--fundo3);
+  border-radius: 16px;
+  background: var(--fundo);
+  color: var(--texto2);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chip-atalho:hover { border-color: var(--primario2); border-style: solid; color: var(--primario); }
+
+.btn-limpar-secao {
+  background: none;
+  border: 1.5px solid var(--primario);
+  color: var(--primario);
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  margin-right: 6px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.btn-limpar-secao:hover { background: rgba(26,45,107,0.08); }
+
+.busca-categorias-linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.btn-importar-cadastro {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 20px;
+  background: var(--verde);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-importar-cadastro:hover:not(:disabled) { filter: brightness(1.08); }
+.btn-importar-cadastro:disabled { background: var(--fundo3); color: var(--cinza); cursor: not-allowed; }
+
+.busca-resultado-item.selecionado {
+  background: var(--fundo2);
+  border-left: 4px solid var(--primario);
+}
+
 .busca-cadastro-input-wrap { position: relative; }
 
 .busca-cadastro-input-wrap input {
@@ -463,6 +554,21 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 .busca-resultado-sub { display: block; font-size: 0.75rem; color: var(--cinza); margin-top: 2px; }
 .busca-resultado-vazio { padding: 14px; text-align: center; color: var(--cinza); font-size: 0.85rem; }
 
+.field input.campo-preenchido:not(.campo-erro):not(.campo-confirmado),
+.field select.campo-preenchido:not(.campo-erro),
+.field textarea.campo-preenchido:not(.campo-erro) {
+  background: #e8f7ea !important;
+  border-color: #a8dab1 !important;
+}
+
+.section.secao-completa {
+  background: #f4fbf5;
+  border-color: #bfe3c4;
+}
+.section.secao-completa > .section-header {
+  background: #e1f3e3;
+}
+
 .barra-fixa {
   position: fixed; left: 0; right: 0; bottom: 0;
   background: var(--branco);
@@ -493,7 +599,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v23</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v33</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -509,13 +615,16 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
     <div class="busca-cadastro-titulo">🔍 Buscar no Cadastro</div>
     <div class="busca-cadastro-sub">Escolha o que você quer preencher automaticamente e busque pelo Nº do imóvel, endereço ou nome:</div>
 
-    <div class="busca-categorias" id="buscaCategorias">
-      <div class="categoria-btn selecionada" data-categoria="IMOVEL" onclick="this.classList.toggle('selecionada')">🏠 Imóvel</div>
-      <div class="categoria-btn selecionada" data-categoria="LOCADOR" onclick="this.classList.toggle('selecionada')">🏡 Locador</div>
-      <div class="categoria-btn selecionada" data-categoria="LOCATARIO" onclick="this.classList.toggle('selecionada')">🔑 Locatário</div>
-      <div class="categoria-btn selecionada" data-categoria="ENCARGOS" onclick="this.classList.toggle('selecionada')">⚡ Encargos</div>
-      <div class="categoria-btn selecionada" data-categoria="GARANTIA" onclick="this.classList.toggle('selecionada')">🛡️ Garantia</div>
-      <div class="categoria-btn selecionada" data-categoria="FIADORES" onclick="this.classList.toggle('selecionada')">🤝 Fiadores</div>
+    <div class="busca-categorias-linha">
+      <div class="busca-categorias" id="buscaCategorias">
+        <div class="categoria-btn selecionada" data-categoria="IMOVEL" onclick="this.classList.toggle('selecionada')">🏠 Imóvel</div>
+        <div class="categoria-btn selecionada" data-categoria="LOCADOR" onclick="this.classList.toggle('selecionada')">🏡 Locador</div>
+        <div class="categoria-btn selecionada" data-categoria="LOCATARIO" onclick="this.classList.toggle('selecionada')">🔑 Locatário</div>
+        <div class="categoria-btn selecionada" data-categoria="ENCARGOS" onclick="this.classList.toggle('selecionada')">⚡ Encargos</div>
+        <div class="categoria-btn selecionada" data-categoria="GARANTIA" onclick="this.classList.toggle('selecionada')">🛡️ Garantia</div>
+        <div class="categoria-btn selecionada" data-categoria="FIADORES" onclick="this.classList.toggle('selecionada')">🤝 Fiadores</div>
+      </div>
+      <button class="btn-importar-cadastro" id="btnImportarCadastro" onclick="importarResultadoSelecionado()" disabled>⬇ Importar</button>
     </div>
 
     <div class="busca-cadastro-input-wrap">
@@ -529,20 +638,20 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-imovel">
     <div class="section-header" onclick="toggleSection('sec-imovel')">
       <div class="section-dot"></div>
-      <span class="section-title">🏠 Imóvel Locado</span>
+      <span class="section-title">🏠 Imóvel Locado</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-imovel&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body grid-4">
       <div class="field col-span-4"><label>Rua e nº</label><input id="imv_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
       <div class="field"><label>Bairro</label><input id="imv_bairro" value="" placeholder="Ex.: Centro"></div>
-      <div class="field"><label>Município/UF</label><input id="imv_cidade" value="" placeholder="Ex.: Monte Mor/SP"></div>
-      <div class="field"><label>CEP</label><input id="imv_cep" value="" placeholder="Ex.: 13190-000"></div>
+      <div class="field"><label>Município/UF</label><input id="imv_cidade" value="" placeholder="Ex.: Monte Mor/SP"><div class="chip-atalho" onclick="document.getElementById(&quot;imv_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;imv_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div>
+      <div class="field"><label>CEP</label><input id="imv_cep" value="" placeholder="Ex.: 13190-000" oninput="formatarCEP(this)" inputmode="numeric"></div>
       <div class="field confirmavel col-span-2"><label>Matrícula</label>
         <input id="imv_matricula" value="" placeholder="Ex.: 3.150 - CRI de Monte Mor/SP" oninput="handleConfirmavelInput('imv_matricula')">
         <label class="confirm-pill" id="imv_matricula_pill"><input type="checkbox" id="imv_matricula_naotem" onchange="handleNaoTemChange('imv_matricula')"> Não tenho esse dado</label>
       </div>
       <div class="field col-span-2 confirmavel"><label>Inscrição Cadastral</label>
-        <input id="imv_inscricao" value="" placeholder="Ex.: 99.99.99.01234.01.0000" oninput="handleConfirmavelInput('imv_inscricao')">
+        <input id="imv_inscricao" value="" placeholder="Ex.: 99.99.99.0123.01.0000" oninput="handleConfirmavelInput('imv_inscricao'); formatarInscricaoCadastral(this);" inputmode="numeric">
         <label class="confirm-pill" id="imv_inscricao_pill"><input type="checkbox" id="imv_inscricao_naotem" onchange="handleNaoTemChange('imv_inscricao')"> Não tenho esse dado</label>
       </div>
       <div class="field confirmavel col-span-2"><label>UC (CPFL)</label>
@@ -560,13 +669,13 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-locadores">
     <div class="section-header" onclick="toggleSection('sec-locadores')">
       <div class="section-dot"></div>
-      <span class="section-title">🏡 Locadores</span>
+      <span class="section-title">🏡 Locadores</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-locadores&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body grid-4">
       <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="lcd_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
       <div class="field"><label>Bairro</label><input id="lcd_bairro" value="" placeholder="Ex.: Centro"></div>
-      <div class="field"><label>Município/UF</label><input id="lcd_cidade" value="" placeholder="Ex.: Monte Mor/SP"></div>
+      <div class="field"><label>Município/UF</label><input id="lcd_cidade" value="" placeholder="Ex.: Monte Mor/SP"><div class="chip-atalho" onclick="document.getElementById(&quot;lcd_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lcd_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div>
 
       <div class="field"><label>Nº de Locadores</label>
         <div class="opcoes-grupo">
@@ -594,7 +703,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       </div>
       <div class="field" id="lcd-data-casamento-field" style="display:none">
         <label>Data do Casamento</label>
-        <input id="lcd_data_casamento" value="" placeholder="Ex.: 01/01/2001">
+        <input id="lcd_data_casamento" value="" placeholder="Ex.: 01/01/2001" oninput="formatarDataDigitada(this)" inputmode="numeric">
       </div>
 
       <div id="lcd1-block" style="display:none;grid-column:1/-1">
@@ -612,8 +721,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Profissão</label><input id="lcd1_prof" value="" placeholder="Ex.: Engenheiro"></div>
           <div class="field"><label>RG</label><input id="lcd1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_rg_naotem_pill"><input type="checkbox" id="lcd1_rg_naotem" onchange="handleRgNaoTem(&quot;lcd1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lcd1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd1&quot;)" inputmode="numeric"></div>
-          <div class="field"><label>Telefone</label><input id="lcd1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
-          <div class="field"><label>E-mail</label><input id="lcd1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+          <div class="field"><label>Telefone</label><input id="lcd1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_tel_naotem_pill"><input type="checkbox" id="lcd1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
+          <div class="field"><label>E-mail</label><input id="lcd1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lcd1_email_naotem_pill"><input type="checkbox" id="lcd1_email_naotem" onchange="handleSemDadoGenerico(&quot;lcd1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
         </div>
       </div>
 
@@ -632,8 +741,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Profissão</label><input id="lcd2_prof" value="" placeholder="Ex.: Engenheiro"></div>
           <div class="field"><label>RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lcd2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd2&quot;)" inputmode="numeric"></div>
-          <div class="field"><label>Telefone</label><input id="lcd2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
-          <div class="field"><label>E-mail</label><input id="lcd2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+          <div class="field"><label>Telefone</label><input id="lcd2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_tel_naotem_pill"><input type="checkbox" id="lcd2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
+          <div class="field"><label>E-mail</label><input id="lcd2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lcd2_email_naotem_pill"><input type="checkbox" id="lcd2_email_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
         </div>
       </div>
     </div>
@@ -643,44 +752,72 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-contrato">
     <div class="section-header" onclick="toggleSection('sec-contrato')">
       <div class="section-dot"></div>
-      <span class="section-title">📄 Dados do Contrato</span>
+      <span class="section-title">📄 Dados do Contrato</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-contrato&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
-    <div class="section-body grid-4">
-      <div class="field"><label>Prazo (meses)</label>
-        <div class="opcoes-grupo">
-          <div class="opcao-btn" data-for="prazo" data-valor="30 (Trinta)" onclick="selecionarOpcao('prazo','30 (Trinta)')">30 (Trinta)</div>
-          <div class="opcao-btn" data-for="prazo" data-valor="60 (Sessenta)" onclick="selecionarOpcao('prazo','60 (Sessenta)')">60 (Sessenta)</div>
+    <div class="section-body" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items:start;">
+
+      <!-- COLUNA ESQUERDA: o que a pessoa preenche -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="field"><label>Prazo (meses)</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn" data-for="prazo" data-valor="30 (Trinta)" onclick="selecionarOpcao('prazo','30 (Trinta)', recalcularDatasContrato)">30 (Trinta)</div>
+            <div class="opcao-btn" data-for="prazo" data-valor="60 (Sessenta)" onclick="selecionarOpcao('prazo','60 (Sessenta)', recalcularDatasContrato)">60 (Sessenta)</div>
+          </div>
+          <input type="hidden" id="prazo" value="">
         </div>
-        <input type="hidden" id="prazo" value="">
-      </div>
-      <div class="field"><label>Início</label>
-        <input id="inicio" value="" placeholder="Ex.: 10 de Março de 2020">
-      </div>
-      <div class="field"><label>Término</label>
-        <input id="termino" value="" placeholder="Ex.: 10 de Março de 2020">
-      </div>
-      <div class="field"><label>Dia de Vencimento</label>
-        <input id="vencimento" value="" placeholder="Ex.: 10 (dez)">
+
+        <div class="field"><label>Início</label>
+          <div style="display:flex; gap:6px; align-items:stretch;">
+            <input id="inicio_data" value="" placeholder="Ex.: 10/07/2026" inputmode="numeric" oninput="formatarDataDigitada(this); recalcularDatasContrato();" style="flex:1">
+            <button type="button" class="btn-calendario" onclick="abrirCalendarioInicio()" title="Escolher no calendário">📅</button>
+            <input type="date" id="inicio_calendario" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" onchange="aplicarCalendarioInicio()">
+          </div>
+        </div>
+
+        <div class="field"><label>Fins</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn" data-for="fins" data-valor="RESIDENCIAIS" onclick="selecionarOpcao('fins','RESIDENCIAIS',toggleLct2)">Residenciais</div>
+            <div class="opcao-btn" data-for="fins" data-valor="COMERCIAIS" onclick="selecionarOpcao('fins','COMERCIAIS',toggleLct2)">Comerciais</div>
+          </div>
+          <input type="hidden" id="fins" value="">
+        </div>
+
+        <div class="field"><label>Data do Contrato</label>
+          <div style="display:flex; gap:6px; align-items:stretch;">
+            <input id="data_contrato_data" value="" placeholder="Ex.: 10/03/2026" inputmode="numeric" oninput="formatarDataDigitada(this); recalcularDataContrato();" style="flex:1">
+            <button type="button" class="btn-calendario" onclick="abrirCalendarioDataContrato()" title="Escolher no calendário">📅</button>
+            <input type="date" id="data_contrato_calendario" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" onchange="aplicarCalendarioDataContrato()">
+          </div>
+        </div>
+
+        <div class="field col-span-2"><label>Valor R$</label>
+          <input id="valor" value="" placeholder="Ex.: 100.000,00" inputmode="numeric" oninput="formatarValorMoeda(this); recalcularValorExtenso();">
+        </div>
       </div>
 
-      <div class="field col-span-2"><label>Valor R$</label>
-        <input id="valor" value="" placeholder="Ex.: 900,00">
-      </div>
-      <div class="field col-span-2"><label>Valor por Extenso</label>
-        <input id="valor_extenso" value="" placeholder="Ex.: Um Mil e Quinhentos Reais">
+      <!-- COLUNA DIREITA: calculado automaticamente pelo app -->
+      <div style="border: 2px dashed var(--fundo3); border-radius: 12px; padding: 16px 14px 14px; position: relative;">
+        <span style="position:absolute; top:-11px; left:14px; background:#fff; padding:0 8px; font-size:0.68rem; font-weight:700; color:var(--cinza); text-transform:uppercase; letter-spacing:0.5px;">⚙️ Calculado automaticamente</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px;">
+          <div class="field"><label>Início</label>
+            <input id="inicio" value="" placeholder="Aguardando Início" readonly>
+          </div>
+          <div class="field"><label>Término</label>
+            <input id="termino" value="" placeholder="Aguardando Início/Prazo" readonly>
+          </div>
+          <div class="field"><label>Data do Contrato</label>
+            <input id="data_contrato" value="" placeholder="Aguardando Data do Contrato" readonly>
+          </div>
+          <div class="field"><label>Dia de Vencimento</label>
+            <input id="vencimento" value="" placeholder="Aguardando Início" readonly>
+          </div>
+          <div class="field col-span-2"><label>Valor por Extenso</label>
+            <input id="valor_extenso" value="" placeholder="Aguardando Valor R$" readonly>
+          </div>
+        </div>
       </div>
 
-      <div class="field col-span-2"><label>Fins</label>
-        <div class="opcoes-grupo">
-          <div class="opcao-btn" data-for="fins" data-valor="RESIDENCIAIS" onclick="selecionarOpcao('fins','RESIDENCIAIS',toggleLct2)">Residenciais</div>
-          <div class="opcao-btn" data-for="fins" data-valor="COMERCIAIS" onclick="selecionarOpcao('fins','COMERCIAIS',toggleLct2)">Comerciais</div>
-        </div>
-        <input type="hidden" id="fins" value="">
-      </div>
-      <div class="field col-span-2"><label>Data do Contrato</label>
-        <input id="data_contrato" value="" placeholder="Ex.: 10 de Março de 2020">
-      </div>
     </div>
   </div>
 
@@ -688,41 +825,41 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-encargos">
     <div class="section-header" onclick="toggleSection('sec-encargos')">
       <div class="section-dot"></div>
-      <span class="section-title">⚡ Encargos</span>
+      <span class="section-title">⚡ Encargos</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-encargos&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body grid-2">
       <div class="field"><label>Água e Energia</label>
-        <select id="enc_agua">
-          <option value="" selected disabled>Selecione...</option>
-          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
-          <option value="Não se aplica">Não se aplica</option>
-          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
-        </select>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_agua" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_agua','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_agua" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_agua','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_agua" data-valor="Não se aplica" onclick="selecionarOpcao('enc_agua','Não se aplica')">Não se Aplica</div>
+        </div>
+        <input type="hidden" id="enc_agua" value="">
       </div>
       <div class="field"><label>Gás</label>
-        <select id="enc_gas">
-          <option value="" selected disabled>Selecione...</option>
-          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
-          <option value="Não se aplica">Não se aplica</option>
-          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
-        </select>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_gas" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_gas','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_gas" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_gas','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_gas" data-valor="Não se aplica" onclick="selecionarOpcao('enc_gas','Não se aplica')">Não se Aplica</div>
+        </div>
+        <input type="hidden" id="enc_gas" value="">
       </div>
       <div class="field"><label>Condomínio</label>
-        <select id="enc_condominio">
-          <option value="" selected disabled>Selecione...</option>
-          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
-          <option value="Não se aplica">Não se aplica</option>
-          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
-        </select>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_condominio" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_condominio','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_condominio" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_condominio','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_condominio" data-valor="Não se aplica" onclick="selecionarOpcao('enc_condominio','Não se aplica')">Não se Aplica</div>
+        </div>
+        <input type="hidden" id="enc_condominio" value="">
       </div>
       <div class="field"><label>IPTU</label>
-        <select id="enc_iptu">
-          <option value="" selected disabled>Selecione...</option>
-          <option value="Pagamento diretamente ao órgão competente ou boleto do condomínio">Pagamento diretamente ao órgão competente ou boleto do condomínio</option>
-          <option value="Não se aplica">Não se aplica</option>
-          <option value="Pagamento na ADMINISTRADORA juntamente com o aluguel">Pagamento na ADMINISTRADORA juntamente com o aluguel</option>
-        </select>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_iptu" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_iptu','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_iptu" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_iptu','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
+          <div class="opcao-btn opcao-btn-compacta" data-for="enc_iptu" data-valor="Não se aplica" onclick="selecionarOpcao('enc_iptu','Não se aplica')">Não se Aplica</div>
+        </div>
+        <input type="hidden" id="enc_iptu" value="">
       </div>
     </div>
   </div>
@@ -731,7 +868,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-locatarios">
     <div class="section-header" onclick="toggleSection('sec-locatarios')">
       <div class="section-dot"></div>
-      <span class="section-title">🔑 Locatários</span>
+      <span class="section-title">🔑 Locatários</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-locatarios&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body grid-4">
@@ -739,7 +876,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         <div class="grid-4" style="gap:14px">
           <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="lct_rua_com" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
           <div class="field"><label>Bairro</label><input id="lct_bairro_com" value="" placeholder="Ex.: Centro"></div>
-          <div class="field"><label>Município/UF</label><input id="lct_cidade_com" value="" placeholder="Ex.: Monte Mor/SP"></div>
+          <div class="field"><label>Município/UF</label><input id="lct_cidade_com" value="" placeholder="Ex.: Monte Mor/SP"><div class="chip-atalho" onclick="document.getElementById(&quot;lct_cidade_com&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lct_cidade_com&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div>
         </div>
       </div>
 
@@ -769,7 +906,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       </div>
       <div class="field" id="lct-data-casamento-field" style="display:none">
         <label>Data do Casamento</label>
-        <input id="lct_data_casamento" value="" placeholder="Ex.: 01/01/2001">
+        <input id="lct_data_casamento" value="" placeholder="Ex.: 01/01/2001" oninput="formatarDataDigitada(this)" inputmode="numeric">
       </div>
 
       <div id="lct1-block" style="display:none;grid-column:1/-1">
@@ -787,8 +924,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Profissão</label><input id="lct1_prof" value="" placeholder="Ex.: Engenheiro"></div>
           <div class="field"><label>RG</label><input id="lct1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_rg_naotem_pill"><input type="checkbox" id="lct1_rg_naotem" onchange="handleRgNaoTem(&quot;lct1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lct1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct1&quot;)" inputmode="numeric"></div>
-          <div class="field"><label>Telefone</label><input id="lct1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
-          <div class="field"><label>E-mail</label><input id="lct1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+          <div class="field"><label>Telefone</label><input id="lct1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_tel_naotem_pill"><input type="checkbox" id="lct1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
+          <div class="field"><label>E-mail</label><input id="lct1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lct1_email_naotem_pill"><input type="checkbox" id="lct1_email_naotem" onchange="handleSemDadoGenerico(&quot;lct1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
         </div>
       </div>
 
@@ -807,8 +944,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Profissão</label><input id="lct2_prof" value="" placeholder="Ex.: Engenheiro"></div>
           <div class="field"><label>RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lct2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct2&quot;)" inputmode="numeric"></div>
-          <div class="field"><label>Telefone</label><input id="lct2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
-          <div class="field"><label>E-mail</label><input id="lct2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+          <div class="field"><label>Telefone</label><input id="lct2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_tel_naotem_pill"><input type="checkbox" id="lct2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
+          <div class="field"><label>E-mail</label><input id="lct2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lct2_email_naotem_pill"><input type="checkbox" id="lct2_email_naotem" onchange="handleSemDadoGenerico(&quot;lct2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
         </div>
       </div>
     </div>
@@ -818,7 +955,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-garantia">
     <div class="section-header" onclick="toggleSection('sec-garantia')">
       <div class="section-dot"></div>
-      <span class="section-title">🔒 Garantia</span>
+      <span class="section-title">🔒 Garantia</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-garantia&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body grid-4">
@@ -834,10 +971,10 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       <div id="caucao-fields" style="display:none;grid-column:1/-1">
         <div class="grid-4" style="gap:14px">
           <div class="field"><label>Valor R$</label>
-            <input id="caucao_valor" value="" placeholder="Ex.: 6.000,00 (Padrão = 3x Valor Aluguel)">
+            <input id="caucao_valor" value="" placeholder="Ex.: 6.000,00 (Padrão = 3x Valor Aluguel)" oninput="formatarValorMoeda(this); recalcularCaucaoExtenso();" inputmode="numeric">
           </div>
-          <div class="field"><label>Valor por Extenso</label>
-            <input id="caucao_extenso" value="" placeholder="Ex.: Seis Mil Reais">
+          <div class="field"><label>Valor por Extenso <span style="font-weight:400;text-transform:none;">(calculado)</span></label>
+            <input id="caucao_extenso" value="" placeholder="Preenchido automaticamente" readonly>
           </div>
           <div class="field"><label>Banco</label>
             <div class="opcoes-grupo">
@@ -855,14 +992,19 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       <div id="imgrt-fields-block" style="display:none;grid-column:1/-1">
         <div class="sublabel" id="imgrt-label" style="margin-bottom:8px">Imóvel Garantia (Fiador)</div>
         <div class="grid-4" style="gap:14px">
-          <div class="field col-span-4" id="imgrt-desc-field">
+          <div class="field col-span-3" id="imgrt-desc-field">
             <label>Descrição do Imóvel</label>
             <input id="imgrt_descricao" value="">
             <span class="campo-dica">Ex.: UM LOTE DE TERRENO sob nº 10 da Quadra "A", bem como suas benfeitorias — ou — UM PRÉDIO RESIDENCIAL, bem como seu respectivo terreno (Lote 10 Quadra "A")</span>
           </div>
-          <div class="field col-span-2" id="imgrt-rua-field"><label>Rua e nº</label><input id="imgrt_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
-          <div class="field" id="imgrt-bairro-field"><label>Bairro / Município-UF</label><input id="imgrt_bairro_cidade" value="" placeholder="Ex.: Centro - Monte Mor/SP"></div>
           <div class="field" id="imgrt-mat-field"><label>Matrícula</label><input id="imgrt_matricula" value="" placeholder="Ex.: 10.500 do CRI de Monte Mor/SP"></div>
+
+          <div class="field col-span-2" id="imgrt-rua-field"><label>Rua e nº</label><input id="imgrt_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+          <div class="field" id="imgrt-bairro-field"><label>Bairro</label><input id="imgrt_bairro" value="" placeholder="Ex.: Centro"></div>
+          <div class="field" id="imgrt-cidade-field"><label>Município/UF</label>
+            <input id="imgrt_cidade" value="" placeholder="Ex.: Monte Mor/SP">
+            <div class="chip-atalho" onclick="document.getElementById('imgrt_cidade').value='Monte Mor/SP'; document.getElementById('imgrt_cidade').dispatchEvent(new Event('input',{bubbles:true}));">📍 Monte Mor/SP</div>
+          </div>
         </div>
       </div>
     </div>
@@ -872,13 +1014,13 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-fiadores" style="display:none">
     <div class="section-header" onclick="toggleSection('sec-fiadores')">
       <div class="section-dot"></div>
-      <span class="section-title">🤝 Fiadores</span>
+      <span class="section-title">🤝 Fiadores</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-fiadores&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body grid-4">
       <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="fdr_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
       <div class="field"><label>Bairro</label><input id="fdr_bairro" value="" placeholder="Ex.: Centro"></div>
-      <div class="field"><label>Município/UF</label><input id="fdr_cidade" value="" placeholder="Ex.: Monte Mor/SP"></div>
+      <div class="field"><label>Município/UF</label><input id="fdr_cidade" value="" placeholder="Ex.: Monte Mor/SP"><div class="chip-atalho" onclick="document.getElementById(&quot;fdr_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;fdr_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div>
 
       <div class="field"><label>Nº de Fiadores</label>
         <div class="opcoes-grupo">
@@ -906,7 +1048,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       </div>
       <div class="field" id="fdr-data-casamento-field" style="display:none">
         <label>Data do Casamento</label>
-        <input id="fdr_data_casamento" value="" placeholder="Ex.: 01/01/2001">
+        <input id="fdr_data_casamento" value="" placeholder="Ex.: 01/01/2001" oninput="formatarDataDigitada(this)" inputmode="numeric">
       </div>
 
       <div id="fdr1-block" style="display:none;grid-column:1/-1">
@@ -924,8 +1066,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Profissão</label><input id="fdr1_prof" value="" placeholder="Ex.: Engenheiro"></div>
           <div class="field"><label>RG</label><input id="fdr1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_rg_naotem_pill"><input type="checkbox" id="fdr1_rg_naotem" onchange="handleRgNaoTem(&quot;fdr1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="fdr1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr1&quot;)" inputmode="numeric"></div>
-          <div class="field"><label>Telefone</label><input id="fdr1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
-          <div class="field"><label>E-mail</label><input id="fdr1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+          <div class="field"><label>Telefone</label><input id="fdr1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_tel_naotem_pill"><input type="checkbox" id="fdr1_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
+          <div class="field"><label>E-mail</label><input id="fdr1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr1_email_naotem_pill"><input type="checkbox" id="fdr1_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
         </div>
       </div>
 
@@ -944,8 +1086,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Profissão</label><input id="fdr2_prof" value="" placeholder="Ex.: Engenheiro"></div>
           <div class="field"><label>RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="fdr2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr2&quot;)" inputmode="numeric"></div>
-          <div class="field"><label>Telefone</label><input id="fdr2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"></div>
-          <div class="field"><label>E-mail</label><input id="fdr2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"></div>
+          <div class="field"><label>Telefone</label><input id="fdr2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_tel_naotem_pill"><input type="checkbox" id="fdr2_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
+          <div class="field"><label>E-mail</label><input id="fdr2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr2_email_naotem_pill"><input type="checkbox" id="fdr2_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
         </div>
       </div>
     </div>
@@ -955,10 +1097,117 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-obs">
     <div class="section-header" onclick="toggleSection('sec-obs')">
       <div class="section-dot"></div>
-      <span class="section-title">📝 Observações Gerais</span>
+      <span class="section-title">📝 Observações Gerais</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-obs&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body">
+      <div class="field"><label>🐾 Possui animais de estimação?</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="tem_animais" data-valor="Sim" onclick="selecionarOpcao('tem_animais','Sim',toggleAnimaisDetalhes)">Sim</div>
+          <div class="opcao-btn" data-for="tem_animais" data-valor="Não" onclick="selecionarOpcao('tem_animais','Não',toggleAnimaisDetalhes)">Não</div>
+        </div>
+        <input type="hidden" id="tem_animais" value="">
+      </div>
+
+      <div id="animais-detalhes-block" style="display:none">
+        <div class="grid-4" style="gap:14px; margin-top:10px">
+          <div class="field"><label>Quantidade</label><input type="number" id="animais_qtd" min="1" placeholder="Ex.: 2"></div>
+          <div class="field col-span-3"><label>Espécie</label>
+            <div class="opcoes-grupo">
+              <label class="confirm-pill"><input type="checkbox" id="animais_especie_cachorro" onchange="atualizarAvisoPendencias()"> Cachorro</label>
+              <label class="confirm-pill"><input type="checkbox" id="animais_especie_gato" onchange="atualizarAvisoPendencias()"> Gato</label>
+              <label class="confirm-pill"><input type="checkbox" id="animais_especie_outro_chk" onchange="toggleAnimalOutro()"> Outro</label>
+            </div>
+          </div>
+          <div class="field col-span-2" id="animais-outro-field" style="display:none"><label>Qual animal?</label><input type="text" id="animais_especie_outro" placeholder="Ex.: Coelho, Pássaro, Tartaruga..."></div>
+          <div class="field col-span-4"><label>Porte</label>
+            <div class="opcoes-grupo">
+              <label class="confirm-pill"><input type="checkbox" id="animais_porte_pequeno" onchange="atualizarAvisoPendencias()"> Pequeno</label>
+              <label class="confirm-pill"><input type="checkbox" id="animais_porte_medio" onchange="atualizarAvisoPendencias()"> Médio</label>
+              <label class="confirm-pill"><input type="checkbox" id="animais_porte_grande" onchange="atualizarAvisoPendencias()"> Grande</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin: 16px 0 12px"></div>
+
+      <div class="field"><label>Observações Padrão</label>
+        <div class="opcoes-grupo">
+          <label class="confirm-pill"><input type="checkbox" id="obs_area_inundacao" onchange="atualizarAvisoPendencias()"> Área de Inundação</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="opcoes-grupo">
+          <label class="confirm-pill"><input type="checkbox" id="obs_rg_outra_uf" onchange="toggleObsSubbloco('bloco_rg_outra_uf', this.checked)"> RG de outra UF</label>
+        </div>
+      </div>
+      <div id="bloco_rg_outra_uf" style="display:none">
+        <div class="grid-4" style="gap:14px; margin-bottom: 10px">
+          <div class="field col-span-4"><label>Quem tem RG de outra UF?</label>
+            <div class="opcoes-grupo">
+              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lcd1"> Locador (1)</label>
+              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lcd2"> Locador (2)</label>
+              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lct1"> Locatário (1)</label>
+              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lct2"> Locatário (2)</label>
+              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_fdr1"> Fiador (1)</label>
+              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_fdr2"> Fiador (2)</label>
+            </div>
+          </div>
+          <div class="field col-span-2"><label>Órgão Emissor</label><input type="text" id="rg_outra_uf_orgao" placeholder="Ex.: DETRAN"></div>
+          <div class="field"><label>UF</label>
+            <select id="rg_outra_uf_uf">
+              <option value="" selected disabled>Selecione...</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option>
+              <option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+              <option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option>
+              <option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+              <option>SP</option><option>SE</option><option>TO</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="opcoes-grupo">
+          <label class="confirm-pill"><input type="checkbox" id="obs_integrante_pj" onchange="toggleObsSubbloco('bloco_integrante_pj', this.checked)"> Integrante PJ</label>
+        </div>
+      </div>
+      <div id="bloco_integrante_pj" style="display:none">
+        <div class="field" style="margin-bottom: 10px"><label>Quem é PJ?</label>
+          <div class="opcoes-grupo">
+            <label class="confirm-pill"><input type="checkbox" id="pj_locador"> Locador</label>
+            <label class="confirm-pill"><input type="checkbox" id="pj_locatario"> Locatário</label>
+            <label class="confirm-pill"><input type="checkbox" id="pj_fiador"> Fiador</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="opcoes-grupo">
+          <label class="confirm-pill"><input type="checkbox" id="obs_descontos" onchange="toggleObsSubbloco('bloco_descontos', this.checked)"> Descontos / Carência</label>
+        </div>
+      </div>
+      <div id="bloco_descontos" style="display:none">
+        <div class="grid-4" style="gap:14px; margin-bottom: 10px">
+          <div class="field col-span-2"><label>Valor R$</label><input type="text" id="desconto_valor" inputmode="numeric" placeholder="Ex.: 1.000,00" oninput="formatarValorMoeda(this)"></div>
+          <div class="field"><label>Meses</label><input type="number" id="desconto_meses" min="1" placeholder="Ex.: 3"></div>
+          <div class="field"><label>&nbsp;</label>
+            <label class="confirm-pill"><input type="checkbox" id="desconto_carencia"> Carência (isenção total)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="opcoes-grupo">
+          <label class="confirm-pill"><input type="checkbox" id="obs_sem_garantia" onchange="atualizarAvisoPendencias()"> Locação sem Imóvel Garantia</label>
+          <label class="confirm-pill"><input type="checkbox" id="obs_matricula_atualizada" onchange="atualizarAvisoPendencias()"> Solicitar Matrícula Atualizada</label>
+        </div>
+      </div>
+
+      <button type="button" class="btn-secundario" style="margin: 6px 0 16px; flex:none; width:fit-content;" onclick="gerarObservacoesPadrao()">🔄 Atualizar Texto Padrão nas Observações</button>
+
       <div class="field"><label>Observações no Contrato</label><textarea id="observacoes"></textarea></div>
     </div>
   </div>
@@ -1027,6 +1276,28 @@ function atualizarPlaceholderConta() {
 
 // Monta o texto completo da conta bancária da Caução para exportar ao Excel
 // === Formatação automática (a pessoa digita só números) ===
+// CEP: 00000-000
+function formatarCEP(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 8);
+  let out = '';
+  if (v.length > 0) out += v.slice(0, 5);
+  if (v.length > 5) out += '-' + v.slice(5, 8);
+  el.value = out;
+}
+
+// Inscrição Cadastral: 00.00.00.0000.00.0000
+function formatarInscricaoCadastral(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 16);
+  let out = '';
+  if (v.length > 0) out += v.slice(0, 2);
+  if (v.length > 2) out += '.' + v.slice(2, 4);
+  if (v.length > 4) out += '.' + v.slice(4, 6);
+  if (v.length > 6) out += '.' + v.slice(6, 10);
+  if (v.length > 10) out += '.' + v.slice(10, 12);
+  if (v.length > 12) out += '.' + v.slice(12, 16);
+  el.value = out;
+}
+
 // Telefone: (19) 9.9999-9999
 function formatarTelefone(el) {
   const v = el.value.replace(/\D/g, '').slice(0, 11);
@@ -1063,6 +1334,320 @@ function formatarCPF(el) {
 
 // Conta Bancária da Caução: formato muda conforme o banco escolhido
 // Banco do Brasil (BB): 000.000-0  |  Caixa Econômica Federal (CEF): 000.000.000.000-0
+// === Dados do Contrato: Início (digitado ou calendário), Término/Vencimento/Data
+// do Contrato calculados automaticamente, e Valor R$ com máscara de moeda ===
+
+// Início: a pessoa digita só números e o campo forma sozinho DD/MM/AAAA
+function formatarDataDigitada(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 8);
+  let out = '';
+  if (v.length > 0) out += v.slice(0, 2);
+  if (v.length > 2) out += '/' + v.slice(2, 4);
+  if (v.length > 4) out += '/' + v.slice(4, 8);
+  el.value = out;
+}
+
+function abrirCalendarioInicio() {
+  const cal = document.getElementById('inicio_calendario');
+  if (typeof cal.showPicker === 'function') { cal.showPicker(); }
+  else { cal.style.pointerEvents = 'auto'; cal.style.opacity = '1'; cal.click(); }
+}
+
+// Quando a pessoa escolhe uma data no calendário, joga ela formatada (DD/MM/AAAA) no campo digitado
+function aplicarCalendarioInicio() {
+  const cal = document.getElementById('inicio_calendario');
+  if (!cal.value) return;
+  const [ano, mes, dia] = cal.value.split('-');
+  document.getElementById('inicio_data').value = `${dia}/${mes}/${ano}`;
+  recalcularDatasContrato();
+}
+
+const MESES_EXTENSO = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DIAS_EXTENSO = ['', 'um','dois','três','quatro','cinco','seis','sete','oito','nove','dez',
+  'onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove','vinte',
+  'vinte e um','vinte e dois','vinte e três','vinte e quatro','vinte e cinco','vinte e seis','vinte e sete','vinte e oito','vinte e nove','trinta','trinta e um'];
+
+function formatarDataExtenso(data) {
+  const dia = String(data.getDate()).padStart(2, '0');
+  return `${dia} de ${MESES_EXTENSO[data.getMonth()]} de ${data.getFullYear()}`;
+}
+
+// Converte "10 de Julho de 2026" de volta para "10/07/2026" (usado ao importar
+// dados antigos vindos do cadastro, rascunho salvo ou PDF, que trazem a data já por extenso)
+function extensoParaDataDigitada(txt) {
+  if (!txt) return '';
+  const m = txt.toString().trim().match(/^(\d{1,2})\s+de\s+([A-Za-zÇçÃãÕõ]+)\s+de\s+(\d{4})$/i);
+  if (!m) return '';
+  const idxMes = MESES_EXTENSO.findIndex(mes => mes.toLowerCase() === m[2].toLowerCase());
+  if (idxMes === -1) return '';
+  return `${m[1].padStart(2, '0')}/${String(idxMes + 1).padStart(2, '0')}/${m[3]}`;
+}
+
+// Recalcula Término, Dia de Vencimento e Data do Contrato a partir de Início + Prazo
+function recalcularDatasContrato() {
+  const dataTxt = document.getElementById('inicio_data').value;
+  const m = dataTxt.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+  if (!m) {
+    document.getElementById('inicio').value = '';
+    document.getElementById('termino').value = '';
+    document.getElementById('vencimento').value = '';
+    atualizarAvisoPendencias();
+    return;
+  }
+
+  const dia = parseInt(m[1], 10), mes = parseInt(m[2], 10), ano = parseInt(m[3], 10);
+  const dataInicio = new Date(ano, mes - 1, dia);
+
+  // valida data real (ex.: 31/02 não existe)
+  if (dataInicio.getDate() !== dia || dataInicio.getMonth() !== mes - 1 || dataInicio.getFullYear() !== ano) {
+    document.getElementById('inicio').value = '';
+    document.getElementById('termino').value = '';
+    document.getElementById('vencimento').value = '';
+    atualizarAvisoPendencias();
+    return;
+  }
+
+  document.getElementById('inicio').value = formatarDataExtenso(dataInicio);
+  document.getElementById('vencimento').value = `${dia} (${DIAS_EXTENSO[dia] || ''})`;
+
+  const prazoTxt = document.getElementById('prazo').value;
+  const meses = prazoTxt.startsWith('30') ? 30 : (prazoTxt.startsWith('60') ? 60 : null);
+  if (meses) {
+    const dataTermino = new Date(ano, mes - 1 + meses, dia);
+    dataTermino.setDate(dataTermino.getDate() - 1);
+    document.getElementById('termino').value = formatarDataExtenso(dataTermino);
+  } else {
+    document.getElementById('termino').value = '';
+  }
+
+  atualizarAvisoPendencias();
+}
+
+function abrirCalendarioDataContrato() {
+  const cal = document.getElementById('data_contrato_calendario');
+  if (typeof cal.showPicker === 'function') { cal.showPicker(); }
+  else { cal.style.pointerEvents = 'auto'; cal.style.opacity = '1'; cal.click(); }
+}
+
+function aplicarCalendarioDataContrato() {
+  const cal = document.getElementById('data_contrato_calendario');
+  if (!cal.value) return;
+  const [ano, mes, dia] = cal.value.split('-');
+  document.getElementById('data_contrato_data').value = `${dia}/${mes}/${ano}`;
+  recalcularDataContrato();
+}
+
+// Data do Contrato: campo independente do Início (a pessoa digita a própria data)
+function recalcularDataContrato() {
+  const dataTxt = document.getElementById('data_contrato_data').value;
+  const m = dataTxt.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  const campoFinal = document.getElementById('data_contrato');
+
+  if (!m) { campoFinal.value = ''; atualizarAvisoPendencias(); return; }
+
+  const dia = parseInt(m[1], 10), mes = parseInt(m[2], 10), ano = parseInt(m[3], 10);
+  const data = new Date(ano, mes - 1, dia);
+  if (data.getDate() !== dia || data.getMonth() !== mes - 1 || data.getFullYear() !== ano) {
+    campoFinal.value = '';
+    atualizarAvisoPendencias();
+    return;
+  }
+
+  campoFinal.value = formatarDataExtenso(data);
+  atualizarAvisoPendencias();
+}
+
+// Valor R$: a pessoa digita só números e o campo forma sozinho 000.000,00
+function formatarValorMoeda(el) {
+  let v = el.value.replace(/\D/g, '');
+  if (!v) { el.value = ''; return; }
+  v = v.replace(/^0+(?=\d)/, '');
+  while (v.length < 3) v = '0' + v;
+  const centavos = v.slice(-2);
+  let inteiros = v.slice(0, -2).replace(/^0+(?=\d)/, '');
+  inteiros = inteiros.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  el.value = inteiros + ',' + centavos;
+}
+
+// === Número por extenso (Real/Reais), em Português ===
+const UNIDADES_EXT = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+const DEZ_A_DEZENOVE_EXT = ['dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
+const DEZENAS_EXT = ['', '', 'vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+const CENTENAS_EXT = ['', 'cento', 'duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
+
+function extensoGrupo(n) {
+  if (n === 0) return '';
+  if (n === 100) return 'cem';
+  const partes = [];
+  const c = Math.floor(n / 100), resto = n % 100;
+  if (c > 0) partes.push(CENTENAS_EXT[c]);
+  if (resto > 0) {
+    if (resto < 10) partes.push(UNIDADES_EXT[resto]);
+    else if (resto < 20) partes.push(DEZ_A_DEZENOVE_EXT[resto - 10]);
+    else {
+      const d = Math.floor(resto / 10), u = resto % 10;
+      partes.push(u > 0 ? `${DEZENAS_EXT[d]} e ${UNIDADES_EXT[u]}` : DEZENAS_EXT[d]);
+    }
+  }
+  return partes.join(' e ');
+}
+
+function numeroPorExtenso(n) {
+  if (n === 0) return 'zero';
+  const milhoes = Math.floor(n / 1000000);
+  const milhares = Math.floor((n % 1000000) / 1000);
+  const centenas = n % 1000;
+  const partes = [];
+
+  if (milhoes > 0) {
+    partes.push(milhoes === 1 ? 'um milhão' : `${extensoGrupo(milhoes)} milhões`);
+  }
+  if (milhares > 0) {
+    // Regra pedida: começando em 1.000, sempre "Um Mil" (nunca só "Mil")
+    partes.push(milhares === 1 ? 'um mil' : `${extensoGrupo(milhares)} mil`);
+  }
+  if (centenas > 0) {
+    partes.push(extensoGrupo(centenas));
+  }
+  return partes.join(' e ');
+}
+
+function titleCasePtBR(str) {
+  return str.split(' ').map(p => p === 'e' ? p : (p.charAt(0).toLocaleUpperCase('pt-BR') + p.slice(1))).join(' ');
+}
+
+function valorParaExtenso(valorStr) {
+  const numero = parseFloat((valorStr || '0').replace(/\./g, '').replace(',', '.')) || 0;
+  const inteiro = Math.floor(numero);
+  const centavos = Math.round((numero - inteiro) * 100);
+
+  let texto = numeroPorExtenso(inteiro) + ' ' + (inteiro === 1 ? 'real' : 'reais');
+  if (centavos > 0) {
+    texto += ' e ' + numeroPorExtenso(centavos) + ' ' + (centavos === 1 ? 'centavo' : 'centavos');
+  }
+  return titleCasePtBR(texto);
+}
+
+function recalcularValorExtenso() {
+  const valorEl = document.getElementById('valor');
+  const extensoEl = document.getElementById('valor_extenso');
+  if (!valorEl.value) { extensoEl.value = ''; atualizarAvisoPendencias(); return; }
+  extensoEl.value = valorParaExtenso(valorEl.value);
+  atualizarAvisoPendencias();
+}
+
+function recalcularCaucaoExtenso() {
+  const valorEl = document.getElementById('caucao_valor');
+  const extensoEl = document.getElementById('caucao_extenso');
+  if (!valorEl.value) { extensoEl.value = ''; atualizarAvisoPendencias(); return; }
+  extensoEl.value = valorParaExtenso(valorEl.value);
+  atualizarAvisoPendencias();
+}
+
+// === Observações Padrão ===
+function toggleAnimaisDetalhes() {
+  const tem = document.getElementById('tem_animais').value;
+  document.getElementById('animais-detalhes-block').style.display = tem === 'Sim' ? 'block' : 'none';
+  atualizarAvisoPendencias();
+}
+
+function toggleAnimalOutro() {
+  const marcado = document.getElementById('animais_especie_outro_chk').checked;
+  document.getElementById('animais-outro-field').style.display = marcado ? '' : 'none';
+  atualizarAvisoPendencias();
+}
+
+function toggleObsSubbloco(blocoId, mostrar) {
+  const bloco = document.getElementById(blocoId);
+  if (bloco) bloco.style.display = mostrar ? 'block' : 'none';
+  atualizarAvisoPendencias();
+}
+
+function marcado(id) {
+  const el = document.getElementById(id);
+  return !!(el && el.checked);
+}
+
+function primeiroNome(nomeCompleto) {
+  return ((nomeCompleto || '').trim().split(/\s+/)[0]) || '—';
+}
+
+// Monta o texto das "Observações Padrão" com base no que foi marcado, e insere
+// no campo de Observações — preservando qualquer texto manual já digitado acima
+function gerarObservacoesPadrao() {
+  const linhas = [];
+
+  if (document.getElementById('tem_animais').value === 'Sim') {
+    const qtd = document.getElementById('animais_qtd').value || '—';
+    const especies = [];
+    if (marcado('animais_especie_cachorro')) especies.push('Cachorro');
+    if (marcado('animais_especie_gato')) especies.push('Gato');
+    if (marcado('animais_especie_outro_chk')) especies.push(document.getElementById('animais_especie_outro').value || 'Outro');
+    const portes = [];
+    if (marcado('animais_porte_pequeno')) portes.push('Pequeno');
+    if (marcado('animais_porte_medio')) portes.push('Médio');
+    if (marcado('animais_porte_grande')) portes.push('Grande');
+    let linha = `- Possui ${qtd} animal(is) de estimação.`;
+    if (especies.length) linha += ` Espécie(s): ${especies.join(', ')}.`;
+    if (portes.length) linha += ` Porte(s): ${portes.join(', ')}.`;
+    linhas.push(linha);
+  }
+
+  if (marcado('obs_area_inundacao')) {
+    linhas.push('- Imóvel em área de inundação. Incluir Cláusula 24 e renumerar cláusula de Foro para 25.');
+  }
+
+  if (marcado('obs_rg_outra_uf')) {
+    const orgaoUf = (document.getElementById('rg_outra_uf_orgao').value || '—') + '/' + (document.getElementById('rg_outra_uf_uf').value || '—');
+    const ROTULOS = { lcd1: ['Locador', 'lcd1_nome'], lcd2: ['Locador', 'lcd2_nome'], lct1: ['Locatário', 'lct1_nome'], lct2: ['Locatário', 'lct2_nome'], fdr1: ['Fiador', 'fdr1_nome'], fdr2: ['Fiador', 'fdr2_nome'] };
+    Object.keys(ROTULOS).forEach(pref => {
+      if (marcado('rg_outra_uf_' + pref)) {
+        const [rotulo, campoNome] = ROTULOS[pref];
+        const nome = primeiroNome(document.getElementById(campoNome)?.value).toUpperCase();
+        linhas.push(`- RG do ${rotulo.toUpperCase()} ${nome} é ${orgaoUf}.`);
+      }
+    });
+  }
+
+  if (marcado('obs_integrante_pj')) {
+    const quem = [];
+    if (marcado('pj_locador')) quem.push('Locador');
+    if (marcado('pj_locatario')) quem.push('Locatário');
+    if (marcado('pj_fiador')) quem.push('Fiador');
+    if (quem.length > 0) {
+      const juntar = itens => itens.length === 1 ? itens[0] : itens.slice(0, -1).join(', ') + ' e ' + itens[itens.length - 1];
+      linhas.push(`- ${juntar(quem)} ${quem.length === 1 ? 'é' : 'são'} PJ.`);
+    }
+  }
+
+  if (marcado('obs_descontos')) {
+    const meses = document.getElementById('desconto_meses').value || '—';
+    const mesesTxt = `${meses} ${parseInt(meses, 10) === 1 ? 'mês' : 'meses'}`;
+    if (marcado('desconto_carencia')) {
+      linhas.push(`- Carência de ${mesesTxt}.`);
+    } else {
+      linhas.push(`- Desconto de R$ ${document.getElementById('desconto_valor').value || '—'} por ${mesesTxt}.`);
+    }
+  }
+
+  if (marcado('obs_sem_garantia')) linhas.push('- Locação sem Imóvel Garantia.');
+  if (marcado('obs_matricula_atualizada')) linhas.push('- Solicitar Matrícula Atualizada.');
+
+  const textarea = document.getElementById('observacoes');
+  const marcador = '--- OBSERVAÇÕES PADRÃO (geradas automaticamente) ---';
+  const idx = textarea.value.indexOf(marcador);
+  const textoManual = (idx >= 0 ? textarea.value.slice(0, idx) : textarea.value).trim();
+
+  const partes = [];
+  if (textoManual) partes.push(textoManual);
+  if (linhas.length) partes.push(marcador + '\n' + linhas.join('\n'));
+  textarea.value = partes.join('\n\n');
+
+  atualizarAvisoPendencias();
+  mostrarToast('📝 Texto padrão atualizado nas Observações!');
+}
+
 function formatarContaCaucao(el) {
   const banco = document.getElementById('caucao_banco').value;
   if (banco === 'BB') {
@@ -1105,12 +1690,76 @@ function handleRgNaoTem(prefixo) {
   atualizarAvisoPendencias();
 }
 
+// === "Não tenho esse dado" para Telefone e E-mail (Locador/Locatário/Fiador) ===
+const VALOR_SEM_DADO = { tel: '(19) 9.0000-0000', email: 'xxx@gmail.com' };
+
+function handleSemDadoGenerico(campoId, tipo) {
+  const chk = document.getElementById(campoId + '_naotem');
+  const pill = document.getElementById(campoId + '_naotem_pill');
+  const input = document.getElementById(campoId);
+  if (chk.checked) {
+    input.value = VALOR_SEM_DADO[tipo];
+    input.readOnly = true;
+    input.classList.add('campo-confirmado');
+    input.classList.remove('campo-erro');
+    if (pill) pill.classList.add('marcada');
+  } else {
+    input.value = '';
+    input.readOnly = false;
+    input.classList.remove('campo-confirmado');
+    if (pill) pill.classList.remove('marcada');
+  }
+  atualizarAvisoPendencias();
+}
+
+// === Limpar dados de uma aba inteira ===
+const CAMPOS_SEMPRE_READONLY = ['termino', 'vencimento', 'valor_extenso', 'data_contrato', 'inicio', 'caucao_extenso'];
+
+function limparSecao(sectionId) {
+  const secao = document.getElementById(sectionId);
+  if (!secao) return;
+
+  if (!confirm('Tem certeza que deseja limpar todos os dados desta aba? Essa ação não pode ser desfeita.')) return;
+
+  secao.querySelectorAll('input, select, textarea').forEach(el => {
+    if (el.type === 'checkbox') { el.checked = false; return; }
+    el.value = '';
+    if (!CAMPOS_SEMPRE_READONLY.includes(el.id)) el.readOnly = false;
+    el.classList.remove('campo-confirmado', 'campo-preenchido', 'campo-erro');
+  });
+
+  secao.querySelectorAll('select').forEach(sel => { sel.selectedIndex = 0; sel.disabled = false; });
+  secao.querySelectorAll('.opcao-btn').forEach(btn => btn.classList.remove('selecionada', 'erro'));
+  secao.querySelectorAll('.confirm-pill').forEach(p => p.classList.remove('marcada'));
+
+  // Recalcula tudo que depende do que acabou de ser limpo, específico de cada aba
+  if (sectionId === 'sec-locadores') { toggleLcd2(); montarEstadoCivil('lcd1'); montarEstadoCivil('lcd2'); }
+  if (sectionId === 'sec-locatarios') { toggleLct2(); montarEstadoCivil('lct1'); montarEstadoCivil('lct2'); }
+  if (sectionId === 'sec-fiadores') { toggleFdr2(); montarEstadoCivil('fdr1'); montarEstadoCivil('fdr2'); }
+  if (sectionId === 'sec-garantia') { toggleGarantia(); }
+  if (sectionId === 'sec-contrato') { recalcularDatasContrato(); recalcularDataContrato(); recalcularValorExtenso(); }
+
+  atualizarAvisoPendencias();
+  mostrarToast('🗑️ Dados desta aba foram limpos.');
+}
+
 // Mantém o texto fixo no campo de RG caso "Não tem RG" esteja marcado (chamado ao digitar no CPF)
 function sincronizarRG(prefixo) {
   const chk = document.getElementById(prefixo + '_rg_naotem');
   if (chk && chk.checked) {
     document.getElementById(prefixo + '_rg').value = '(Não Tem RG)';
   }
+}
+
+// Junta Bairro + Município/UF do Imóvel Garantia na mesma célula de sempre no Excel
+// (a tela agora tem os 2 campos separados, mas a exportação continua igual a antes)
+function imgrtBairroCidadeCompleto() {
+  const bairro = v('imgrt_bairro');
+  const cidade = v('imgrt_cidade');
+  const bairroOk = bairro !== '---' ? bairro : '';
+  const cidadeOk = cidade !== '---' ? cidade : '';
+  if (bairroOk && cidadeOk) return `${bairroOk} - ${cidadeOk}`;
+  return bairroOk || cidadeOk || '---';
 }
 
 function contaCaucaoCompleta() {
@@ -1295,7 +1944,8 @@ function obterCamposObrigatorios() {
   } else {
     add('imgrt_descricao', 'Imóvel Garantia — Descrição');
     add('imgrt_rua', 'Imóvel Garantia — Rua e nº');
-    add('imgrt_bairro_cidade', 'Imóvel Garantia — Bairro/Município-UF');
+    add('imgrt_bairro', 'Imóvel Garantia — Bairro');
+    add('imgrt_cidade', 'Imóvel Garantia — Município/UF');
     add('imgrt_matricula', 'Imóvel Garantia — Matrícula');
   }
 
@@ -1309,6 +1959,8 @@ function obterCamposObrigatorios() {
   add('lcd1_prof', 'Locador 1 — Profissão');
   add('lcd1_rg', 'Locador 1 — RG');
   add('lcd1_cpf', 'Locador 1 — CPF');
+  add('lcd1_tel', 'Locador 1 — Telefone');
+  add('lcd1_email', 'Locador 1 — E-mail');
 
   if (document.getElementById('num_lcd').value === '2') {
     add('lcd_casados', 'Locadores — Casados entre si?');
@@ -1318,6 +1970,8 @@ function obterCamposObrigatorios() {
     add('lcd2_prof', 'Locador 2 — Profissão');
     add('lcd2_rg', 'Locador 2 — RG');
     add('lcd2_cpf', 'Locador 2 — CPF');
+    add('lcd2_tel', 'Locador 2 — Telefone');
+    add('lcd2_email', 'Locador 2 — E-mail');
     if (document.getElementById('lcd_casados').value === 'Sim') {
       add('lcd_regime', 'Locadores — Regime de Casamento');
       add('lcd_data_casamento', 'Locadores — Data do Casamento');
@@ -1331,6 +1985,8 @@ function obterCamposObrigatorios() {
   add('lct1_prof', 'Locatário 1 — Profissão');
   add('lct1_rg', 'Locatário 1 — RG');
   add('lct1_cpf', 'Locatário 1 — CPF');
+  add('lct1_tel', 'Locatário 1 — Telefone');
+  add('lct1_email', 'Locatário 1 — E-mail');
 
   if (document.getElementById('num_lct').value === '2') {
     add('lct_casados', 'Locatários — Casados entre si?');
@@ -1340,6 +1996,8 @@ function obterCamposObrigatorios() {
     add('lct2_prof', 'Locatário 2 — Profissão');
     add('lct2_rg', 'Locatário 2 — RG');
     add('lct2_cpf', 'Locatário 2 — CPF');
+    add('lct2_tel', 'Locatário 2 — Telefone');
+    add('lct2_email', 'Locatário 2 — E-mail');
     if (document.getElementById('lct_casados').value === 'Sim') {
       add('lct_regime', 'Locatários — Regime de Casamento');
       add('lct_data_casamento', 'Locatários — Data do Casamento');
@@ -1363,6 +2021,8 @@ function obterCamposObrigatorios() {
     add('fdr1_prof', 'Fiador 1 — Profissão');
     add('fdr1_rg', 'Fiador 1 — RG');
     add('fdr1_cpf', 'Fiador 1 — CPF');
+    add('fdr1_tel', 'Fiador 1 — Telefone');
+    add('fdr1_email', 'Fiador 1 — E-mail');
 
     if (document.getElementById('num_fdr').value === '2') {
       add('fdr_casados', 'Fiadores — Casados entre si?');
@@ -1372,6 +2032,8 @@ function obterCamposObrigatorios() {
       add('fdr2_prof', 'Fiador 2 — Profissão');
       add('fdr2_rg', 'Fiador 2 — RG');
       add('fdr2_cpf', 'Fiador 2 — CPF');
+      add('fdr2_tel', 'Fiador 2 — Telefone');
+      add('fdr2_email', 'Fiador 2 — E-mail');
     }
     if (document.getElementById('fdr_casados').value === 'Sim') {
       add('fdr_regime', 'Fiadores — Regime de Casamento');
@@ -1396,6 +2058,67 @@ function calcularPendencias() {
 }
 
 // Atualiza a mensagem no rodapé com a contagem de campos pendentes
+// === Destaque visual verde (campo preenchido / seção completa) ===
+// Mapeia cada campo obrigatório para a seção (.section) onde ele aparece na tela
+const FIELD_TO_SECAO = {
+  imv_rua: 'sec-imovel', imv_bairro: 'sec-imovel', imv_cidade: 'sec-imovel', imv_cep: 'sec-imovel',
+  imv_matricula: 'sec-imovel', imv_inscricao: 'sec-imovel', imv_uc: 'sec-imovel', imv_rgi: 'sec-imovel',
+
+  data_contrato: 'sec-contrato', prazo: 'sec-contrato', inicio: 'sec-contrato', termino: 'sec-contrato',
+  valor: 'sec-contrato', valor_extenso: 'sec-contrato', vencimento: 'sec-contrato', fins: 'sec-contrato',
+
+  enc_agua: 'sec-encargos', enc_gas: 'sec-encargos', enc_condominio: 'sec-encargos', enc_iptu: 'sec-encargos',
+
+  garantia: 'sec-garantia', caucao_valor: 'sec-garantia', caucao_extenso: 'sec-garantia',
+  caucao_banco: 'sec-garantia', caucao_conta: 'sec-garantia',
+  imgrt_descricao: 'sec-garantia', imgrt_rua: 'sec-garantia', imgrt_bairro: 'sec-garantia', imgrt_cidade: 'sec-garantia', imgrt_matricula: 'sec-garantia',
+
+  lcd_rua: 'sec-locadores', lcd_bairro: 'sec-locadores', lcd_cidade: 'sec-locadores', num_lcd: 'sec-locadores',
+  lcd1_sexo: 'sec-locadores', lcd1_nome: 'sec-locadores', lcd1_ec: 'sec-locadores', lcd1_prof: 'sec-locadores', lcd1_rg: 'sec-locadores', lcd1_cpf: 'sec-locadores', lcd1_tel: 'sec-locadores', lcd1_email: 'sec-locadores',
+  lcd2_sexo: 'sec-locadores', lcd2_nome: 'sec-locadores', lcd2_ec: 'sec-locadores', lcd2_prof: 'sec-locadores', lcd2_rg: 'sec-locadores', lcd2_cpf: 'sec-locadores', lcd2_tel: 'sec-locadores', lcd2_email: 'sec-locadores',
+  lcd_casados: 'sec-locadores', lcd_regime: 'sec-locadores', lcd_data_casamento: 'sec-locadores',
+
+  lct1_sexo: 'sec-locatarios', lct1_nome: 'sec-locatarios', lct1_ec: 'sec-locatarios', lct1_prof: 'sec-locatarios', lct1_rg: 'sec-locatarios', lct1_cpf: 'sec-locatarios', lct1_tel: 'sec-locatarios', lct1_email: 'sec-locatarios',
+  lct2_sexo: 'sec-locatarios', lct2_nome: 'sec-locatarios', lct2_ec: 'sec-locatarios', lct2_prof: 'sec-locatarios', lct2_rg: 'sec-locatarios', lct2_cpf: 'sec-locatarios', lct2_tel: 'sec-locatarios', lct2_email: 'sec-locatarios',
+  lct_rua_com: 'sec-locatarios', lct_bairro_com: 'sec-locatarios', lct_cidade_com: 'sec-locatarios', num_lct: 'sec-locatarios',
+  lct_casados: 'sec-locatarios', lct_regime: 'sec-locatarios', lct_data_casamento: 'sec-locatarios',
+
+  fdr1_sexo: 'sec-fiadores', fdr1_nome: 'sec-fiadores', fdr1_ec: 'sec-fiadores', fdr1_prof: 'sec-fiadores', fdr1_rg: 'sec-fiadores', fdr1_cpf: 'sec-fiadores', fdr1_tel: 'sec-fiadores', fdr1_email: 'sec-fiadores',
+  fdr2_sexo: 'sec-fiadores', fdr2_nome: 'sec-fiadores', fdr2_ec: 'sec-fiadores', fdr2_prof: 'sec-fiadores', fdr2_rg: 'sec-fiadores', fdr2_cpf: 'sec-fiadores', fdr2_tel: 'sec-fiadores', fdr2_email: 'sec-fiadores',
+  fdr_rua: 'sec-fiadores', fdr_bairro: 'sec-fiadores', fdr_cidade: 'sec-fiadores', num_fdr: 'sec-fiadores',
+  fdr_casados: 'sec-fiadores', fdr_regime: 'sec-fiadores', fdr_data_casamento: 'sec-fiadores',
+};
+
+// Marca com fundo verde discreto cada seção cujos campos obrigatórios (visíveis no momento) estão todos preenchidos
+function atualizarSecoesCompletas() {
+  const gruposPorSecao = {};
+  obterCamposObrigatorios().forEach(campo => {
+    const secaoId = FIELD_TO_SECAO[campo.id];
+    if (!secaoId) return;
+    (gruposPorSecao[secaoId] = gruposPorSecao[secaoId] || []).push(campo.id);
+  });
+
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('secao-completa'));
+
+  Object.keys(gruposPorSecao).forEach(secaoId => {
+    const idsCampos = gruposPorSecao[secaoId];
+    const completo = idsCampos.length > 0 && idsCampos.every(id => {
+      const el = document.getElementById(id);
+      return el && el.value && el.value.toString().trim() !== '';
+    });
+    const secaoEl = document.getElementById(secaoId);
+    if (secaoEl && completo) secaoEl.classList.add('secao-completa');
+  });
+}
+
+// Marca com fundo verde discreto cada campo de texto/select/textarea que tem valor preenchido
+function atualizarCamposPreenchidos() {
+  document.querySelectorAll('.container input:not([type="hidden"]):not([type="checkbox"]), .container select, .container textarea').forEach(el => {
+    const preenchido = !!(el.value && el.value.toString().trim() !== '');
+    el.classList.toggle('campo-preenchido', preenchido);
+  });
+}
+
 function atualizarAvisoPendencias() {
   const aviso = document.getElementById('avisoPendencias');
   if (!aviso) return;
@@ -1408,6 +2131,8 @@ function atualizarAvisoPendencias() {
     aviso.textContent = `⚠ ${pendentes.length} campo${plural ? 's' : ''} obrigatório${plural ? 's' : ''} ainda não preenchido${plural ? 's' : ''}`;
     aviso.classList.remove('completo');
   }
+  atualizarCamposPreenchidos();
+  atualizarSecoesCompletas();
 }
 
 // Valida antes de gerar o Excel: bloqueia e avisa quais campos faltam
@@ -1421,15 +2146,24 @@ function validarAntesDeGerar() {
   if (pendentes.length === 0) return true;
 
   let primeiroInvalido = null;
+  // Campos ocultos/calculados que não têm botão-pill próprio: o erro é
+  // redirecionado para o campo visível que a pessoa realmente preenche
+  const REDIRECIONAR_ERRO = {
+    inicio: 'inicio_data', termino: 'inicio_data', vencimento: 'inicio_data',
+    data_contrato: 'data_contrato_data',
+    valor_extenso: 'valor',
+  };
+
   pendentes.forEach(campo => {
-    const input = document.getElementById(campo.id);
+    const idAlvo = REDIRECIONAR_ERRO[campo.id] || campo.id;
+    const input = document.getElementById(idAlvo);
     if (input) {
       const secao = input.closest('.section');
       if (secao) secao.classList.remove('collapsed');
 
       if (input.type === 'hidden') {
         // campo é um grupo de botões (opcao-btn) — destaca os botões em vez do input escondido
-        const botoes = document.querySelectorAll('.opcao-btn[data-for="' + campo.id + '"]');
+        const botoes = document.querySelectorAll('.opcao-btn[data-for="' + idAlvo + '"]');
         botoes.forEach(btn => btn.classList.add('erro'));
         if (!primeiroInvalido && botoes.length) primeiroInvalido = botoes[0];
       } else {
@@ -1463,6 +2197,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function v(id) { return document.getElementById(id)?.value?.trim() || '---'; }
+// Igual a v(id), mas em minúsculo — usada para Estado Civil e Profissão, que no app
+// ficam como a pessoa digitou/escolheu, mas são exportados sempre em minúsculo
+function vMin(id) { const val = v(id); return val === '---' ? val : val.toLocaleLowerCase('pt-BR'); }
 function vNum(id) { const n = parseInt(document.getElementById(id)?.value); return isNaN(n)?1:n; }
 function nat(sexoVal) { return sexoVal === 'Feminino' ? 'brasileira' : 'brasileiro'; }
 
@@ -1504,13 +2241,13 @@ function buildDataRow() {
     isFiador ? '---' : contaCaucaoCompleta(),    // Y
     isFiador ? v('imgrt_descricao') : '---', // Z  - Imóv Grt Desc
     isFiador ? v('imgrt_rua') : '---',       // AA
-    isFiador ? v('imgrt_bairro_cidade'):'---',//AB
+    isFiador ? imgrtBairroCidadeCompleto() : '---',//AB
     isFiador ? v('imgrt_matricula') : '---', // AC
     v('lcd1_sexo'),                          // AD - Loc1 Sexo
     v('lcd1_nome'),                          // AE - Loc1 Nome
     nat(v('lcd1_sexo')),                     // AF - Loc1 Nac
-    v('lcd1_ec'),                            // AG - Loc1 E.Civil
-    v('lcd1_prof'),                          // AH
+    vMin('lcd1_ec'),                            // AG - Loc1 E.Civil
+    vMin('lcd1_prof'),                          // AH
     v('lcd1_rg'),                            // AI
     v('lcd1_cpf'),                           // AJ
     v('lcd1_tel'),                           // AK
@@ -1518,8 +2255,8 @@ function buildDataRow() {
     nLcd===2 ? v('lcd2_sexo') : '---',       // AM - Loc2 Sexo
     nLcd===2 ? v('lcd2_nome') : '---',       // AN
     nLcd===2 ? nat(v('lcd2_sexo')) : '---',  // AO
-    nLcd===2 ? v('lcd2_ec') : '---',         // AP
-    nLcd===2 ? v('lcd2_prof') : '---',       // AQ
+    nLcd===2 ? vMin('lcd2_ec') : '---',         // AP
+    nLcd===2 ? vMin('lcd2_prof') : '---',       // AQ
     nLcd===2 ? v('lcd2_rg') : '---',         // AR
     nLcd===2 ? v('lcd2_cpf') : '---',        // AS
     nLcd===2 ? v('lcd2_tel') : '---',        // AT
@@ -1534,8 +2271,8 @@ function buildDataRow() {
     v('lct1_sexo'),                          // BC - Lct1 Sexo
     v('lct1_nome'),                          // BD
     nat(v('lct1_sexo')),                     // BE
-    v('lct1_ec'),                            // BF
-    v('lct1_prof'),                          // BG
+    vMin('lct1_ec'),                            // BF
+    vMin('lct1_prof'),                          // BG
     v('lct1_rg'),                            // BH
     v('lct1_cpf'),                           // BI
     v('lct1_tel'),                           // BJ
@@ -1543,8 +2280,8 @@ function buildDataRow() {
     nLct===2 ? v('lct2_sexo') : '---',       // BL
     nLct===2 ? v('lct2_nome') : '---',       // BM
     nLct===2 ? nat(v('lct2_sexo')) : '---',  // BN
-    nLct===2 ? v('lct2_ec') : '---',         // BO
-    nLct===2 ? v('lct2_prof') : '---',       // BP
+    nLct===2 ? vMin('lct2_ec') : '---',         // BO
+    nLct===2 ? vMin('lct2_prof') : '---',       // BP
     nLct===2 ? v('lct2_rg') : '---',         // BQ
     nLct===2 ? v('lct2_cpf') : '---',        // BR
     nLct===2 ? v('lct2_tel') : '---',        // BS
@@ -1559,8 +2296,8 @@ function buildDataRow() {
     isFiador ? v('fdr1_sexo') : '---',       // CB - Fdr1 Sexo
     isFiador ? v('fdr1_nome') : '---',       // CC
     isFiador ? nat(v('fdr1_sexo')) : '---',  // CD
-    isFiador ? v('fdr1_ec') : '---',         // CE
-    isFiador ? v('fdr1_prof') : '---',       // CF
+    isFiador ? vMin('fdr1_ec') : '---',         // CE
+    isFiador ? vMin('fdr1_prof') : '---',       // CF
     isFiador ? v('fdr1_rg') : '---',         // CG
     isFiador ? v('fdr1_cpf') : '---',        // CH
     isFiador ? v('fdr1_tel') : '---',        // CI
@@ -1568,8 +2305,8 @@ function buildDataRow() {
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_sexo') : '---',    // CK
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_nome') : '---',    // CL
     (isFiador && parseInt(nFdr)===2) ? nat(v('fdr2_sexo')):'---', // CM
-    (isFiador && parseInt(nFdr)===2) ? v('fdr2_ec') : '---',      // CN
-    (isFiador && parseInt(nFdr)===2) ? v('fdr2_prof') : '---',    // CO
+    (isFiador && parseInt(nFdr)===2) ? vMin('fdr2_ec') : '---',      // CN
+    (isFiador && parseInt(nFdr)===2) ? vMin('fdr2_prof') : '---',    // CO
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_rg') : '---',      // CP
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_cpf') : '---',     // CQ
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_tel') : '---',     // CR
@@ -1785,6 +2522,35 @@ function aplicarDadosFormulario(dados) {
     input.classList.toggle('campo-confirmado', chk.checked);
     if (pill) pill.classList.toggle('marcada', chk.checked);
   });
+
+  ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(p => {
+    ['tel', 'email'].forEach(tipo => {
+      const campoId = p + '_' + tipo;
+      const chk = document.getElementById(campoId + '_naotem');
+      const pill = document.getElementById(campoId + '_naotem_pill');
+      const input = document.getElementById(campoId);
+      if (!chk || !input) return;
+      input.readOnly = chk.checked;
+      input.classList.toggle('campo-confirmado', chk.checked);
+      if (pill) pill.classList.toggle('marcada', chk.checked);
+    });
+  });
+
+  // 6ª etapa: Início/Término/Vencimento/Valor por Extenso agora são calculados, e
+  // Data do Contrato é um campo de data independente do Início.
+  // Se o dado importado trouxe essas datas já por extenso (rascunho/cadastro/PDF antigos),
+  // tenta converter de volta para DD/MM/AAAA e recalcula tudo a partir daí.
+  if (dados.inicio) {
+    const dataDigitada = extensoParaDataDigitada(dados.inicio);
+    if (dataDigitada) document.getElementById('inicio_data').value = dataDigitada;
+  }
+  if (dados.data_contrato) {
+    const dataContratoDigitada = extensoParaDataDigitada(dados.data_contrato);
+    if (dataContratoDigitada) document.getElementById('data_contrato_data').value = dataContratoDigitada;
+  }
+  recalcularDatasContrato();
+  recalcularDataContrato();
+  if (dados.valor) recalcularValorExtenso();
 
   atualizarAvisoPendencias();
 }
@@ -2037,7 +2803,7 @@ const COLUNAS_CADASTRO = [
   'fins', 'data_contrato', 'prazo', 'inicio', 'termino', 'valor', 'valor_extenso', 'vencimento', // J-Q
   'enc_agua', 'enc_gas', 'enc_condominio', 'enc_iptu', // R-U
   'garantia', 'caucao_valor', 'caucao_extenso', 'caucao_conta_completa', // V-Y (Y tratado à parte)
-  'imgrt_descricao', 'imgrt_rua', 'imgrt_bairro_cidade', 'imgrt_matricula', // Z-AC
+  'imgrt_descricao', 'imgrt_rua', 'imgrt_bairro_cidade_completo', 'imgrt_matricula', // Z-AC
   'lcd1_sexo', 'lcd1_nome', null, 'lcd1_ec', 'lcd1_prof', 'lcd1_rg', 'lcd1_cpf', 'lcd1_tel', 'lcd1_email', // AD-AL
   'lcd2_sexo', 'lcd2_nome', null, 'lcd2_ec', 'lcd2_prof', 'lcd2_rg', 'lcd2_cpf', 'lcd2_tel', 'lcd2_email', // AM-AU
   'lcd_rua', 'lcd_bairro', 'lcd_cidade', 'num_lcd', 'lcd_casados', 'lcd_regime', 'lcd_data_casamento', // AV-BB
@@ -2062,7 +2828,7 @@ const CAMPOS_POR_CATEGORIA = {
               'lct_rua_com','lct_bairro_com','lct_cidade_com','num_lct','lct_casados','lct_regime','lct_data_casamento'],
   ENCARGOS: ['enc_agua','enc_gas','enc_condominio','enc_iptu'],
   GARANTIA: ['garantia','caucao_valor','caucao_extenso','caucao_banco','caucao_conta',
-             'imgrt_descricao','imgrt_rua','imgrt_bairro_cidade','imgrt_matricula'],
+             'imgrt_descricao','imgrt_rua','imgrt_bairro','imgrt_cidade','imgrt_matricula'],
   FIADORES: ['fdr1_sexo','fdr1_nome','fdr1_ec','fdr1_prof','fdr1_rg','fdr1_cpf','fdr1_tel','fdr1_email',
              'fdr2_sexo','fdr2_nome','fdr2_ec','fdr2_prof','fdr2_rg','fdr2_cpf','fdr2_tel','fdr2_email',
              'fdr_rua','fdr_bairro','fdr_cidade','num_fdr','fdr_casados','fdr_regime','fdr_data_casamento'],
@@ -2161,10 +2927,28 @@ async function carregarCadastroContratos() {
           delete campos.caucao_conta_completa;
         }
 
-        const contractId = (row[0] || '').toString().trim();
-        const enderecoImovel = [row[1], row[2], row[3]].map(v => (v || '').toString().trim()).filter(Boolean).join(', ');
-        const nomeLocador = (row[30] || '').toString().trim();
-        const nomeLocatario = (row[55] || '').toString().trim();
+        // Desfaz "Bairro - Município/UF" do Imóvel Garantia em 2 campos separados
+        if (campos.imgrt_bairro_cidade_completo) {
+          const partes = campos.imgrt_bairro_cidade_completo.split(' - ');
+          if (partes.length >= 2) {
+            campos.imgrt_bairro = partes[0].trim();
+            campos.imgrt_cidade = partes.slice(1).join(' - ').trim();
+          } else {
+            campos.imgrt_bairro = campos.imgrt_bairro_cidade_completo.trim();
+          }
+          delete campos.imgrt_bairro_cidade_completo;
+        }
+
+        const semPlaceholder = (v) => {
+          const s = (v || '').toString().trim();
+          return (s === '---' || s === '???') ? '' : s;
+        };
+
+        const contractId = semPlaceholder(row[0]);
+        const enderecoImovel = [row[1], row[2], row[3]].map(semPlaceholder).filter(Boolean).join(', ');
+        const nomeLocador = semPlaceholder(row[30]);
+        const nomeLocatario = semPlaceholder(row[55]);
+        const nomeLocatario2 = semPlaceholder(row[64]);
 
         if (!enderecoImovel && !nomeLocador && !nomeLocatario) continue; // linha sem nada útil
 
@@ -2173,6 +2957,7 @@ async function carregarCadastroContratos() {
           enderecoImovel,
           nomeLocador,
           nomeLocatario,
+          nomeLocatario2,
           campos,
         });
       }
@@ -2214,11 +2999,14 @@ function escapeHtmlBusca(s) {
 function renderizarResultadosBusca(itens) {
   const el = document.getElementById('busca_cadastro_resultados');
   buscaCadastroResultadosAtuais = itens;
+  resultadoSelecionadoIdx = null;
+  atualizarBotaoImportar();
+
   if (itens.length === 0) {
     el.innerHTML = '<div class="busca-resultado-vazio">Nenhum resultado encontrado.</div>';
   } else {
     el.innerHTML = itens.map((item, idx) => {
-      const pessoas = [item.nomeLocador, item.nomeLocatario].filter(Boolean).join(' / ');
+      const pessoas = [item.nomeLocador, [item.nomeLocatario, item.nomeLocatario2].filter(Boolean).join(' e ')].filter(Boolean).join(' / ');
       return '<div class="busca-resultado-item" data-idx="' + idx + '">' +
         '<strong>' + escapeHtmlBusca(item.contractId || '—') + '</strong> — ' + escapeHtmlBusca(item.enderecoImovel || 'Endereço não informado') +
         (pessoas ? '<span class="busca-resultado-sub">' + escapeHtmlBusca(pessoas) + '</span>' : '') +
@@ -2232,10 +3020,34 @@ function categoriasSelecionadas() {
   return [...document.querySelectorAll('#buscaCategorias .categoria-btn.selecionada')].map(b => b.dataset.categoria);
 }
 
-function selecionarResultadoBusca(item) {
+let resultadoSelecionadoIdx = null;
+
+function atualizarBotaoImportar() {
+  const btn = document.getElementById('btnImportarCadastro');
+  if (btn) btn.disabled = resultadoSelecionadoIdx === null;
+}
+
+// Apenas marca o resultado clicado como selecionado (não aplica nada ainda)
+function selecionarResultadoBusca(idx) {
+  resultadoSelecionadoIdx = idx;
+  document.querySelectorAll('.busca-resultado-item').forEach(el => {
+    el.classList.toggle('selecionado', parseInt(el.dataset.idx, 10) === idx);
+  });
+  atualizarBotaoImportar();
+}
+
+// Chamado ao clicar no botão "Importar": aplica o resultado selecionado, considerando as categorias marcadas
+function importarResultadoSelecionado() {
+  if (resultadoSelecionadoIdx === null) {
+    alert('Escolha um resultado da lista antes de clicar em Importar.');
+    return;
+  }
+  const item = buscaCadastroResultadosAtuais[resultadoSelecionadoIdx];
+  if (!item) return;
+
   const categorias = categoriasSelecionadas();
   if (categorias.length === 0) {
-    alert('Selecione ao menos uma categoria (Imóvel, Locador, Locatário, Encargos, Garantia ou Fiadores) antes de escolher um resultado.');
+    alert('Selecione ao menos uma categoria (Imóvel, Locador, Locatário, Encargos, Garantia ou Fiadores) antes de importar.');
     return;
   }
 
@@ -2253,6 +3065,8 @@ function selecionarResultadoBusca(item) {
 
   document.getElementById('busca_cadastro').value = (item.contractId ? item.contractId + ' — ' : '') + item.enderecoImovel;
   document.getElementById('busca_cadastro_resultados').style.display = 'none';
+  resultadoSelecionadoIdx = null;
+  atualizarBotaoImportar();
 
   mostrarToast(`🔍 ${qtd} campo(s) preenchido(s) a partir do cadastro (${categorias.length} categoria(s))!`);
 }
@@ -2260,22 +3074,22 @@ function selecionarResultadoBusca(item) {
 document.getElementById('busca_cadastro').addEventListener('input', async function () {
   const termo = this.value.trim().toLowerCase();
   const resultadosEl = document.getElementById('busca_cadastro_resultados');
-  if (!termo) { resultadosEl.style.display = 'none'; return; }
+  if (!termo) { resultadosEl.style.display = 'none'; resultadoSelecionadoIdx = null; atualizarBotaoImportar(); return; }
   const dados = await carregarCadastroContratos();
   const filtrados = dados.filter(item =>
     (item.contractId || '').toLowerCase().includes(termo) ||
     (item.enderecoImovel || '').toLowerCase().includes(termo) ||
     (item.nomeLocador || '').toLowerCase().includes(termo) ||
-    (item.nomeLocatario || '').toLowerCase().includes(termo)
-  ).slice(0, 8);
+    (item.nomeLocatario || '').toLowerCase().includes(termo) ||
+    (item.nomeLocatario2 || '').toLowerCase().includes(termo)
+  ).slice(0, 20);
   renderizarResultadosBusca(filtrados);
 });
 
 document.getElementById('busca_cadastro_resultados').addEventListener('click', function (e) {
   const item = e.target.closest('.busca-resultado-item');
   if (!item) return;
-  const dado = buscaCadastroResultadosAtuais[parseInt(item.dataset.idx, 10)];
-  if (dado) selecionarResultadoBusca(dado);
+  selecionarResultadoBusca(parseInt(item.dataset.idx, 10));
 });
 
 // Init
