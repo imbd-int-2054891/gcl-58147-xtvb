@@ -16,6 +16,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
 
@@ -376,6 +377,17 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   line-height: 1.25;
 }
 
+.opcao-btn-encargos {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.opcao-btn-curto {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: 7px 20px;
+}
+
 .busca-cadastro-card {
   background: var(--branco);
   border: 1px solid var(--fundo3);
@@ -463,6 +475,20 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   transition: all 0.15s;
 }
 .chip-atalho:hover { border-color: var(--primario2); border-style: solid; color: var(--primario); }
+
+.obs-subpainel {
+  background: var(--fundo2);
+  border: 1px solid #cddef4;
+  border-left: 4px solid var(--primario2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: -4px 0 14px;
+}
+
+.confirm-pill-compacta {
+  padding: 4px 10px !important;
+  font-size: 0.72rem !important;
+}
 
 .btn-limpar-secao {
   background: none;
@@ -554,6 +580,47 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 .busca-resultado-sub { display: block; font-size: 0.75rem; color: var(--cinza); margin-top: 2px; }
 .busca-resultado-vazio { padding: 14px; text-align: center; color: var(--cinza); font-size: 0.85rem; }
 
+.caixa-observacoes-import {
+  margin-top: 12px;
+  background: #fff8e1;
+  border: 1.5px solid #f2c94c;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.caixa-observacoes-import-titulo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #8a6d00;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.caixa-observacoes-import-texto {
+  font-size: 0.88rem;
+  color: #5c4a00;
+  white-space: pre-wrap;
+}
+
+.dropzone-import {
+  border: 2px dashed var(--fundo3);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  background: var(--branco);
+  color: var(--texto2);
+  font-size: 0.9rem;
+  transition: all 0.15s;
+  margin-bottom: 20px;
+  box-shadow: var(--sombra);
+}
+.dropzone-import label { cursor: pointer; }
+.dropzone-import b { color: var(--primario); }
+.dropzone-import.arrastando { border-color: var(--primario); background: var(--fundo2); }
+.dropzone-import .dica-dropzone { display:block; font-size: 0.72rem; color: var(--cinza); margin-top: 8px; }
+.status-import { font-size: 0.82rem; margin-top: 10px; font-weight: 600; }
+.status-import.sucesso { color: var(--verde); }
+.status-import.erro { color: var(--destaque); }
+
 .field input.campo-preenchido:not(.campo-erro):not(.campo-confirmado),
 .field select.campo-preenchido:not(.campo-erro),
 .field textarea.campo-preenchido:not(.campo-erro) {
@@ -599,16 +666,21 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v33</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v40</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
 
 <div class="container">
 
-  <div class="contract-id-bar">
-    <span class="contract-id-label">🔑 Nº do Contrato:</span>
-    <input type="text" id="contractId" value="" placeholder="Ex.: L.26.050">
+  <div class="dropzone-import" id="dropzone_import"
+       ondragover="event.preventDefault(); this.classList.add('arrastando')"
+       ondragleave="this.classList.remove('arrastando')"
+       ondrop="tratarDropImportacao(event)">
+    <label for="arquivo_importar">📎 <b>Arraste um arquivo aqui</b> ou clique para escolher</label>
+    <input type="file" id="arquivo_importar" accept=".json,.pdf,.docx,.doc" style="display:none" onchange="importarArquivo(event)">
+    <span class="dica-dropzone">Aceita: rascunho salvo (.json), formulário do cliente ou resumo interno (.pdf), ou contrato já pronto (.pdf ou .docx). Sempre confira os dados antes de gerar o Excel.</span>
+    <div class="status-import" id="status_import_arquivo"></div>
   </div>
 
   <div class="busca-cadastro-card">
@@ -632,6 +704,15 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       <div class="busca-cadastro-resultados" id="busca_cadastro_resultados"></div>
     </div>
     <div class="busca-cadastro-status" id="busca_cadastro_status">Carregando cadastro...</div>
+    <div class="caixa-observacoes-import" id="caixa_observacoes_import" style="display:none">
+      <div class="caixa-observacoes-import-titulo">📌 Observações do contrato importado (não entra sozinho no contrato — só para conferência)</div>
+      <div class="caixa-observacoes-import-texto" id="texto_observacoes_import"></div>
+    </div>
+  </div>
+
+  <div class="contract-id-bar">
+    <span class="contract-id-label">🔑 Nº do Contrato:</span>
+    <input type="text" id="contractId" value="" placeholder="Ex.: 26050" oninput="formatarNumeroContrato(this)" inputmode="numeric">
   </div>
 
   <!-- IMÓVEL -->
@@ -819,47 +900,48 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       </div>
 
     </div>
-  </div>
 
-  <!-- ENCARGOS -->
-  <div class="section" id="sec-encargos">
-    <div class="section-header" onclick="toggleSection('sec-encargos')">
-      <div class="section-dot"></div>
-      <span class="section-title">⚡ Encargos</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-encargos&quot;)">🗑️ Limpar dados</button>
-      <span class="toggle-icon">▾</span>
-    </div>
-    <div class="section-body grid-2">
-      <div class="field"><label>Água e Energia</label>
-        <div class="opcoes-grupo">
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_agua" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_agua','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_agua" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_agua','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_agua" data-valor="Não se aplica" onclick="selecionarOpcao('enc_agua','Não se aplica')">Não se Aplica</div>
-        </div>
-        <input type="hidden" id="enc_agua" value="">
+    <div style="grid-column:1/-1; margin-top:10px; padding:16px 18px; background:var(--fundo); border:1px solid var(--fundo3); border-radius:10px;">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+        <span class="sublabel" style="border:none; margin:0; padding:0;">⚡ Encargos</span>
+        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('salao')">🏢 Casa / Salão Padrão</button>
+        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('apto')">🏠 Apto Padrão</button>
+        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('casacondominio')">🏘️ Casa Condomínio</button>
+        <button type="button" class="btn-limpar-secao" onclick="limparEncargos()">🗑️ Limpar dados</button>
       </div>
-      <div class="field"><label>Gás</label>
-        <div class="opcoes-grupo">
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_gas" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_gas','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_gas" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_gas','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_gas" data-valor="Não se aplica" onclick="selecionarOpcao('enc_gas','Não se aplica')">Não se Aplica</div>
+      <div class="grid-2" style="gap:14px">
+        <div class="field"><label>Água e Energia</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_agua','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_agua','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_agua','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_agua" value="">
         </div>
-        <input type="hidden" id="enc_gas" value="">
-      </div>
-      <div class="field"><label>Condomínio</label>
-        <div class="opcoes-grupo">
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_condominio" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_condominio','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_condominio" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_condominio','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_condominio" data-valor="Não se aplica" onclick="selecionarOpcao('enc_condominio','Não se aplica')">Não se Aplica</div>
+        <div class="field"><label>Gás</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_gas','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_gas','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_gas','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_gas" value="">
         </div>
-        <input type="hidden" id="enc_condominio" value="">
-      </div>
-      <div class="field"><label>IPTU</label>
-        <div class="opcoes-grupo">
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_iptu" data-valor="Pagamento diretamente ao órgão competente ou boleto do condomínio" onclick="selecionarOpcao('enc_iptu','Pagamento diretamente ao órgão competente ou boleto do condomínio')">Orgão Competente / Condomínio</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_iptu" data-valor="Pagamento na ADMINISTRADORA juntamente com o aluguel" onclick="selecionarOpcao('enc_iptu','Pagamento na ADMINISTRADORA juntamente com o aluguel')">Na Administradora (FICA)</div>
-          <div class="opcao-btn opcao-btn-compacta" data-for="enc_iptu" data-valor="Não se aplica" onclick="selecionarOpcao('enc_iptu','Não se aplica')">Não se Aplica</div>
+        <div class="field"><label>Condomínio</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_condominio','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_condominio','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_condominio','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_condominio" value="">
         </div>
-        <input type="hidden" id="enc_iptu" value="">
+        <div class="field"><label>IPTU</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_iptu','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_iptu','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_iptu','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_iptu" value="">
+        </div>
       </div>
     </div>
   </div>
@@ -1103,8 +1185,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
     <div class="section-body">
       <div class="field"><label>🐾 Possui animais de estimação?</label>
         <div class="opcoes-grupo">
-          <div class="opcao-btn" data-for="tem_animais" data-valor="Sim" onclick="selecionarOpcao('tem_animais','Sim',toggleAnimaisDetalhes)">Sim</div>
-          <div class="opcao-btn" data-for="tem_animais" data-valor="Não" onclick="selecionarOpcao('tem_animais','Não',toggleAnimaisDetalhes)">Não</div>
+          <div class="opcao-btn opcao-btn-curto" data-for="tem_animais" data-valor="Sim" onclick="selecionarOpcao('tem_animais','Sim',toggleAnimaisDetalhes)">Sim</div>
+          <div class="opcao-btn opcao-btn-curto" data-for="tem_animais" data-valor="Não" onclick="selecionarOpcao('tem_animais','Não',toggleAnimaisDetalhes)">Não</div>
         </div>
         <input type="hidden" id="tem_animais" value="">
       </div>
@@ -1114,17 +1196,17 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Quantidade</label><input type="number" id="animais_qtd" min="1" placeholder="Ex.: 2"></div>
           <div class="field col-span-3"><label>Espécie</label>
             <div class="opcoes-grupo">
-              <label class="confirm-pill"><input type="checkbox" id="animais_especie_cachorro" onchange="atualizarAvisoPendencias()"> Cachorro</label>
-              <label class="confirm-pill"><input type="checkbox" id="animais_especie_gato" onchange="atualizarAvisoPendencias()"> Gato</label>
-              <label class="confirm-pill"><input type="checkbox" id="animais_especie_outro_chk" onchange="toggleAnimalOutro()"> Outro</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="animais_especie_cachorro" onchange="atualizarAvisoPendencias()"> Cachorro</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="animais_especie_gato" onchange="atualizarAvisoPendencias()"> Gato</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="animais_especie_outro_chk" onchange="toggleAnimalOutro()"> Outro</label>
             </div>
           </div>
           <div class="field col-span-2" id="animais-outro-field" style="display:none"><label>Qual animal?</label><input type="text" id="animais_especie_outro" placeholder="Ex.: Coelho, Pássaro, Tartaruga..."></div>
           <div class="field col-span-4"><label>Porte</label>
             <div class="opcoes-grupo">
-              <label class="confirm-pill"><input type="checkbox" id="animais_porte_pequeno" onchange="atualizarAvisoPendencias()"> Pequeno</label>
-              <label class="confirm-pill"><input type="checkbox" id="animais_porte_medio" onchange="atualizarAvisoPendencias()"> Médio</label>
-              <label class="confirm-pill"><input type="checkbox" id="animais_porte_grande" onchange="atualizarAvisoPendencias()"> Grande</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="animais_porte_pequeno" onchange="atualizarAvisoPendencias()"> Pequeno</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="animais_porte_medio" onchange="atualizarAvisoPendencias()"> Médio</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="animais_porte_grande" onchange="atualizarAvisoPendencias()"> Grande</label>
             </div>
           </div>
         </div>
@@ -1135,6 +1217,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       <div class="field"><label>Observações Padrão</label>
         <div class="opcoes-grupo">
           <label class="confirm-pill"><input type="checkbox" id="obs_area_inundacao" onchange="atualizarAvisoPendencias()"> Área de Inundação</label>
+          <label class="confirm-pill"><input type="checkbox" id="obs_sem_garantia" onchange="atualizarAvisoPendencias()"> Locação sem Imóvel Garantia</label>
+          <label class="confirm-pill"><input type="checkbox" id="obs_matricula_atualizada" onchange="atualizarAvisoPendencias()"> Solicitar Matrícula Atualizada</label>
         </div>
       </div>
 
@@ -1143,16 +1227,16 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <label class="confirm-pill"><input type="checkbox" id="obs_rg_outra_uf" onchange="toggleObsSubbloco('bloco_rg_outra_uf', this.checked)"> RG de outra UF</label>
         </div>
       </div>
-      <div id="bloco_rg_outra_uf" style="display:none">
-        <div class="grid-4" style="gap:14px; margin-bottom: 10px">
+      <div class="obs-subpainel" id="bloco_rg_outra_uf" style="display:none">
+        <div class="grid-4" style="gap:14px">
           <div class="field col-span-4"><label>Quem tem RG de outra UF?</label>
             <div class="opcoes-grupo">
-              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lcd1"> Locador (1)</label>
-              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lcd2"> Locador (2)</label>
-              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lct1"> Locatário (1)</label>
-              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_lct2"> Locatário (2)</label>
-              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_fdr1"> Fiador (1)</label>
-              <label class="confirm-pill"><input type="checkbox" id="rg_outra_uf_fdr2"> Fiador (2)</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="rg_outra_uf_lcd1"> Locador (1)</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="rg_outra_uf_lcd2"> Locador (2)</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="rg_outra_uf_lct1"> Locatário (1)</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="rg_outra_uf_lct2"> Locatário (2)</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="rg_outra_uf_fdr1"> Fiador (1)</label>
+              <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="rg_outra_uf_fdr2"> Fiador (2)</label>
             </div>
           </div>
           <div class="field col-span-2"><label>Órgão Emissor</label><input type="text" id="rg_outra_uf_orgao" placeholder="Ex.: DETRAN"></div>
@@ -1174,12 +1258,12 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <label class="confirm-pill"><input type="checkbox" id="obs_integrante_pj" onchange="toggleObsSubbloco('bloco_integrante_pj', this.checked)"> Integrante PJ</label>
         </div>
       </div>
-      <div id="bloco_integrante_pj" style="display:none">
-        <div class="field" style="margin-bottom: 10px"><label>Quem é PJ?</label>
+      <div class="obs-subpainel" id="bloco_integrante_pj" style="display:none">
+        <div class="field"><label>Quem é PJ?</label>
           <div class="opcoes-grupo">
-            <label class="confirm-pill"><input type="checkbox" id="pj_locador"> Locador</label>
-            <label class="confirm-pill"><input type="checkbox" id="pj_locatario"> Locatário</label>
-            <label class="confirm-pill"><input type="checkbox" id="pj_fiador"> Fiador</label>
+            <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_locador"> Locador</label>
+            <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_locatario"> Locatário</label>
+            <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_fiador"> Fiador</label>
           </div>
         </div>
       </div>
@@ -1189,20 +1273,13 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <label class="confirm-pill"><input type="checkbox" id="obs_descontos" onchange="toggleObsSubbloco('bloco_descontos', this.checked)"> Descontos / Carência</label>
         </div>
       </div>
-      <div id="bloco_descontos" style="display:none">
-        <div class="grid-4" style="gap:14px; margin-bottom: 10px">
-          <div class="field col-span-2"><label>Valor R$</label><input type="text" id="desconto_valor" inputmode="numeric" placeholder="Ex.: 1.000,00" oninput="formatarValorMoeda(this)"></div>
-          <div class="field"><label>Meses</label><input type="number" id="desconto_meses" min="1" placeholder="Ex.: 3"></div>
-          <div class="field"><label>&nbsp;</label>
-            <label class="confirm-pill"><input type="checkbox" id="desconto_carencia"> Carência (isenção total)</label>
+      <div class="obs-subpainel" id="bloco_descontos" style="display:none">
+        <div class="grid-4" style="gap:14px">
+          <div class="field col-span-2"><label>Valor R$</label>
+            <input type="text" id="desconto_valor" inputmode="numeric" placeholder="Ex.: 1.000,00" oninput="formatarValorMoeda(this)">
+            <label class="confirm-pill"><input type="checkbox" id="desconto_carencia" onchange="toggleCarencia()"> Carência (isenção total)</label>
           </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="opcoes-grupo">
-          <label class="confirm-pill"><input type="checkbox" id="obs_sem_garantia" onchange="atualizarAvisoPendencias()"> Locação sem Imóvel Garantia</label>
-          <label class="confirm-pill"><input type="checkbox" id="obs_matricula_atualizada" onchange="atualizarAvisoPendencias()"> Solicitar Matrícula Atualizada</label>
+          <div class="field"><label>Meses</label><input type="number" id="desconto_meses" min="1" placeholder="Ex.: 3"></div>
         </div>
       </div>
 
@@ -1247,6 +1324,49 @@ function selecionarOpcao(hiddenId, valor, callback) {
   atualizarAvisoPendencias();
 }
 
+// Igual selecionarOpcao, mas sempre define o valor (não desmarca se já estiver selecionado) —
+// usado pelos presets de Encargos, que devem sempre forçar a escolha certa
+function forcarOpcao(hiddenId, valor) {
+  document.getElementById(hiddenId).value = valor;
+  document.querySelectorAll('.opcao-btn[data-for="' + hiddenId + '"]').forEach(btn => {
+    btn.classList.toggle('selecionada', btn.dataset.valor === valor);
+    btn.classList.remove('erro');
+  });
+}
+
+function aplicarPresetEncargos(tipo) {
+  const ORGAO = 'Orgão Competente / Condomínio';
+  const NAO_SE_APLICA = 'Não se Aplica';
+  const NA_IMOB = 'Na IMOB (FICA)';
+
+  const presets = {
+    salao:          { agua: ORGAO, gas: NAO_SE_APLICA, condominio: NAO_SE_APLICA, iptu: NAO_SE_APLICA },
+    apto:           { agua: ORGAO, gas: ORGAO,          condominio: NA_IMOB,       iptu: NAO_SE_APLICA },
+    casacondominio: { agua: ORGAO, gas: NAO_SE_APLICA, condominio: NA_IMOB,       iptu: NAO_SE_APLICA },
+  };
+  const p = presets[tipo];
+  if (!p) return;
+
+  forcarOpcao('enc_agua', p.agua);
+  forcarOpcao('enc_gas', p.gas);
+  forcarOpcao('enc_condominio', p.condominio);
+  forcarOpcao('enc_iptu', p.iptu);
+
+  atualizarAvisoPendencias();
+  mostrarToast('⚡ Encargos preenchidos com o padrão selecionado!');
+}
+
+// Limpa só os 4 campos de Encargos, sem afetar o resto de Dados do Contrato
+function limparEncargos() {
+  if (!confirm('Tem certeza que deseja limpar os dados de Encargos?')) return;
+  ['enc_agua', 'enc_gas', 'enc_condominio', 'enc_iptu'].forEach(id => {
+    document.getElementById(id).value = '';
+    document.querySelectorAll('.opcao-btn[data-for="' + id + '"]').forEach(btn => btn.classList.remove('selecionada', 'erro'));
+  });
+  atualizarAvisoPendencias();
+  mostrarToast('🗑️ Encargos limpos.');
+}
+
 function toggleSection(id) {
   document.getElementById(id).classList.toggle('collapsed');
 }
@@ -1277,6 +1397,15 @@ function atualizarPlaceholderConta() {
 // Monta o texto completo da conta bancária da Caução para exportar ao Excel
 // === Formatação automática (a pessoa digita só números) ===
 // CEP: 00000-000
+// Nº do Contrato: L.XX.XXX (a pessoa digita só os números)
+function formatarNumeroContrato(el) {
+  const v = el.value.replace(/\D/g, '').slice(0, 5);
+  let out = '';
+  if (v.length > 0) out = 'L.' + v.slice(0, 2);
+  if (v.length > 2) out += '.' + v.slice(2, 5);
+  el.value = out;
+}
+
 function formatarCEP(el) {
   const v = el.value.replace(/\D/g, '').slice(0, 8);
   let out = '';
@@ -1561,6 +1690,21 @@ function toggleAnimalOutro() {
 function toggleObsSubbloco(blocoId, mostrar) {
   const bloco = document.getElementById(blocoId);
   if (bloco) bloco.style.display = mostrar ? 'block' : 'none';
+  atualizarAvisoPendencias();
+}
+
+// Quando "Carência" é marcada, trava o campo Valor (não faz sentido ter valor de desconto numa isenção total)
+function toggleCarencia() {
+  const carencia = document.getElementById('desconto_carencia').checked;
+  const valorEl = document.getElementById('desconto_valor');
+  if (carencia) {
+    valorEl.value = '';
+    valorEl.readOnly = true;
+    valorEl.placeholder = 'Não se aplica (isenção total)';
+  } else {
+    valorEl.readOnly = false;
+    valorEl.placeholder = 'Ex.: 1.000,00';
+  }
   atualizarAvisoPendencias();
 }
 
@@ -2067,7 +2211,7 @@ const FIELD_TO_SECAO = {
   data_contrato: 'sec-contrato', prazo: 'sec-contrato', inicio: 'sec-contrato', termino: 'sec-contrato',
   valor: 'sec-contrato', valor_extenso: 'sec-contrato', vencimento: 'sec-contrato', fins: 'sec-contrato',
 
-  enc_agua: 'sec-encargos', enc_gas: 'sec-encargos', enc_condominio: 'sec-encargos', enc_iptu: 'sec-encargos',
+  enc_agua: 'sec-contrato', enc_gas: 'sec-contrato', enc_condominio: 'sec-contrato', enc_iptu: 'sec-contrato',
 
   garantia: 'sec-garantia', caucao_valor: 'sec-garantia', caucao_extenso: 'sec-garantia',
   caucao_banco: 'sec-garantia', caucao_conta: 'sec-garantia',
@@ -2466,8 +2610,19 @@ function carregarProgresso(inputFile) {
   inputFile.value = ''; // permite carregar o mesmo arquivo de novo, se precisar
 }
 
+// Converte os textos antigos de Encargos (usados antes da v39) para as novas opções resumidas
+const MAPA_ENCARGOS_LEGADO = {
+  'Pagamento diretamente ao órgão competente ou boleto do condomínio': 'Orgão Competente / Condomínio',
+  'Pagamento na ADMINISTRADORA juntamente com o aluguel': 'Na IMOB (FICA)',
+  'Não se aplica': 'Não se Aplica',
+};
+
 // Aplica os dados carregados de volta em todos os campos do formulário
 function aplicarDadosFormulario(dados) {
+  ['enc_agua', 'enc_gas', 'enc_condominio', 'enc_iptu'].forEach(id => {
+    if (dados[id] && MAPA_ENCARGOS_LEGADO[dados[id]]) dados[id] = MAPA_ENCARGOS_LEGADO[dados[id]];
+  });
+
   // 1ª etapa: preenche todos os campos, exceto os selects de Estado Civil
   // (cujas opções são geradas dinamicamente e só existem depois do Sexo ser aplicado)
   Object.keys(dados).forEach(id => {
@@ -3037,6 +3192,20 @@ function selecionarResultadoBusca(idx) {
 }
 
 // Chamado ao clicar no botão "Importar": aplica o resultado selecionado, considerando as categorias marcadas
+// Mostra (ou esconde) o quadro amarelo com as Observações do contrato importado do cadastro
+function exibirObservacoesImportadas(obs) {
+  const caixa = document.getElementById('caixa_observacoes_import');
+  const texto = document.getElementById('texto_observacoes_import');
+  const valor = (obs || '').toString().trim();
+  if (valor && valor !== '---' && valor !== '—' && valor !== '-') {
+    texto.textContent = valor;
+    caixa.style.display = 'block';
+  } else {
+    texto.textContent = '';
+    caixa.style.display = 'none';
+  }
+}
+
 function importarResultadoSelecionado() {
   if (resultadoSelecionadoIdx === null) {
     alert('Escolha um resultado da lista antes de clicar em Importar.');
@@ -3062,6 +3231,8 @@ function importarResultadoSelecionado() {
   const qtd = Object.keys(dadosParaAplicar).length;
   aplicarDadosFormulario(dadosParaAplicar);
   reformatarCamposImportados(dadosParaAplicar);
+
+  exibirObservacoesImportadas(item.campos.observacoes);
 
   document.getElementById('busca_cadastro').value = (item.contractId ? item.contractId + ' — ' : '') + item.enderecoImovel;
   document.getElementById('busca_cadastro_resultados').style.display = 'none';
@@ -3091,6 +3262,380 @@ document.getElementById('busca_cadastro_resultados').addEventListener('click', f
   if (!item) return;
   selecionarResultadoBusca(parseInt(item.dataset.idx, 10));
 });
+
+// ==========================================================
+// DROPZONE DE IMPORTAÇÃO UNIVERSAL
+// Aceita: rascunho salvo (.json), formulário do cliente ou
+// resumo interno (.pdf), ou contrato já pronto (.pdf/.docx).
+// Detecta o tipo pelo conteúdo e usa o parser adequado.
+// ==========================================================
+
+function tratarDropImportacao(event) {
+  event.preventDefault();
+  document.getElementById('dropzone_import').classList.remove('arrastando');
+  const arquivos = event.dataTransfer.files;
+  if (!arquivos || arquivos.length === 0) return;
+  const input = document.getElementById('arquivo_importar');
+  input.files = arquivos;
+  importarArquivo({ target: input });
+}
+
+async function importarArquivo(event) {
+  const arquivo = event.target.files[0];
+  if (!arquivo) return;
+  const status = document.getElementById('status_import_arquivo');
+  status.className = 'status-import';
+  status.textContent = 'Lendo arquivo...';
+
+  const nome = arquivo.name.toLowerCase();
+
+  try {
+    if (nome.endsWith('.json')) {
+      const texto = await arquivo.text();
+      const dados = JSON.parse(texto);
+      aplicarDadosFormulario(dados);
+      status.className = 'status-import sucesso';
+      status.textContent = `✅ Rascunho "${arquivo.name}" carregado com sucesso!`;
+      mostrarToast('📂 Rascunho carregado com sucesso!');
+
+    } else if (nome.endsWith('.pdf')) {
+      const buffer = await arquivo.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+
+      const camposForm = await pdf.getFieldObjects();
+      if (camposForm && Object.keys(camposForm).length > 0) {
+        // PDF com campos de formulário reais (ex.: Formulário Interno) — extração exata
+        const dados = mapearCamposAcroForm(camposForm);
+        aplicarImportacaoGenerica(dados, status, arquivo.name);
+      } else {
+        // PDF "achatado": tenta como formulário de cliente (rótulos) e, se achar pouco,
+        // tenta como contrato já pronto (texto corrido com qualificação das partes)
+        const textoColunas = await extrairTextoComColunas(pdf);
+        const dadosLabel = mapearTextoPDF(textoColunas);
+
+        const textoCorrido = await extrairTextoCorridoPDF(pdf);
+        const resultadoContrato = analisarTextoContratoPronto(textoCorrido);
+        const dadosContrato = montarDadosContratoPronto(resultadoContrato);
+
+        const dados = { ...dadosLabel, ...dadosContrato };
+        aplicarImportacaoGenerica(dados, status, arquivo.name, resultadoContrato);
+      }
+
+    } else if (nome.endsWith('.docx')) {
+      const buffer = await arquivo.arrayBuffer();
+      const resultado = await mammoth.extractRawText({ arrayBuffer: buffer });
+      const textoCorrido = resultado.value;
+
+      const dadosLabel = mapearTextoPDF(textoCorrido);
+      const resultadoContrato = analisarTextoContratoPronto(textoCorrido);
+      const dadosContrato = montarDadosContratoPronto(resultadoContrato);
+
+      const dados = { ...dadosLabel, ...dadosContrato };
+      aplicarImportacaoGenerica(dados, status, arquivo.name, resultadoContrato);
+
+    } else if (nome.endsWith('.doc')) {
+      status.className = 'status-import erro';
+      status.textContent = '⚠️ Arquivos .doc antigos não podem ser lidos direto no navegador. Abra no Word, use "Salvar como" → Word (.docx) ou PDF, e envie o arquivo novo.';
+    } else {
+      status.className = 'status-import erro';
+      status.textContent = '⚠️ Formato não suportado. Envie um arquivo .json, .pdf ou .docx.';
+    }
+  } catch (e) {
+    console.error(e);
+    status.className = 'status-import erro';
+    status.textContent = '⚠️ Não consegui ler esse arquivo. Preencha os dados manualmente.';
+  }
+  event.target.value = '';
+}
+
+function aplicarImportacaoGenerica(dados, status, nomeArquivo, resultadoContrato) {
+  const qtd = Object.keys(dados).length;
+  if (qtd === 0) {
+    status.className = 'status-import erro';
+    status.textContent = `⚠️ Não consegui identificar dados automaticamente em "${nomeArquivo}". Preencha manualmente.`;
+    return;
+  }
+  aplicarDadosFormulario(dados);
+  reformatarCamposImportados(dados);
+
+  if (resultadoContrato && resultadoContrato.usouFallback) {
+    status.className = 'status-import erro';
+    status.textContent = '⚠️ Não achei um quadro específico de cada parte — os dados podem ter se misturado entre Locador/Locatário/Fiador. Confira tudo com atenção.';
+  } else {
+    status.className = 'status-import sucesso';
+    status.textContent = `✅ ${qtd} campo(s) reconhecido(s) em "${nomeArquivo}". Revise os dados antes de gerar o Excel.`;
+  }
+  mostrarToast(`📎 ${qtd} campo(s) importado(s) de "${nomeArquivo}"!`);
+}
+
+// --- Extração de texto corrido (preserva posição real de cada fragmento do PDF) ---
+// Diferente de extrairTextoComColunas (pensada para formulários em tabela), esta função
+// reconstrói o texto como um contrato de verdade seria lido, palavra a palavra.
+async function extrairTextoCorridoPDF(pdf) {
+  const paginas = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const pagina = await pdf.getPage(i);
+    const conteudo = await pagina.getTextContent();
+    let texto = '';
+    let anterior = null;
+    conteudo.items.forEach(item => {
+      if (!item.str) return;
+      if (anterior) {
+        const mesmaLinha = Math.abs(item.transform[5] - anterior.transform[5]) < 2;
+        if (!mesmaLinha) texto += '\n';
+        else if (item.transform[4] - (anterior.transform[4] + anterior.width) > 1) texto += ' ';
+      }
+      texto += item.str;
+      anterior = item;
+    });
+    paginas.push(texto);
+  }
+  return paginas.join('\n');
+}
+
+// ==========================================================
+// PARSER DE "CONTRATO PRONTO" (documento já finalizado, em PDF ou DOCX)
+// Extrai a qualificação das partes (Locador/Locatário/Fiador), endereço do
+// imóvel e data do contrato a partir do texto corrido do documento.
+// Adaptado de um parser já testado em outro app para contratos de locação.
+// ==========================================================
+
+function tituloCasePtBrContrato(texto) {
+  const minusculas = ['da', 'de', 'do', 'das', 'dos', 'e'];
+  return texto.toLowerCase().split(' ').filter(Boolean).map((p, i) =>
+    (minusculas.includes(p) && i !== 0) ? p : (p.charAt(0).toUpperCase() + p.slice(1))
+  ).join(' ');
+}
+
+// colapsa títulos com letras separadas por espaço (ex.: "L O C A T Á R I O" -> "LOCATÁRIO"),
+// comuns em contratos antigos, tanto em PDF quanto em Word/.doc
+function normalizarEspacamentoLetrasContrato(texto) {
+  return texto.replace(/\b(?:[A-ZÀ-ÖØ-Þ]\s+){2,}[A-ZÀ-ÖØ-Þ]\b/g, m => m.replace(/\s+/g, ''));
+}
+
+function mapearEstadoCivilContrato(txt) {
+  const t = txt.toLowerCase();
+  if (t.startsWith('solteir')) return 'solteiro';
+  if (t.startsWith('casad')) return 'casado';
+  if (t.startsWith('divorciad')) return 'divorciado';
+  if (t.startsWith('vi')) return 'viuvo';
+  if (t.startsWith('separad')) return 'separado';
+  return '';
+}
+
+// Converte a chave normalizada de estado civil (masculina) para a forma exibida
+// no app, já considerando o sexo da pessoa (ex.: 'casado' + F -> 'Casada')
+function estadoCivilParaFormulario(chave, sexo) {
+  const MAPA_M = { solteiro: 'Solteiro', casado: 'Casado', separado: 'Separado', divorciado: 'Divorciado', viuvo: 'Viúvo' };
+  const MAPA_F = { solteiro: 'Solteira', casado: 'Casada', separado: 'Separada', divorciado: 'Divorciada', viuvo: 'Viúva' };
+  return (sexo === 'F' ? MAPA_F : MAPA_M)[chave] || '';
+}
+
+function proximaOcorrenciaContrato(texto, apartirDe, regexes) {
+  let menor = -1;
+  regexes.forEach(fonte => {
+    const re = new RegExp(fonte, 'gi');
+    re.lastIndex = apartirDe;
+    const m = re.exec(texto);
+    if (m && (menor === -1 || m.index < menor)) menor = m.index;
+  });
+  return menor;
+}
+
+// encontra o início do quadro/parágrafo de um papel (LOCADOR/LOCATÁRIO/FIADOR) — só
+// considera uma ocorrência do rótulo se houver um CPF logo em seguida (distingue o
+// quadro de qualificação de meras menções soltas ao papel no meio das cláusulas)
+function localizarInicioBlocoContrato(texto, regexLabelFonte) {
+  const regexLabel = new RegExp(regexLabelFonte, 'gi');
+  let m;
+  while ((m = regexLabel.exec(texto)) !== null) {
+    const janela = texto.slice(m.index, m.index + 900);
+    if (/\d{3}\.\d{3}\.\d{3}-\d{2}/.test(janela)) return m.index;
+  }
+  return -1;
+}
+
+// recorta apenas o trecho de um papel, do início do quadro até a próxima seção
+function extrairBlocoContrato(texto, regexLabelFonte, outrosLabelsParaTerminar) {
+  const inicio = localizarInicioBlocoContrato(texto, regexLabelFonte);
+  if (inicio === -1) return '';
+  const marcadoresFim = [
+    'IM[OÓ]VEL', 'GARANTIA', 'TESTEMUNHA',
+    'CL[ÁA]USULA\\s*1', 'OBJETO\\s+DA', 'VALOR\\s+DO\\s+ALUGUEL',
+    'PRAZO\\s+DA\\s+LOCA', 'VIG[ÊE]NCIA'
+  ].concat(outrosLabelsParaTerminar || []);
+  let fim = proximaOcorrenciaContrato(texto, inicio + 15, marcadoresFim);
+  if (fim === -1 || fim - inicio > 1800) fim = Math.min(texto.length, inicio + 900);
+  return texto.slice(inicio, fim);
+}
+
+// extrai nome, sexo, estado civil, profissão, RG e CPF de cada pessoa dentro de um bloco de texto
+function extrairPessoasDoBlocoContrato(bloco) {
+  const pessoas = [];
+  const chavesVistas = new Set();
+
+  const regexPrincipal = /([A-ZÀ-Ý]{2,}(?:\s+[A-ZÀ-Ý]{2,}){1,6})\s*,\s*([a-zà-ÿ]+)\s*,\s*(?:([Ss]olteir[oa]|[Cc]asad[oa]|[Dd]ivorciad[oa]|[Vv]i[úu]v[oa]|[Ss]eparad[oa](?:\s+judicialmente)?)\s*,\s*)?([^,]+?)\s*,\s*[Pp]ortador[a]?\s+d[ao]\s+((?:[Cc][ée]dula\s+de\s+[Ii]dentidade|[Rr]egistro\s+[Gg]eral))(?:[^\d]{0,30}?(?=[A-Za-z0-9.\-\/]*\d)([A-Za-z0-9][A-Za-z0-9.\-\/]{3,15}[A-Za-z0-9]))?(?:[^\d]{0,60}(\d{3}\.\d{3}\.\d{3}-\d{2}))?/g;
+  let m;
+  while ((m = regexPrincipal.exec(bloco)) !== null) {
+    const nome = m[1].trim();
+    let cpf = m[7] || '';
+    let rg = m[6] || '';
+    if (rg && !cpf && /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(rg)) { cpf = rg; rg = ''; }
+    const chave = cpf || (nome + '|' + rg);
+    if (chavesVistas.has(chave)) continue;
+    chavesVistas.add(chave);
+    const textoAntes = bloco.slice(Math.max(0, m.index - 20), m.index);
+    pessoas.push({
+      nome, sexo: /a$/i.test(m[2]) ? 'F' : 'M',
+      estadoCivil: m[3] ? mapearEstadoCivilContrato(m[3]) : '',
+      profissao: m[4].trim(), rg, cpf,
+      viaConjuge: /(sua\s+mulher|seu\s+marido)\s*$/i.test(textoAntes)
+    });
+  }
+
+  const regexConjuge = /(sua\s+mulher|seu\s+marido)\s+([A-ZÀ-Ý]{2,}(?:\s+[A-ZÀ-Ý]{2,}){1,6})\s*,\s*(?:(brasileir[oa]|estrangeir[oa])\s*,\s*)?([^,]+?)\s*,\s*[Pp]ortador[a]?\s+d[ao]\s+((?:[Cc][ée]dula\s+de\s+[Ii]dentidade|[Rr]egistro\s+[Gg]eral))(?:[^\d]{0,30}?(?=[A-Za-z0-9.\-\/]*\d)([A-Za-z0-9][A-Za-z0-9.\-\/]{3,15}[A-Za-z0-9]))?(?:[^\d]{0,60}(\d{3}\.\d{3}\.\d{3}-\d{2}))?/gi;
+  while ((m = regexConjuge.exec(bloco)) !== null) {
+    const nomeConjuge = m[2].trim();
+    let cpf = m[7] || '';
+    let rg = m[6] || '';
+    if (rg && !cpf && /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(rg)) { cpf = rg; rg = ''; }
+    const chave = cpf || (nomeConjuge + '|' + rg);
+    if (chavesVistas.has(chave)) continue;
+    chavesVistas.add(chave);
+    pessoas.push({
+      nome: nomeConjuge, sexo: /mulher/i.test(m[1]) ? 'F' : 'M',
+      estadoCivil: 'casado', profissao: m[4].trim(), rg, cpf, viaConjuge: true
+    });
+  }
+
+  return pessoas;
+}
+
+// quando a 1ª pessoa não tem estado civil e a 2ª foi encontrada via "seu marido/sua mulher",
+// entende-se que são casados entre si
+function detectarCasadosEntreSiContrato(pessoas, bloco) {
+  if (pessoas.length !== 2) return { casadosEntreSi: false, regimeBens: '', dataCasamento: '' };
+  const casadosEntreSi = !pessoas[0].estadoCivil && pessoas[1].viaConjuge;
+  if (!casadosEntreSi) return { casadosEntreSi: false, regimeBens: '', dataCasamento: '' };
+
+  let regimeBens = '';
+  const mRegime = /regime\s+d[ae]\s+(comunh[ãa]o\s+parcial\s+de\s+bens|comunh[ãa]o\s+universal\s+de\s+bens|separa[çc][ãa]o\s+total\s+de\s+bens)/i.exec(bloco);
+  if (mRegime) {
+    const chave = mRegime[1].toLowerCase();
+    if (chave.includes('parcial')) regimeBens = 'Comunhão Parcial de Bens';
+    else if (chave.includes('universal')) regimeBens = 'Comunhão Universal de Bens';
+    else if (chave.includes('separa')) regimeBens = 'Separação Total de Bens';
+  }
+
+  let dataCasamento = '';
+  const mData = /(?:no\s+dia|desde|em)\s+(\d{1,2}\/\d{1,2}\/\d{4})/i.exec(bloco);
+  if (mData) dataCasamento = mData[1];
+
+  return { casadosEntreSi, regimeBens, dataCasamento };
+}
+
+// endereço do imóvel: procura o quadro "IMÓVEL" que tenha "ENDEREÇO" por perto
+function extrairEnderecoContrato(texto) {
+  const regexImovel = /IM[OÓ]VEL/gi;
+  let m0;
+  while ((m0 = regexImovel.exec(texto)) !== null) {
+    const janela = texto.slice(m0.index, m0.index + 500);
+    if (!/ENDERE[ÇC]O/i.test(janela)) continue;
+    const m = /ENDERE[ÇC]O[\s\-:]{0,15}([\s\S]{5,250}?)(?:-{3,}|MATR[IÍ]CULA|TRANSCRI[ÇC][ÃA]O|INSCRI[ÇC][ÃA]O\s+MUNICIPAL|FIM\s*\/?\s*DESTINA|DESTINA[ÇC][ÃA]O|VALOR\s+DO\s+ALUGUEL|PRAZO\s+DA|VIG[ÊE]NCIA|CL[ÁA]USULA|$)/i.exec(janela);
+    if (m) return m[1].replace(/\s+/g, ' ').trim().replace(/[.:;\-\s]+$/, '');
+  }
+  return '';
+}
+
+function analisarTextoContratoPronto(textoOriginal) {
+  const texto = normalizarEspacamentoLetrasContrato(textoOriginal.replace(/[ \t]+/g, ' '));
+
+  const blocoLocador = extrairBlocoContrato(texto, 'LOCADOR', ['LOCAT[ÁA]RI[OA]', 'FIADOR']);
+  const blocoLocatario = extrairBlocoContrato(texto, 'LOCAT[ÁA]RI[OA]', ['FIADOR']);
+  const blocoFiador = extrairBlocoContrato(texto, 'FIADOR', ['TESTEMUNHA']);
+
+  const pessoasLocador = blocoLocador ? extrairPessoasDoBlocoContrato(blocoLocador) : [];
+  const pessoasLocatario = blocoLocatario ? extrairPessoasDoBlocoContrato(blocoLocatario) : [];
+  const pessoasFiador = blocoFiador ? extrairPessoasDoBlocoContrato(blocoFiador) : [];
+
+  let usouFallback = false;
+  let pessoasLocatarioFinal = pessoasLocatario;
+  if (pessoasLocatarioFinal.length === 0 && pessoasLocador.length === 0 && pessoasFiador.length === 0) {
+    // não achou nenhum quadro específico — tenta no documento inteiro (best-effort)
+    pessoasLocatarioFinal = extrairPessoasDoBlocoContrato(texto);
+    usouFallback = pessoasLocatarioFinal.length > 0;
+  }
+
+  const endereco = extrairEnderecoContrato(texto);
+  const casadosLocador = detectarCasadosEntreSiContrato(pessoasLocador, blocoLocador);
+  const casadosLocatario = detectarCasadosEntreSiContrato(pessoasLocatarioFinal, blocoLocatario);
+  const casadosFiador = detectarCasadosEntreSiContrato(pessoasFiador, blocoFiador);
+
+  // data do contrato: usa a última data mencionada no documento (normalmente perto da assinatura)
+  const datasEncontradas = [];
+  const regexDataNumerica = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g;
+  let matchData;
+  while ((matchData = regexDataNumerica.exec(texto)) !== null) {
+    datasEncontradas.push({ index: matchData.index, dia: matchData[1].padStart(2, '0'), mes: matchData[2].padStart(2, '0'), ano: matchData[3] });
+  }
+  const mesesMap = { janeiro: 1, fevereiro: 2, 'março': 3, marco: 3, abril: 4, maio: 5, junho: 6, julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12 };
+  const regexDataExtenso = /\b(\d{1,2})\s+de\s+(janeiro|fevereiro|março|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)\s+de\s+(\d{1,2}\.?\d{3})\b/gi;
+  while ((matchData = regexDataExtenso.exec(texto)) !== null) {
+    const mesNum = mesesMap[matchData[2].toLowerCase()];
+    datasEncontradas.push({ index: matchData.index, dia: matchData[1].padStart(2, '0'), mes: String(mesNum).padStart(2, '0'), ano: matchData[3].replace('.', '') });
+  }
+  datasEncontradas.sort((a, b) => a.index - b.index);
+  const ultimaData = datasEncontradas.length ? datasEncontradas[datasEncontradas.length - 1] : null;
+  const dataContratoDigitada = ultimaData ? `${ultimaData.dia}/${ultimaData.mes}/${ultimaData.ano}` : '';
+
+  return {
+    pessoasLocador, pessoasLocatario: pessoasLocatarioFinal, pessoasFiador,
+    endereco, dataContratoDigitada, usouFallback,
+    casadosLocador, casadosLocatario, casadosFiador,
+  };
+}
+
+// Monta o objeto de dados (no formato aceito por aplicarDadosFormulario) a partir
+// do resultado da análise do texto do contrato pronto
+function montarDadosContratoPronto(resultado) {
+  const dados = {};
+  if (!resultado) return dados;
+
+  function aplicarGrupo(pessoas, prefixo, numCampoId, casadosInfo) {
+    pessoas.slice(0, 2).forEach((p, idx) => {
+      const pref = prefixo + (idx + 1);
+      if (p.nome) dados[pref + '_nome'] = tituloCasePtBrContrato(p.nome).toUpperCase();
+      dados[pref + '_sexo'] = p.sexo === 'F' ? 'Feminino' : 'Masculino';
+      if (p.estadoCivil) {
+        const ec = estadoCivilParaFormulario(p.estadoCivil, p.sexo);
+        if (ec) dados[pref + '_ec'] = ec;
+      }
+      if (p.profissao) dados[pref + '_prof'] = tituloCasePtBrContrato(p.profissao);
+      if (p.rg) dados[pref + '_rg'] = p.rg;
+      if (p.cpf) dados[pref + '_cpf'] = p.cpf;
+    });
+    if (pessoas.length >= 2) {
+      dados[numCampoId] = '2';
+      if (casadosInfo && casadosInfo.casadosEntreSi) {
+        dados[prefixo + '_casados'] = 'Sim';
+        if (casadosInfo.regimeBens) dados[prefixo + '_regime'] = casadosInfo.regimeBens;
+        if (casadosInfo.dataCasamento) dados[prefixo + '_data_casamento'] = casadosInfo.dataCasamento;
+      }
+    } else if (pessoas.length === 1) {
+      dados[numCampoId] = '1';
+    }
+  }
+
+  aplicarGrupo(resultado.pessoasLocador, 'lcd', 'num_lcd', resultado.casadosLocador);
+  aplicarGrupo(resultado.pessoasLocatario, 'lct', 'num_lct', resultado.casadosLocatario);
+  aplicarGrupo(resultado.pessoasFiador, 'fdr', 'num_fdr', resultado.casadosFiador);
+  if (resultado.pessoasFiador.length > 0) dados.garantia = 'FIADOR';
+
+  if (resultado.endereco) dados.imv_rua = resultado.endereco;
+  if (resultado.dataContratoDigitada) dados.data_contrato_data = resultado.dataContratoDigitada;
+
+  return dados;
+}
 
 // Init
 toggleGarantia();
