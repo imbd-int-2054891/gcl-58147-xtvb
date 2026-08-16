@@ -134,7 +134,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 .section.collapsed .toggle-icon { transform: rotate(-90deg); }
 
 .section-body { padding: 20px 22px; display: grid; gap: 14px; }
-.section.collapsed .section-body { display: none; }
+.section.collapsed .section-body { display: none !important; }
+.section-body-contrato { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
@@ -285,6 +286,14 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 
 .contract-id-bar input::placeholder { color: var(--cinza); }
 .contract-id-bar input:focus { outline: none; border-color: var(--destaque); }
+.contract-id-bar input.campo-preenchido {
+  background: #e8f7ea !important;
+  border-color: #a8dab1 !important;
+  color: var(--primario);
+}
+.contract-id-bar.completo {
+  background: #d9f0dc;
+}
 .contract-id-label { font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; font-size: 0.75rem; }
 
 .confirm-pill {
@@ -364,6 +373,11 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 .opcao-btn.selecionada {
   background: var(--verde);
   border-color: var(--verde);
+  color: #fff;
+}
+.opcao-btn.opcao-btn-neutro.selecionada {
+  background: var(--primario);
+  border-color: var(--primario);
   color: #fff;
 }
 .opcao-btn.erro { border-color: var(--destaque); }
@@ -621,6 +635,60 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 .status-import.sucesso { color: var(--verde); }
 .status-import.erro { color: var(--destaque); }
 
+.sidebar-rapido { display: none; }
+@media (min-width: 1440px) {
+  .sidebar-rapido {
+    display: block;
+    position: fixed;
+    left: 24px;
+    top: 100px;
+    width: 220px;
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+    background: var(--branco);
+    border: 1px solid var(--fundo3);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: var(--sombra);
+    z-index: 50;
+  }
+}
+.sidebar-rapido.completo {
+  background: #eaf7ec;
+  border-color: #a8dab1;
+}
+.sidebar-titulo {
+  display: block;
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--primario);
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primario);
+  text-decoration: none;
+  padding: 7px 10px 7px 12px;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+}
+.sidebar-item:hover { background: var(--fundo); border-left-color: var(--destaque); color: var(--destaque); }
+.sidebar-check { display: inline-block; width: 16px; flex-shrink: 0; }
+
 .field input.campo-preenchido:not(.campo-erro):not(.campo-confirmado),
 .field select.campo-preenchido:not(.campo-erro),
 .field textarea.campo-preenchido:not(.campo-erro) {
@@ -634,6 +702,11 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 }
 .section.secao-completa > .section-header {
   background: #e1f3e3;
+}
+
+#bloco-encargos.completo {
+  background: #e8f7ea !important;
+  border-color: #a8dab1 !important;
 }
 
 .barra-fixa {
@@ -666,10 +739,22 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v40</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v53</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
+
+<aside class="sidebar-rapido" id="sidebarRapido">
+  <div class="sidebar-titulo">📑 Ir para</div>
+  <a href="#contractIdBar" class="sidebar-item" onclick="irParaAncora(event,'contractIdBar')"><span>🔑 Nº de Contrato</span><span class="sidebar-check" id="check-contractIdBar"></span></a>
+  <a href="#sec-contrato" class="sidebar-item" data-secao-check="sec-contrato" onclick="irParaSecao(event,'sec-contrato')"><span>📄 Dados do Contrato</span><span class="sidebar-check" id="check-sec-contrato"></span></a>
+  <a href="#sec-garantia" class="sidebar-item" data-secao-check="sec-garantia" onclick="irParaSecao(event,'sec-garantia')"><span>🛡️ Garantia</span><span class="sidebar-check" id="check-sec-garantia"></span></a>
+  <a href="#sec-imovel" class="sidebar-item" data-secao-check="sec-imovel" onclick="irParaSecao(event,'sec-imovel')"><span>🏠 Imóvel Locado</span><span class="sidebar-check" id="check-sec-imovel"></span></a>
+  <a href="#sec-locadores" class="sidebar-item" data-secao-check="sec-locadores" onclick="irParaSecao(event,'sec-locadores')"><span>🏡 Locadores</span><span class="sidebar-check" id="check-sec-locadores"></span></a>
+  <a href="#sec-locatarios" class="sidebar-item" data-secao-check="sec-locatarios" onclick="irParaSecao(event,'sec-locatarios')"><span>🔑 Locatários</span><span class="sidebar-check" id="check-sec-locatarios"></span></a>
+  <a href="#sec-fiadores" class="sidebar-item" id="sidebarItemFiadores" data-secao-check="sec-fiadores" style="display:none" onclick="irParaSecao(event,'sec-fiadores')"><span>🤝 Fiadores</span><span class="sidebar-check" id="check-sec-fiadores"></span></a>
+  <a href="#sec-obs" class="sidebar-item" onclick="irParaSecao(event,'sec-obs')"><span>📝 Observações</span><span class="sidebar-check" id="check-sec-obs"></span></a>
+</aside>
 
 <div class="container">
 
@@ -689,12 +774,14 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 
     <div class="busca-categorias-linha">
       <div class="busca-categorias" id="buscaCategorias">
-        <div class="categoria-btn selecionada" data-categoria="IMOVEL" onclick="this.classList.toggle('selecionada')">🏠 Imóvel</div>
-        <div class="categoria-btn selecionada" data-categoria="LOCADOR" onclick="this.classList.toggle('selecionada')">🏡 Locador</div>
-        <div class="categoria-btn selecionada" data-categoria="LOCATARIO" onclick="this.classList.toggle('selecionada')">🔑 Locatário</div>
-        <div class="categoria-btn selecionada" data-categoria="ENCARGOS" onclick="this.classList.toggle('selecionada')">⚡ Encargos</div>
-        <div class="categoria-btn selecionada" data-categoria="GARANTIA" onclick="this.classList.toggle('selecionada')">🛡️ Garantia</div>
-        <div class="categoria-btn selecionada" data-categoria="FIADORES" onclick="this.classList.toggle('selecionada')">🤝 Fiadores</div>
+        <div class="categoria-btn" data-categoria="CONTRATO" onclick="this.classList.toggle('selecionada')">📄 Dados do Contrato</div>
+        <div class="categoria-btn" data-categoria="GARANTIA" onclick="this.classList.toggle('selecionada')">🛡️ Garantia</div>
+        <div class="categoria-btn" data-categoria="IMOVEL" onclick="this.classList.toggle('selecionada')">🏠 Imóvel</div>
+        <div class="categoria-btn" data-categoria="LOCADOR" onclick="this.classList.toggle('selecionada')">🏡 Locador</div>
+        <div class="categoria-btn" data-categoria="LOCATARIO" onclick="this.classList.toggle('selecionada')">🔑 Locatário</div>
+        <div class="categoria-btn" data-categoria="FIADORES" onclick="this.classList.toggle('selecionada')">🤝 Fiadores</div>
+        <div class="categoria-btn" data-categoria="OBSERVACOES" onclick="this.classList.toggle('selecionada')">📝 Observações</div>
+        <div class="categoria-btn" data-categoria="TODOS" onclick="selecionarTodasCategorias(this)">✅ Selecionar Todos</div>
       </div>
       <button class="btn-importar-cadastro" id="btnImportarCadastro" onclick="importarResultadoSelecionado()" disabled>⬇ Importar</button>
     </div>
@@ -710,9 +797,186 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
     </div>
   </div>
 
-  <div class="contract-id-bar">
+  <div class="contract-id-bar" id="contractIdBar">
     <span class="contract-id-label">🔑 Nº do Contrato:</span>
     <input type="text" id="contractId" value="" placeholder="Ex.: 26050" oninput="formatarNumeroContrato(this)" inputmode="numeric">
+  </div>
+
+  <!-- DADOS DO CONTRATO -->
+  <div class="section" id="sec-contrato">
+    <div class="section-header" onclick="toggleSection('sec-contrato')">
+      <div class="section-dot"></div>
+      <span class="section-title">📄 Dados do Contrato</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-contrato&quot;)">🗑️ Limpar dados</button>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body section-body-contrato">
+
+      <!-- COLUNA ESQUERDA: o que a pessoa preenche -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="field"><label>Prazo (meses)</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn" data-for="prazo" data-valor="30 (Trinta)" onclick="selecionarOpcao('prazo','30 (Trinta)', recalcularDatasContrato)">30 (Trinta)</div>
+            <div class="opcao-btn" data-for="prazo" data-valor="60 (Sessenta)" onclick="selecionarOpcao('prazo','60 (Sessenta)', recalcularDatasContrato)">60 (Sessenta)</div>
+          </div>
+          <input type="hidden" id="prazo" value="">
+        </div>
+
+        <div class="field"><label>Início</label>
+          <div style="display:flex; gap:6px; align-items:stretch;">
+            <input id="inicio_data" value="" placeholder="Ex.: 10/07/2026" inputmode="numeric" oninput="formatarDataDigitada(this); recalcularDatasContrato();" style="flex:1">
+            <button type="button" class="btn-calendario" onclick="abrirCalendarioInicio()" title="Escolher no calendário">📅</button>
+            <input type="date" id="inicio_calendario" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" onchange="aplicarCalendarioInicio()">
+          </div>
+        </div>
+
+        <div class="field"><label>Fins</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn" data-for="fins" data-valor="RESIDENCIAIS" onclick="selecionarOpcao('fins','RESIDENCIAIS',toggleLct2)">Residenciais</div>
+            <div class="opcao-btn" data-for="fins" data-valor="COMERCIAIS" onclick="selecionarOpcao('fins','COMERCIAIS',toggleLct2)">Comerciais</div>
+          </div>
+          <input type="hidden" id="fins" value="">
+        </div>
+
+        <div class="field"><label>Data do Contrato</label>
+          <div style="display:flex; gap:6px; align-items:stretch;">
+            <input id="data_contrato_data" value="" placeholder="Ex.: 10/03/2026" inputmode="numeric" oninput="formatarDataDigitada(this); recalcularDataContrato();" style="flex:1">
+            <button type="button" class="btn-calendario" onclick="abrirCalendarioDataContrato()" title="Escolher no calendário">📅</button>
+            <input type="date" id="data_contrato_calendario" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" onchange="aplicarCalendarioDataContrato()">
+          </div>
+          <div class="chip-atalho" onclick="aplicarDataContratoHoje()">📆 Hoje</div>
+        </div>
+
+        <div class="field col-span-2"><label>Valor R$</label>
+          <input id="valor" value="" placeholder="Ex.: 100.000,00" inputmode="numeric" oninput="formatarValorMoeda(this); recalcularValorExtenso();">
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA: calculado automaticamente pelo app -->
+      <div style="border: 2px dashed var(--fundo3); border-radius: 12px; padding: 16px 14px 14px; position: relative;">
+        <span style="position:absolute; top:-11px; left:14px; background:#fff; padding:0 8px; font-size:0.68rem; font-weight:700; color:var(--cinza); text-transform:uppercase; letter-spacing:0.5px;">⚙️ Calculado automaticamente</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px;">
+          <div class="field"><label>Início</label>
+            <input id="inicio" value="" placeholder="Aguardando Início" readonly>
+          </div>
+          <div class="field"><label>Término</label>
+            <input id="termino" value="" placeholder="Aguardando Início/Prazo" readonly>
+          </div>
+          <div class="field"><label>Data do Contrato</label>
+            <input id="data_contrato" value="" placeholder="Aguardando Data do Contrato" readonly>
+          </div>
+          <div class="field"><label>Dia de Vencimento</label>
+            <input id="vencimento" value="" placeholder="Aguardando Início" readonly>
+          </div>
+          <div class="field col-span-2"><label>Valor por Extenso</label>
+            <input id="valor_extenso" value="" placeholder="Aguardando Valor R$" readonly>
+          </div>
+        </div>
+      </div>
+
+    <div id="bloco-encargos" style="grid-column:1/-1; margin-top:10px; padding:16px 18px; background:var(--fundo); border:1px solid var(--fundo3); border-radius:10px;">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+        <span class="sublabel" style="border:none; margin:0; padding:0;">⚡ Encargos</span>
+        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('salao')">🏢 Casa / Salão Padrão</button>
+        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('apto')">🏠 Apto Padrão</button>
+        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('casacondominio')">🏘️ Casa Condomínio</button>
+        <button type="button" class="btn-limpar-secao" onclick="limparEncargos()">🗑️ Limpar dados</button>
+      </div>
+      <div class="grid-2" style="gap:14px">
+        <div class="field"><label>Água e Energia</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_agua','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_agua','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_agua','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_agua" value="">
+        </div>
+        <div class="field"><label>Gás</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_gas','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_gas','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_gas','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_gas" value="">
+        </div>
+        <div class="field"><label>Condomínio</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_condominio','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_condominio','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_condominio','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_condominio" value="">
+        </div>
+        <div class="field"><label>IPTU</label>
+          <div class="opcoes-grupo">
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_iptu','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_iptu','Na IMOB (FICA)')">Na IMOB (FICA)</div>
+            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_iptu','Não se Aplica')">Não se Aplica</div>
+          </div>
+          <input type="hidden" id="enc_iptu" value="">
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- GARANTIA -->
+  <div class="section" id="sec-garantia">
+    <div class="section-header" onclick="toggleSection('sec-garantia')">
+      <div class="section-dot"></div>
+      <span class="section-title">🔒 Garantia</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-garantia&quot;)">🗑️ Limpar dados</button>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body grid-4">
+      <div class="field">
+        <label>Tipo de Garantia</label>
+        <div class="opcoes-grupo">
+          <div class="opcao-btn" data-for="garantia" data-valor="FIADOR" onclick="selecionarOpcao('garantia','FIADOR',toggleGarantia)">Fiador</div>
+          <div class="opcao-btn" data-for="garantia" data-valor="CAUÇÃO" onclick="selecionarOpcao('garantia','CAUÇÃO',toggleGarantia)">Caução</div>
+        </div>
+        <input type="hidden" id="garantia" value="">
+      </div>
+
+      <div id="caucao-fields" style="display:none;grid-column:1/-1">
+        <div class="grid-4" style="gap:14px">
+          <div class="field"><label>Valor R$</label>
+            <input id="caucao_valor" value="" placeholder="Ex.: 6.000,00 (Padrão = 3x Valor Aluguel)" oninput="formatarValorMoeda(this); recalcularCaucaoExtenso();" inputmode="numeric">
+            <div class="chip-atalho" onclick="aplicarValorPadraoCaucao()">💰 Valor Padrão (3x o Aluguel)</div>
+          </div>
+          <div class="field"><label>Valor por Extenso <span style="font-weight:400;text-transform:none;">(calculado)</span></label>
+            <input id="caucao_extenso" value="" placeholder="Preenchido automaticamente" readonly>
+          </div>
+          <div class="field"><label>Banco</label>
+            <div class="opcoes-grupo">
+              <div class="opcao-btn" data-for="caucao_banco" data-valor="BB" onclick="selecionarOpcao('caucao_banco','BB',atualizarPlaceholderConta)">Banco do Brasil (BB)</div>
+              <div class="opcao-btn" data-for="caucao_banco" data-valor="CEF" onclick="selecionarOpcao('caucao_banco','CEF',atualizarPlaceholderConta)">Caixa Econômica Federal (CEF)</div>
+            </div>
+            <input type="hidden" id="caucao_banco" value="">
+          </div>
+          <div class="field"><label>Conta Bancária</label>
+            <input id="caucao_conta" value="" placeholder="Escolha o banco ao lado" oninput="formatarContaCaucao(this)" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+
+      <div id="imgrt-fields-block" style="display:none;grid-column:1/-1">
+        <div class="sublabel" id="imgrt-label" style="margin-bottom:8px">Imóvel Garantia (Fiador)</div>
+        <div class="grid-4" style="gap:14px">
+          <div class="field col-span-3" id="imgrt-desc-field">
+            <label>Descrição do Imóvel</label>
+            <input id="imgrt_descricao" value="">
+            <span class="campo-dica">Ex.: UM LOTE DE TERRENO sob nº 10 da Quadra "A", bem como suas benfeitorias — ou — UM PRÉDIO RESIDENCIAL, bem como seu respectivo terreno (Lote 10 Quadra "A")</span>
+          </div>
+          <div class="field" id="imgrt-mat-field"><label>Matrícula</label><input id="imgrt_matricula" value="" placeholder="Ex.: 10.500 do CRI de Monte Mor/SP"></div>
+
+          <div class="field col-span-2" id="imgrt-rua-field"><label>Rua e nº</label><input id="imgrt_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+          <div class="field" id="imgrt-bairro-field"><label>Bairro</label><input id="imgrt_bairro" value="" placeholder="Ex.: Centro"></div>
+          <div class="field" id="imgrt-cidade-field"><label>Município/UF</label>
+            <input id="imgrt_cidade" value="" placeholder="Ex.: Monte Mor/SP">
+            <div class="chip-atalho" onclick="document.getElementById('imgrt_cidade').value='Monte Mor/SP'; document.getElementById('imgrt_cidade').dispatchEvent(new Event('input',{bubbles:true}));">📍 Monte Mor/SP</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- IMÓVEL -->
@@ -777,9 +1041,9 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         <label>Regime de Casamento</label>
         <select id="lcd_regime">
           <option value="" selected disabled>Selecione...</option>
-          <option value="Separação Total de Bens">Separação Total de Bens</option>
-          <option value="Comunhão Universal de Bens">Comunhão Universal de Bens</option>
-          <option value="Comunhão Parcial de Bens">Comunhão Parcial de Bens</option>
+          <option value="separação total de bens">separação total de bens</option>
+          <option value="comunhão universal de bens">comunhão universal de bens</option>
+          <option value="comunhão parcial de bens">comunhão parcial de bens</option>
         </select>
       </div>
       <div class="field" id="lcd-data-casamento-field" style="display:none">
@@ -799,7 +1063,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           </div>
           <div class="field col-span-3"><label>Nome Completo</label><input id="lcd1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lcd1_ec"></select></div>
-          <div class="field"><label>Profissão</label><input id="lcd1_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>Profissão</label><input id="lcd1_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
           <div class="field"><label>RG</label><input id="lcd1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_rg_naotem_pill"><input type="checkbox" id="lcd1_rg_naotem" onchange="handleRgNaoTem(&quot;lcd1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lcd1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd1&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lcd1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_tel_naotem_pill"><input type="checkbox" id="lcd1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
@@ -819,128 +1083,11 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           </div>
           <div class="field col-span-3"><label>Nome Completo</label><input id="lcd2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lcd2_ec"></select></div>
-          <div class="field"><label>Profissão</label><input id="lcd2_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>Profissão</label><input id="lcd2_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
           <div class="field"><label>RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lcd2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd2&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lcd2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_tel_naotem_pill"><input type="checkbox" id="lcd2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lcd2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lcd2_email_naotem_pill"><input type="checkbox" id="lcd2_email_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DADOS DO CONTRATO -->
-  <div class="section" id="sec-contrato">
-    <div class="section-header" onclick="toggleSection('sec-contrato')">
-      <div class="section-dot"></div>
-      <span class="section-title">📄 Dados do Contrato</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-contrato&quot;)">🗑️ Limpar dados</button>
-      <span class="toggle-icon">▾</span>
-    </div>
-    <div class="section-body" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items:start;">
-
-      <!-- COLUNA ESQUERDA: o que a pessoa preenche -->
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-        <div class="field"><label>Prazo (meses)</label>
-          <div class="opcoes-grupo">
-            <div class="opcao-btn" data-for="prazo" data-valor="30 (Trinta)" onclick="selecionarOpcao('prazo','30 (Trinta)', recalcularDatasContrato)">30 (Trinta)</div>
-            <div class="opcao-btn" data-for="prazo" data-valor="60 (Sessenta)" onclick="selecionarOpcao('prazo','60 (Sessenta)', recalcularDatasContrato)">60 (Sessenta)</div>
-          </div>
-          <input type="hidden" id="prazo" value="">
-        </div>
-
-        <div class="field"><label>Início</label>
-          <div style="display:flex; gap:6px; align-items:stretch;">
-            <input id="inicio_data" value="" placeholder="Ex.: 10/07/2026" inputmode="numeric" oninput="formatarDataDigitada(this); recalcularDatasContrato();" style="flex:1">
-            <button type="button" class="btn-calendario" onclick="abrirCalendarioInicio()" title="Escolher no calendário">📅</button>
-            <input type="date" id="inicio_calendario" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" onchange="aplicarCalendarioInicio()">
-          </div>
-        </div>
-
-        <div class="field"><label>Fins</label>
-          <div class="opcoes-grupo">
-            <div class="opcao-btn" data-for="fins" data-valor="RESIDENCIAIS" onclick="selecionarOpcao('fins','RESIDENCIAIS',toggleLct2)">Residenciais</div>
-            <div class="opcao-btn" data-for="fins" data-valor="COMERCIAIS" onclick="selecionarOpcao('fins','COMERCIAIS',toggleLct2)">Comerciais</div>
-          </div>
-          <input type="hidden" id="fins" value="">
-        </div>
-
-        <div class="field"><label>Data do Contrato</label>
-          <div style="display:flex; gap:6px; align-items:stretch;">
-            <input id="data_contrato_data" value="" placeholder="Ex.: 10/03/2026" inputmode="numeric" oninput="formatarDataDigitada(this); recalcularDataContrato();" style="flex:1">
-            <button type="button" class="btn-calendario" onclick="abrirCalendarioDataContrato()" title="Escolher no calendário">📅</button>
-            <input type="date" id="data_contrato_calendario" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" onchange="aplicarCalendarioDataContrato()">
-          </div>
-        </div>
-
-        <div class="field col-span-2"><label>Valor R$</label>
-          <input id="valor" value="" placeholder="Ex.: 100.000,00" inputmode="numeric" oninput="formatarValorMoeda(this); recalcularValorExtenso();">
-        </div>
-      </div>
-
-      <!-- COLUNA DIREITA: calculado automaticamente pelo app -->
-      <div style="border: 2px dashed var(--fundo3); border-radius: 12px; padding: 16px 14px 14px; position: relative;">
-        <span style="position:absolute; top:-11px; left:14px; background:#fff; padding:0 8px; font-size:0.68rem; font-weight:700; color:var(--cinza); text-transform:uppercase; letter-spacing:0.5px;">⚙️ Calculado automaticamente</span>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px;">
-          <div class="field"><label>Início</label>
-            <input id="inicio" value="" placeholder="Aguardando Início" readonly>
-          </div>
-          <div class="field"><label>Término</label>
-            <input id="termino" value="" placeholder="Aguardando Início/Prazo" readonly>
-          </div>
-          <div class="field"><label>Data do Contrato</label>
-            <input id="data_contrato" value="" placeholder="Aguardando Data do Contrato" readonly>
-          </div>
-          <div class="field"><label>Dia de Vencimento</label>
-            <input id="vencimento" value="" placeholder="Aguardando Início" readonly>
-          </div>
-          <div class="field col-span-2"><label>Valor por Extenso</label>
-            <input id="valor_extenso" value="" placeholder="Aguardando Valor R$" readonly>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div style="grid-column:1/-1; margin-top:10px; padding:16px 18px; background:var(--fundo); border:1px solid var(--fundo3); border-radius:10px;">
-      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-        <span class="sublabel" style="border:none; margin:0; padding:0;">⚡ Encargos</span>
-        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('salao')">🏢 Casa / Salão Padrão</button>
-        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('apto')">🏠 Apto Padrão</button>
-        <button type="button" class="btn-limpar-secao" onclick="aplicarPresetEncargos('casacondominio')">🏘️ Casa Condomínio</button>
-        <button type="button" class="btn-limpar-secao" onclick="limparEncargos()">🗑️ Limpar dados</button>
-      </div>
-      <div class="grid-2" style="gap:14px">
-        <div class="field"><label>Água e Energia</label>
-          <div class="opcoes-grupo">
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_agua','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_agua','Na IMOB (FICA)')">Na IMOB (FICA)</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_agua" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_agua','Não se Aplica')">Não se Aplica</div>
-          </div>
-          <input type="hidden" id="enc_agua" value="">
-        </div>
-        <div class="field"><label>Gás</label>
-          <div class="opcoes-grupo">
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_gas','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_gas','Na IMOB (FICA)')">Na IMOB (FICA)</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_gas" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_gas','Não se Aplica')">Não se Aplica</div>
-          </div>
-          <input type="hidden" id="enc_gas" value="">
-        </div>
-        <div class="field"><label>Condomínio</label>
-          <div class="opcoes-grupo">
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_condominio','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_condominio','Na IMOB (FICA)')">Na IMOB (FICA)</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_condominio" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_condominio','Não se Aplica')">Não se Aplica</div>
-          </div>
-          <input type="hidden" id="enc_condominio" value="">
-        </div>
-        <div class="field"><label>IPTU</label>
-          <div class="opcoes-grupo">
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Orgão Competente / Condomínio" onclick="selecionarOpcao('enc_iptu','Orgão Competente / Condomínio')">Orgão Competente / Condomínio</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Na IMOB (FICA)" onclick="selecionarOpcao('enc_iptu','Na IMOB (FICA)')">Na IMOB (FICA)</div>
-            <div class="opcao-btn opcao-btn-encargos" data-for="enc_iptu" data-valor="Não se Aplica" onclick="selecionarOpcao('enc_iptu','Não se Aplica')">Não se Aplica</div>
-          </div>
-          <input type="hidden" id="enc_iptu" value="">
         </div>
       </div>
     </div>
@@ -981,9 +1128,9 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         <label>Regime de Casamento</label>
         <select id="lct_regime">
           <option value="" selected disabled>Selecione...</option>
-          <option value="Separação Total de Bens">Separação Total de Bens</option>
-          <option value="Comunhão Universal de Bens">Comunhão Universal de Bens</option>
-          <option value="Comunhão Parcial de Bens">Comunhão Parcial de Bens</option>
+          <option value="separação total de bens">separação total de bens</option>
+          <option value="comunhão universal de bens">comunhão universal de bens</option>
+          <option value="comunhão parcial de bens">comunhão parcial de bens</option>
         </select>
       </div>
       <div class="field" id="lct-data-casamento-field" style="display:none">
@@ -1003,7 +1150,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           </div>
           <div class="field col-span-3"><label>Nome Completo</label><input id="lct1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lct1_ec"></select></div>
-          <div class="field"><label>Profissão</label><input id="lct1_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>Profissão</label><input id="lct1_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
           <div class="field"><label>RG</label><input id="lct1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_rg_naotem_pill"><input type="checkbox" id="lct1_rg_naotem" onchange="handleRgNaoTem(&quot;lct1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lct1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct1&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lct1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_tel_naotem_pill"><input type="checkbox" id="lct1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
@@ -1023,70 +1170,11 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           </div>
           <div class="field col-span-3"><label>Nome Completo</label><input id="lct2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lct2_ec"></select></div>
-          <div class="field"><label>Profissão</label><input id="lct2_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>Profissão</label><input id="lct2_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
           <div class="field"><label>RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lct2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct2&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lct2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_tel_naotem_pill"><input type="checkbox" id="lct2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lct2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lct2_email_naotem_pill"><input type="checkbox" id="lct2_email_naotem" onchange="handleSemDadoGenerico(&quot;lct2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- GARANTIA -->
-  <div class="section" id="sec-garantia">
-    <div class="section-header" onclick="toggleSection('sec-garantia')">
-      <div class="section-dot"></div>
-      <span class="section-title">🔒 Garantia</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-garantia&quot;)">🗑️ Limpar dados</button>
-      <span class="toggle-icon">▾</span>
-    </div>
-    <div class="section-body grid-4">
-      <div class="field">
-        <label>Tipo de Garantia</label>
-        <div class="opcoes-grupo">
-          <div class="opcao-btn" data-for="garantia" data-valor="FIADOR" onclick="selecionarOpcao('garantia','FIADOR',toggleGarantia)">Fiador</div>
-          <div class="opcao-btn" data-for="garantia" data-valor="CAUÇÃO" onclick="selecionarOpcao('garantia','CAUÇÃO',toggleGarantia)">Caução</div>
-        </div>
-        <input type="hidden" id="garantia" value="">
-      </div>
-
-      <div id="caucao-fields" style="display:none;grid-column:1/-1">
-        <div class="grid-4" style="gap:14px">
-          <div class="field"><label>Valor R$</label>
-            <input id="caucao_valor" value="" placeholder="Ex.: 6.000,00 (Padrão = 3x Valor Aluguel)" oninput="formatarValorMoeda(this); recalcularCaucaoExtenso();" inputmode="numeric">
-          </div>
-          <div class="field"><label>Valor por Extenso <span style="font-weight:400;text-transform:none;">(calculado)</span></label>
-            <input id="caucao_extenso" value="" placeholder="Preenchido automaticamente" readonly>
-          </div>
-          <div class="field"><label>Banco</label>
-            <div class="opcoes-grupo">
-              <div class="opcao-btn" data-for="caucao_banco" data-valor="BB" onclick="selecionarOpcao('caucao_banco','BB',atualizarPlaceholderConta)">Banco do Brasil (BB)</div>
-              <div class="opcao-btn" data-for="caucao_banco" data-valor="CEF" onclick="selecionarOpcao('caucao_banco','CEF',atualizarPlaceholderConta)">Caixa Econômica Federal (CEF)</div>
-            </div>
-            <input type="hidden" id="caucao_banco" value="">
-          </div>
-          <div class="field"><label>Conta Bancária</label>
-            <input id="caucao_conta" value="" placeholder="Escolha o banco ao lado" oninput="formatarContaCaucao(this)" inputmode="numeric">
-          </div>
-        </div>
-      </div>
-
-      <div id="imgrt-fields-block" style="display:none;grid-column:1/-1">
-        <div class="sublabel" id="imgrt-label" style="margin-bottom:8px">Imóvel Garantia (Fiador)</div>
-        <div class="grid-4" style="gap:14px">
-          <div class="field col-span-3" id="imgrt-desc-field">
-            <label>Descrição do Imóvel</label>
-            <input id="imgrt_descricao" value="">
-            <span class="campo-dica">Ex.: UM LOTE DE TERRENO sob nº 10 da Quadra "A", bem como suas benfeitorias — ou — UM PRÉDIO RESIDENCIAL, bem como seu respectivo terreno (Lote 10 Quadra "A")</span>
-          </div>
-          <div class="field" id="imgrt-mat-field"><label>Matrícula</label><input id="imgrt_matricula" value="" placeholder="Ex.: 10.500 do CRI de Monte Mor/SP"></div>
-
-          <div class="field col-span-2" id="imgrt-rua-field"><label>Rua e nº</label><input id="imgrt_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
-          <div class="field" id="imgrt-bairro-field"><label>Bairro</label><input id="imgrt_bairro" value="" placeholder="Ex.: Centro"></div>
-          <div class="field" id="imgrt-cidade-field"><label>Município/UF</label>
-            <input id="imgrt_cidade" value="" placeholder="Ex.: Monte Mor/SP">
-            <div class="chip-atalho" onclick="document.getElementById('imgrt_cidade').value='Monte Mor/SP'; document.getElementById('imgrt_cidade').dispatchEvent(new Event('input',{bubbles:true}));">📍 Monte Mor/SP</div>
-          </div>
         </div>
       </div>
     </div>
@@ -1123,9 +1211,9 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         <label>Regime de Casamento</label>
         <select id="fdr_regime">
           <option value="" selected disabled>Selecione...</option>
-          <option value="Separação Total de Bens">Separação Total de Bens</option>
-          <option value="Comunhão Universal de Bens">Comunhão Universal de Bens</option>
-          <option value="Comunhão Parcial de Bens">Comunhão Parcial de Bens</option>
+          <option value="separação total de bens">separação total de bens</option>
+          <option value="comunhão universal de bens">comunhão universal de bens</option>
+          <option value="comunhão parcial de bens">comunhão parcial de bens</option>
         </select>
       </div>
       <div class="field" id="fdr-data-casamento-field" style="display:none">
@@ -1145,7 +1233,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           </div>
           <div class="field col-span-3"><label>Nome Completo</label><input id="fdr1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="fdr1_ec"></select></div>
-          <div class="field"><label>Profissão</label><input id="fdr1_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>Profissão</label><input id="fdr1_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
           <div class="field"><label>RG</label><input id="fdr1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_rg_naotem_pill"><input type="checkbox" id="fdr1_rg_naotem" onchange="handleRgNaoTem(&quot;fdr1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="fdr1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr1&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="fdr1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_tel_naotem_pill"><input type="checkbox" id="fdr1_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
@@ -1165,7 +1253,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           </div>
           <div class="field col-span-3"><label>Nome Completo</label><input id="fdr2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="fdr2_ec"></select></div>
-          <div class="field"><label>Profissão</label><input id="fdr2_prof" value="" placeholder="Ex.: Engenheiro"></div>
+          <div class="field"><label>Profissão</label><input id="fdr2_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
           <div class="field"><label>RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="fdr2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr2&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="fdr2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_tel_naotem_pill"><input type="checkbox" id="fdr2_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
@@ -1179,14 +1267,14 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <div class="section" id="sec-obs">
     <div class="section-header" onclick="toggleSection('sec-obs')">
       <div class="section-dot"></div>
-      <span class="section-title">📝 Observações Gerais</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-obs&quot;)">🗑️ Limpar dados</button>
+      <span class="section-title">📝 Observações Gerais</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); marcarSemObservacoes()">✅ Sem Observações</button><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-obs&quot;)">🗑️ Limpar dados</button>
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body">
       <div class="field"><label>🐾 Possui animais de estimação?</label>
         <div class="opcoes-grupo">
-          <div class="opcao-btn opcao-btn-curto" data-for="tem_animais" data-valor="Sim" onclick="selecionarOpcao('tem_animais','Sim',toggleAnimaisDetalhes)">Sim</div>
-          <div class="opcao-btn opcao-btn-curto" data-for="tem_animais" data-valor="Não" onclick="selecionarOpcao('tem_animais','Não',toggleAnimaisDetalhes)">Não</div>
+          <div class="opcao-btn opcao-btn-curto opcao-btn-neutro" data-for="tem_animais" data-valor="Sim" onclick="selecionarOpcao('tem_animais','Sim',toggleAnimaisDetalhes)">Sim</div>
+          <div class="opcao-btn opcao-btn-curto opcao-btn-neutro" data-for="tem_animais" data-valor="Não" onclick="selecionarOpcao('tem_animais','Não',toggleAnimaisDetalhes)">Não</div>
         </div>
         <input type="hidden" id="tem_animais" value="">
       </div>
@@ -1222,6 +1310,42 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         </div>
       </div>
 
+      <div class="grid-2" style="gap:20px">
+        <div>
+          <div class="field">
+            <div class="opcoes-grupo">
+              <label class="confirm-pill"><input type="checkbox" id="obs_integrante_pj" onchange="toggleObsSubbloco('bloco_integrante_pj', this.checked)"> Integrante PJ</label>
+            </div>
+          </div>
+          <div class="obs-subpainel" id="bloco_integrante_pj" style="display:none">
+            <div class="field"><label>Quem é PJ?</label>
+              <div class="opcoes-grupo">
+                <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_locador"> Locador</label>
+                <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_locatario"> Locatário</label>
+                <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_fiador"> Fiador</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="field">
+            <div class="opcoes-grupo">
+              <label class="confirm-pill"><input type="checkbox" id="obs_descontos" onchange="toggleObsSubbloco('bloco_descontos', this.checked)"> Descontos / Carência</label>
+            </div>
+          </div>
+          <div class="obs-subpainel" id="bloco_descontos" style="display:none">
+            <div class="grid-2" style="gap:14px">
+              <div class="field"><label>Valor R$</label>
+                <input type="text" id="desconto_valor" inputmode="numeric" placeholder="Ex.: 1.000,00" oninput="formatarValorMoeda(this)">
+                <label class="confirm-pill"><input type="checkbox" id="desconto_carencia" onchange="toggleCarencia()"> Carência (isenção total)</label>
+              </div>
+              <div class="field"><label>Meses</label><input type="number" id="desconto_meses" min="1" placeholder="Ex.: 3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="field">
         <div class="opcoes-grupo">
           <label class="confirm-pill"><input type="checkbox" id="obs_rg_outra_uf" onchange="toggleObsSubbloco('bloco_rg_outra_uf', this.checked)"> RG de outra UF</label>
@@ -1253,36 +1377,6 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         </div>
       </div>
 
-      <div class="field">
-        <div class="opcoes-grupo">
-          <label class="confirm-pill"><input type="checkbox" id="obs_integrante_pj" onchange="toggleObsSubbloco('bloco_integrante_pj', this.checked)"> Integrante PJ</label>
-        </div>
-      </div>
-      <div class="obs-subpainel" id="bloco_integrante_pj" style="display:none">
-        <div class="field"><label>Quem é PJ?</label>
-          <div class="opcoes-grupo">
-            <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_locador"> Locador</label>
-            <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_locatario"> Locatário</label>
-            <label class="confirm-pill confirm-pill-compacta"><input type="checkbox" id="pj_fiador"> Fiador</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="opcoes-grupo">
-          <label class="confirm-pill"><input type="checkbox" id="obs_descontos" onchange="toggleObsSubbloco('bloco_descontos', this.checked)"> Descontos / Carência</label>
-        </div>
-      </div>
-      <div class="obs-subpainel" id="bloco_descontos" style="display:none">
-        <div class="grid-4" style="gap:14px">
-          <div class="field col-span-2"><label>Valor R$</label>
-            <input type="text" id="desconto_valor" inputmode="numeric" placeholder="Ex.: 1.000,00" oninput="formatarValorMoeda(this)">
-            <label class="confirm-pill"><input type="checkbox" id="desconto_carencia" onchange="toggleCarencia()"> Carência (isenção total)</label>
-          </div>
-          <div class="field"><label>Meses</label><input type="number" id="desconto_meses" min="1" placeholder="Ex.: 3"></div>
-        </div>
-      </div>
-
       <button type="button" class="btn-secundario" style="margin: 6px 0 16px; flex:none; width:fit-content;" onclick="gerarObservacoesPadrao()">🔄 Atualizar Texto Padrão nas Observações</button>
 
       <div class="field"><label>Observações no Contrato</label><textarea id="observacoes"></textarea></div>
@@ -1296,10 +1390,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
     <div class="aviso-pendencias" id="avisoPendencias">Carregando...</div>
     <div class="barra-botoes">
       <button class="btn-secundario" onclick="salvarProgresso()">💾 Salvar Rascunho</button>
-      <button class="btn-secundario" onclick="document.getElementById('inputCarregarRascunho').click()">📂 Carregar Rascunho</button>
-      <input type="file" id="inputCarregarRascunho" accept="application/json,.json" style="display:none" onchange="carregarProgresso(this)">
-      <button class="btn-secundario" onclick="document.getElementById('inputImportarPDF').click()">📄 Importar PDF</button>
-      <input type="file" id="inputImportarPDF" accept="application/pdf,.pdf" style="display:none" onchange="importarPDF(this)">
+      <button class="btn-secundario" onclick="limparTudo()">🗑️ Limpar Tudo</button>
       <button class="btn-gerar" onclick="gerarExcel()">⬇ Gerar Excel — Contratos Locação</button>
     </div>
   </div>
@@ -1367,6 +1458,22 @@ function limparEncargos() {
   mostrarToast('🗑️ Encargos limpos.');
 }
 
+// Barra lateral de acesso rápido: rola até a seção, garantindo que ela esteja expandida
+function irParaSecao(evento, secaoId) {
+  evento.preventDefault();
+  const secao = document.getElementById(secaoId);
+  if (!secao) return;
+  secao.classList.remove('collapsed');
+  secao.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Rola até um elemento qualquer da barra lateral que não seja uma .section (ex.: Nº do Contrato)
+function irParaAncora(evento, elementoId) {
+  evento.preventDefault();
+  const el = document.getElementById(elementoId);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function toggleSection(id) {
   document.getElementById(id).classList.toggle('collapsed');
 }
@@ -1376,6 +1483,8 @@ function toggleGarantia() {
   document.getElementById('imgrt-fields-block').style.display = g === 'FIADOR' ? 'block' : 'none';
   document.getElementById('caucao-fields').style.display = g === 'CAUÇÃO' ? 'block' : 'none';
   document.getElementById('sec-fiadores').style.display = g === 'FIADOR' ? '' : 'none';
+  const linkFiadores = document.getElementById('sidebarItemFiadores');
+  if (linkFiadores) linkFiadores.style.display = g === 'FIADOR' ? 'flex' : 'none';
   atualizarAvisoPendencias();
 }
 
@@ -1587,6 +1696,16 @@ function recalcularDataContrato() {
   atualizarAvisoPendencias();
 }
 
+// Preenche a Data do Contrato com a data de hoje
+function aplicarDataContratoHoje() {
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const ano = hoje.getFullYear();
+  document.getElementById('data_contrato_data').value = `${dia}/${mes}/${ano}`;
+  recalcularDataContrato();
+}
+
 // Valor R$: a pessoa digita só números e o campo forma sozinho 000.000,00
 function formatarValorMoeda(el) {
   let v = el.value.replace(/\D/g, '');
@@ -1632,13 +1751,21 @@ function numeroPorExtenso(n) {
   if (milhoes > 0) {
     partes.push(milhoes === 1 ? 'um milhão' : `${extensoGrupo(milhoes)} milhões`);
   }
-  if (milhares > 0) {
-    // Regra pedida: começando em 1.000, sempre "Um Mil" (nunca só "Mil")
-    partes.push(milhares === 1 ? 'um mil' : `${extensoGrupo(milhares)} mil`);
+
+  // Regra pedida: começando em 1.000, sempre "Um Mil" (nunca só "Mil")
+  const textoMilhares = milhares > 0 ? (milhares === 1 ? 'um mil' : `${extensoGrupo(milhares)} mil`) : '';
+  const textoCentenas = centenas > 0 ? extensoGrupo(centenas) : '';
+
+  if (textoMilhares && textoCentenas) {
+    // Se a centena já tem "e" internamente (tem dezena e/ou unidade, ex.: "quinhentos e cinquenta"),
+    // separa milhares e centena com vírgula. Se for uma centena "redonda" (ex.: "quinhentos"), mantém "e".
+    const juntor = textoCentenas.includes(' e ') ? ', ' : ' e ';
+    partes.push(textoMilhares + juntor + textoCentenas);
+  } else {
+    if (textoMilhares) partes.push(textoMilhares);
+    if (textoCentenas) partes.push(textoCentenas);
   }
-  if (centenas > 0) {
-    partes.push(extensoGrupo(centenas));
-  }
+
   return partes.join(' e ');
 }
 
@@ -1672,6 +1799,21 @@ function recalcularCaucaoExtenso() {
   if (!valorEl.value) { extensoEl.value = ''; atualizarAvisoPendencias(); return; }
   extensoEl.value = valorParaExtenso(valorEl.value);
   atualizarAvisoPendencias();
+}
+
+// Preenche o Valor R$ da Caução automaticamente com 3x o Valor R$ de Dados do Contrato
+function aplicarValorPadraoCaucao() {
+  const valorContratoTxt = document.getElementById('valor').value;
+  const numero = parseFloat((valorContratoTxt || '0').replace(/\./g, '').replace(',', '.')) || 0;
+  if (!numero) {
+    alert('Preencha primeiro o "Valor R$" em Dados do Contrato para calcular o valor padrão da Caução (3x o aluguel).');
+    return;
+  }
+  const centavos = Math.round(numero * 3 * 100);
+  const caucaoEl = document.getElementById('caucao_valor');
+  caucaoEl.value = String(centavos);
+  formatarValorMoeda(caucaoEl);
+  recalcularCaucaoExtenso();
 }
 
 // === Observações Padrão ===
@@ -1859,12 +2001,8 @@ function handleSemDadoGenerico(campoId, tipo) {
 // === Limpar dados de uma aba inteira ===
 const CAMPOS_SEMPRE_READONLY = ['termino', 'vencimento', 'valor_extenso', 'data_contrato', 'inicio', 'caucao_extenso'];
 
-function limparSecao(sectionId) {
-  const secao = document.getElementById(sectionId);
-  if (!secao) return;
-
-  if (!confirm('Tem certeza que deseja limpar todos os dados desta aba? Essa ação não pode ser desfeita.')) return;
-
+// Limpa os campos de uma seção (sem confirmação — usado tanto por limparSecao quanto por limparTudo)
+function resetarCamposDaSecao(secao, sectionId) {
   secao.querySelectorAll('input, select, textarea').forEach(el => {
     if (el.type === 'checkbox') { el.checked = false; return; }
     el.value = '';
@@ -1882,9 +2020,37 @@ function limparSecao(sectionId) {
   if (sectionId === 'sec-fiadores') { toggleFdr2(); montarEstadoCivil('fdr1'); montarEstadoCivil('fdr2'); }
   if (sectionId === 'sec-garantia') { toggleGarantia(); }
   if (sectionId === 'sec-contrato') { recalcularDatasContrato(); recalcularDataContrato(); recalcularValorExtenso(); }
+}
+
+function limparSecao(sectionId) {
+  const secao = document.getElementById(sectionId);
+  if (!secao) return;
+
+  if (!confirm('Tem certeza que deseja limpar todos os dados desta aba? Essa ação não pode ser desfeita.')) return;
+
+  resetarCamposDaSecao(secao, sectionId);
 
   atualizarAvisoPendencias();
   mostrarToast('🗑️ Dados desta aba foram limpos.');
+}
+
+// Limpa o app inteiro (todas as seções + Nº do Contrato) com uma única confirmação
+function limparTudo() {
+  if (!confirm('Tem certeza que deseja limpar TODOS os dados do formulário? Essa ação não pode ser desfeita.')) return;
+
+  document.querySelectorAll('.section').forEach(secao => {
+    resetarCamposDaSecao(secao, secao.id);
+    secao.classList.remove('collapsed');
+  });
+
+  const contractIdEl = document.getElementById('contractId');
+  contractIdEl.value = '';
+  contractIdEl.classList.remove('campo-preenchido');
+
+  Object.keys(ESTADO_ANTERIOR_SECOES).forEach(k => delete ESTADO_ANTERIOR_SECOES[k]);
+
+  atualizarAvisoPendencias();
+  mostrarToast('🗑️ Todos os dados foram limpos.');
 }
 
 // Mantém o texto fixo no campo de RG caso "Não tem RG" esteja marcado (chamado ao digitar no CPF)
@@ -1981,8 +2147,8 @@ function toggleFdr2() {
 }
 
 // === Estado Civil dinâmico (muda para as formas femininas quando Sexo = Feminino) ===
-const EC_MASCULINO = ['Solteiro', 'Casado', 'Separado', 'Divorciado', 'Viúvo'];
-const EC_FEMININO  = ['Solteira', 'Casada', 'Separada', 'Divorciada', 'Viúva'];
+const EC_MASCULINO = ['solteiro', 'casado', 'separado', 'divorciado', 'viúvo'];
+const EC_FEMININO  = ['solteira', 'casada', 'separada', 'divorciada', 'viúva'];
 
 function montarEstadoCivil(prefixo) {
   const sexoEl = document.getElementById(prefixo + '_sexo');
@@ -2003,7 +2169,7 @@ function montarEstadoCivil(prefixo) {
   const grupo = prefixo.slice(0, 3); // 'lcd' ou 'lct'
   const casadosEl = document.getElementById(grupo + '_casados');
   const travarCasado = (prefixo === grupo + '1' || prefixo === grupo + '2') && casadosEl && casadosEl.value === 'Sim';
-  if (travarCasado) manter = feminino ? 'Casada' : 'Casado';
+  if (travarCasado) manter = feminino ? 'casada' : 'casado';
 
   ecEl.innerHTML = '<option value="" ' + (manter ? '' : 'selected') + ' disabled>Selecione...</option>' +
     lista.map(op => `<option value="${op}"${op === manter ? ' selected' : ''}>${op}</option>`).join('');
@@ -2234,6 +2400,10 @@ const FIELD_TO_SECAO = {
 };
 
 // Marca com fundo verde discreto cada seção cujos campos obrigatórios (visíveis no momento) estão todos preenchidos
+// Guarda se cada seção já estava completa na última verificação, para só
+// fechar automaticamente na hora exata em que ela FICA completa (não toda vez)
+const ESTADO_ANTERIOR_SECOES = {};
+
 function atualizarSecoesCompletas() {
   const gruposPorSecao = {};
   obterCamposObrigatorios().forEach(campo => {
@@ -2243,6 +2413,7 @@ function atualizarSecoesCompletas() {
   });
 
   document.querySelectorAll('.section').forEach(sec => sec.classList.remove('secao-completa'));
+  document.querySelectorAll('.sidebar-check').forEach(chk => chk.textContent = '');
 
   Object.keys(gruposPorSecao).forEach(secaoId => {
     const idsCampos = gruposPorSecao[secaoId];
@@ -2251,13 +2422,83 @@ function atualizarSecoesCompletas() {
       return el && el.value && el.value.toString().trim() !== '';
     });
     const secaoEl = document.getElementById(secaoId);
-    if (secaoEl && completo) secaoEl.classList.add('secao-completa');
+    if (secaoEl && completo) {
+      secaoEl.classList.add('secao-completa');
+      // acabou de ficar completa agora (não estava completa na checagem anterior) -> fecha sozinha
+      if (!ESTADO_ANTERIOR_SECOES[secaoId]) secaoEl.classList.add('collapsed');
+    }
+    const checkEl = document.getElementById('check-' + secaoId);
+    if (checkEl && completo) checkEl.textContent = '✅';
+    ESTADO_ANTERIOR_SECOES[secaoId] = completo;
   });
+}
+
+// Observações Gerais: fica verde quando existe algum texto em "Observações no Contrato",
+// mas NUNCA fecha sozinha por causa disso (diferente das outras abas)
+// Marca a aba de Observações como "Sem Observações": preenche com "---", fica verde e fecha
+function marcarSemObservacoes() {
+  const obsInput = document.getElementById('observacoes');
+  obsInput.value = '---';
+  atualizarAvisoPendencias();
+  document.getElementById('sec-obs').classList.add('collapsed');
+  mostrarToast('✅ Marcado como "Sem Observações".');
+}
+
+function atualizarObservacoesCompleto() {
+  const secaoObs = document.getElementById('sec-obs');
+  const obsInput = document.getElementById('observacoes');
+  if (!secaoObs || !obsInput) return;
+  const completo = obsInput.value.trim() !== '';
+  secaoObs.classList.toggle('secao-completa', completo);
+  const checkEl = document.getElementById('check-sec-obs');
+  if (checkEl) checkEl.textContent = completo ? '✅' : '';
+}
+
+// Marca com fundo verde discreto o bloco de Encargos quando os 4 campos estão preenchidos
+// (independente do resto de Dados do Contrato estar completo ou não)
+function atualizarEncargosCompleto() {
+  const bloco = document.getElementById('bloco-encargos');
+  if (!bloco) return;
+  const completo = ['enc_agua', 'enc_gas', 'enc_condominio', 'enc_iptu'].every(id => {
+    const el = document.getElementById(id);
+    return el && el.value.trim() !== '';
+  });
+  bloco.classList.toggle('completo', completo);
+}
+
+// Marca a barra do Nº do Contrato como completa quando preenchida
+function atualizarContractIdCompleto() {
+  const barra = document.querySelector('.contract-id-bar');
+  const input = document.getElementById('contractId');
+  if (!barra || !input) return;
+  const completo = input.value.trim() !== '';
+  barra.classList.toggle('completo', completo);
+  const checkEl = document.getElementById('check-contractIdBar');
+  if (checkEl) checkEl.textContent = completo ? '✅' : '';
+}
+
+// Deixa a barra lateral inteira verde quando todos os itens VISÍVEIS dela já estão com check ✅
+function atualizarSidebarCompleto() {
+  const sidebar = document.getElementById('sidebarRapido');
+  if (!sidebar) return;
+  const itens = [...sidebar.querySelectorAll('.sidebar-item')].filter(item => item.offsetParent !== null || item.style.display !== 'none');
+  const itensVisiveis = itens.filter(item => item.style.display !== 'none');
+  const todosCompletos = itensVisiveis.length > 0 && itensVisiveis.every(item => {
+    const check = item.querySelector('.sidebar-check');
+    return check && check.textContent === '✅';
+  });
+  sidebar.classList.toggle('completo', todosCompletos);
 }
 
 // Marca com fundo verde discreto cada campo de texto/select/textarea que tem valor preenchido
 function atualizarCamposPreenchidos() {
   document.querySelectorAll('.container input:not([type="hidden"]):not([type="checkbox"]), .container select, .container textarea').forEach(el => {
+    // Dentro de Observações Padrão, nenhum campo individual fica verde — só a aba
+    // inteira (sec-obs) fica verde quando existe texto em "Observações no Contrato"
+    if (el.id !== 'observacoes' && el.closest('#sec-obs')) {
+      el.classList.remove('campo-preenchido');
+      return;
+    }
     const preenchido = !!(el.value && el.value.toString().trim() !== '');
     el.classList.toggle('campo-preenchido', preenchido);
   });
@@ -2277,6 +2518,10 @@ function atualizarAvisoPendencias() {
   }
   atualizarCamposPreenchidos();
   atualizarSecoesCompletas();
+  atualizarObservacoesCompleto();
+  atualizarEncargosCompleto();
+  atualizarContractIdCompleto();
+  atualizarSidebarCompleto();
 }
 
 // Valida antes de gerar o Excel: bloqueia e avisa quais campos faltam
@@ -2663,6 +2908,9 @@ function aplicarDadosFormulario(dados) {
     const pill = document.getElementById(id + '_pill');
     const input = document.getElementById(id);
     if (!chk || !input) return;
+    if (chk.checked && CAMPOS_CONFIRMAVEIS[id] && !input.value.trim()) {
+      input.value = CAMPOS_CONFIRMAVEIS[id].padrao;
+    }
     input.readOnly = chk.checked;
     input.classList.toggle('campo-confirmado', chk.checked);
     if (pill) pill.classList.toggle('marcada', chk.checked);
@@ -2706,6 +2954,10 @@ function aplicarDadosFormulario(dados) {
   recalcularDatasContrato();
   recalcularDataContrato();
   if (dados.valor) recalcularValorExtenso();
+
+  // Reexibe os blocos de detalhe de Animais de Estimação, se aplicável
+  toggleAnimaisDetalhes();
+  toggleAnimalOutro();
 
   atualizarAvisoPendencias();
 }
@@ -2770,7 +3022,9 @@ function valorCampoPDF(campos, nome) {
 
 function mapearCamposAcroForm(campos) {
   const dados = {};
-  const norm = (t) => (t || '').toString().replace(/\(a\)|\(o\)/gi, '').trim();
+  // Normaliza o texto do Estado Civil: tira "(a)/(o)" e deixa em minúsculo,
+  // batendo com as opções da lista suspensa do app
+  const norm = (t) => (t || '').toString().replace(/\(a\)|\(o\)/gi, '').trim().toLocaleLowerCase('pt-BR');
   const marcado = (nome) => { const v = valorCampoPDF(campos, nome); return v === true || v === 'Yes' || v === 'On'; };
   const txt = (nome) => {
     const v = valorCampoPDF(campos, nome);
@@ -2780,37 +3034,54 @@ function mapearCamposAcroForm(campos) {
 
   if (v = txt('f1_imovel_endereco')) dados.imv_rua = v;
   if (v = txt('f2_imovel_valor')) dados.valor = v;
-  if (v = txt('f3_imovel_data_inicio')) dados.inicio = v;
-  if (marcado('f4_utilizacao_residencial')) dados.fins = 'RESIDENCIAIS';
+  if (v = txt('f3_imovel_data_inicio')) dados.inicio_data = v;
+  if (v = txt('f7_proprietario_codigo')) dados.contractId = v;
+
+  let residencial = false;
+  if (marcado('f4_utilizacao_residencial')) { dados.fins = 'RESIDENCIAIS'; residencial = true; }
   else if (marcado('f5_utilizacao_comercial')) dados.fins = 'COMERCIAIS';
+  // Regra pedida: locação Residencial já vem com Prazo de 30 meses automaticamente
+  if (residencial) dados.prazo = '30 (Trinta)';
+
   if (v = txt('f6_proprietario_nome')) dados.lcd1_nome = v.toUpperCase();
 
   if (v = txt('f8_loc1_nome')) dados.lct1_nome = v.toUpperCase();
-  if (v = txt('f9_loc1_estado_civil_txt')) dados.lct1_ec = norm(v);
-  if (v = txt('f10_loc1_profissao')) dados.lct1_prof = v;
+  const loc1Ec = txt('f9_loc1_estado_civil_txt');
+  if (loc1Ec) dados.lct1_ec = norm(loc1Ec);
+  if (v = txt('f10_loc1_profissao')) dados.lct1_prof = v.toLocaleLowerCase('pt-BR');
   if (v = txt('f11_loc1_tel')) dados.lct1_tel = v;
   if (v = txt('f12_loc1_email')) dados.lct1_email = v;
 
   if (v = txt('f13_loc2_nome')) dados.lct2_nome = v.toUpperCase();
-  if (v = txt('f14_loc2_estado_civil_txt')) dados.lct2_ec = norm(v);
-  if (v = txt('f15_loc2_profissao')) dados.lct2_prof = v;
+  const loc2Ec = txt('f14_loc2_estado_civil_txt');
+  if (loc2Ec) dados.lct2_ec = norm(loc2Ec);
+  if (v = txt('f15_loc2_profissao')) dados.lct2_prof = v.toLocaleLowerCase('pt-BR');
   if (v = txt('f16_loc2_tel')) dados.lct2_tel = v;
   if (v = txt('f17_loc2_email')) dados.lct2_email = v;
+  // Se os 2 locatários constam como casados(as), considera "casados entre si"
+  if (dados.lct2_nome && loc1Ec && loc2Ec && loc1Ec.toLowerCase().startsWith('casad') && loc2Ec.toLowerCase().startsWith('casad')) {
+    dados.lct_casados = 'Sim';
+  }
 
   if (v = txt('f24_fiador1_nome')) dados.fdr1_nome = v.toUpperCase();
-  if (v = txt('f25_fiador1_estado_civil_txt')) dados.fdr1_ec = norm(v);
-  if (v = txt('f26_fiador1_profissao')) dados.fdr1_prof = v;
+  const fdr1Ec = txt('f25_fiador1_estado_civil_txt');
+  if (fdr1Ec) dados.fdr1_ec = norm(fdr1Ec);
+  if (v = txt('f26_fiador1_profissao')) dados.fdr1_prof = v.toLocaleLowerCase('pt-BR');
   if (v = txt('f27_fiador1_tel')) dados.fdr1_tel = v;
   if (v = txt('f28_fiador1_email')) dados.fdr1_email = v;
 
   if (v = txt('f29_fiador2_nome')) dados.fdr2_nome = v.toUpperCase();
-  if (v = txt('f30_fiador2_estado_civil_txt')) dados.fdr2_ec = norm(v);
-  if (v = txt('f31_fiador2_profissao')) dados.fdr2_prof = v;
+  const fdr2Ec = txt('f30_fiador2_estado_civil_txt');
+  if (fdr2Ec) dados.fdr2_ec = norm(fdr2Ec);
+  if (v = txt('f31_fiador2_profissao')) dados.fdr2_prof = v.toLocaleLowerCase('pt-BR');
   if (v = txt('f32_fiador2_tel')) dados.fdr2_tel = v;
   if (v = txt('f33_fiador2_email')) dados.fdr2_email = v;
+  // Mesma regra de "casados entre si" para os fiadores
+  if (dados.fdr2_nome && fdr1Ec && fdr2Ec && fdr1Ec.toLowerCase().startsWith('casad') && fdr2Ec.toLowerCase().startsWith('casad')) {
+    dados.fdr_casados = 'Sim';
+  }
 
-  if (v = txt('f42_dia_pagamento')) dados.vencimento = v;
-  if (v = txt('f43_observacoes')) dados.observacoes = v;
+  if (v = txt('f42_observacoes')) dados.observacoes = v;
 
   if (dados.lct2_nome) dados.num_lct = '2'; else if (dados.lct1_nome) dados.num_lct = '1';
   if (dados.fdr1_nome) { dados.garantia = 'FIADOR'; dados.num_fdr = dados.fdr2_nome ? '2' : '1'; }
@@ -2877,13 +3148,42 @@ function todasOcorrenciasPDF(regexBase, texto) {
 
 function mapearTextoPDF(texto) {
   const dados = {};
-  const norm = (t) => t ? t.replace(/\(a\)|\(o\)/gi, '').trim() : t;
+  const norm = (t) => t ? t.replace(/\(a\)|\(o\)/gi, '').trim().toLocaleLowerCase('pt-BR') : t;
 
   const uso = buscarNoPDF(/uso:\s*(residencial|comercial)/i, texto) || buscarNoPDF(/utiliza[cç][aã]o[:\s]+(residencial|comercial)/i, texto);
-  if (uso) dados.fins = /resid/i.test(uso) ? 'RESIDENCIAIS' : 'COMERCIAIS';
+  if (uso) {
+    dados.fins = /resid/i.test(uso) ? 'RESIDENCIAIS' : 'COMERCIAIS';
+    // Regra pedida: locação Residencial já vem com Prazo de 30 meses automaticamente
+    if (dados.fins === 'RESIDENCIAIS') dados.prazo = '30 (Trinta)';
+  }
 
   const dia = buscarNoPDF(/dia[^\n:]*pagamento[^\n:]*[:\s]+(\d{1,2})/i, texto);
   if (dia) dados.vencimento = dia;
+
+  // Animais de estimação
+  const temAnimais = buscarNoPDF(/possui\s+animais[^:]*:\s*(sim|n[ãa]o)/i, texto);
+  if (temAnimais) {
+    dados.tem_animais = /sim/i.test(temAnimais) ? 'Sim' : 'Não';
+    if (dados.tem_animais === 'Sim') {
+      const qtd = buscarNoPDF(/quantidade:\s*(\d+)/i, texto);
+      if (qtd) dados.animais_qtd = qtd;
+
+      const especieTxt = (buscarNoPDF(/esp[ée]cie:\s*([^\n]+)/i, texto) || '').toLowerCase();
+      if (especieTxt.includes('cachorro')) dados.animais_especie_cachorro = true;
+      if (especieTxt.includes('gato')) dados.animais_especie_gato = true;
+      const outraEspecie = especieTxt.replace(/cachorro|gato|,|\se\s/gi, '').trim();
+      if (outraEspecie) {
+        dados.animais_especie_outro_chk = true;
+        const qualAnimal = buscarNoPDF(/qual\s+animal:\s*([^\n]+)/i, texto);
+        dados.animais_especie_outro = qualAnimal || outraEspecie;
+      }
+
+      const porteTxt = (buscarNoPDF(/porte:\s*([^\n]+)/i, texto) || '').toLowerCase();
+      if (porteTxt.includes('pequeno')) dados.animais_porte_pequeno = true;
+      if (porteTxt.includes('m[ée]dio') || porteTxt.includes('médio') || porteTxt.includes('medio')) dados.animais_porte_medio = true;
+      if (porteTxt.includes('grande')) dados.animais_porte_grande = true;
+    }
+  }
 
   // Ordem assumida no documento: Locatário 1, Locatário 2, Fiador 1, Fiador 2
   const nomes = todasOcorrenciasPDF(/\bnome[:\s]+([^\n]+)/i, texto);
@@ -2897,10 +3197,11 @@ function mapearTextoPDF(texto) {
   if (nomes[2]) dados.fdr1_nome = nomes[2].toUpperCase();
   if (nomes[3]) dados.fdr2_nome = nomes[3].toUpperCase();
 
-  if (profissoes[0]) dados.lct1_prof = profissoes[0];
-  if (profissoes[1]) dados.lct2_prof = profissoes[1];
-  if (profissoes[2]) dados.fdr1_prof = profissoes[2];
-  if (profissoes[3]) dados.fdr2_prof = profissoes[3];
+  // Profissão sempre em minúsculo no app
+  if (profissoes[0]) dados.lct1_prof = profissoes[0].toLocaleLowerCase('pt-BR');
+  if (profissoes[1]) dados.lct2_prof = profissoes[1].toLocaleLowerCase('pt-BR');
+  if (profissoes[2]) dados.fdr1_prof = profissoes[2].toLocaleLowerCase('pt-BR');
+  if (profissoes[3]) dados.fdr2_prof = profissoes[3].toLocaleLowerCase('pt-BR');
 
   if (telefones[0]) dados.lct1_tel = telefones[0];
   if (telefones[1]) dados.lct2_tel = telefones[1];
@@ -2912,6 +3213,7 @@ function mapearTextoPDF(texto) {
   if (emails[2]) dados.fdr1_email = emails[2];
   if (emails[3]) dados.fdr2_email = emails[3];
 
+  // Estado Civil sempre em minúsculo, batendo com as opções da lista suspensa
   if (estadoCivis[0]) dados.lct1_ec = norm(estadoCivis[0]);
   if (estadoCivis[1]) dados.lct2_ec = norm(estadoCivis[1]);
   if (estadoCivis[2]) dados.fdr1_ec = norm(estadoCivis[2]);
@@ -2919,6 +3221,14 @@ function mapearTextoPDF(texto) {
 
   if (dados.lct2_nome) dados.num_lct = '2'; else if (dados.lct1_nome) dados.num_lct = '1';
   if (dados.fdr1_nome) { dados.garantia = 'FIADOR'; dados.num_fdr = dados.fdr2_nome ? '2' : '1'; }
+
+  // Se os 2 locatários (ou os 2 fiadores) constam como casados(as), considera "casados entre si"
+  if (dados.lct2_nome && estadoCivis[0] && estadoCivis[1] && /^casad/i.test(estadoCivis[0]) && /^casad/i.test(estadoCivis[1])) {
+    dados.lct_casados = 'Sim';
+  }
+  if (dados.fdr2_nome && estadoCivis[2] && estadoCivis[3] && /^casad/i.test(estadoCivis[2]) && /^casad/i.test(estadoCivis[3])) {
+    dados.fdr_casados = 'Sim';
+  }
 
   return dados;
 }
@@ -2973,20 +3283,21 @@ const COLUNAS_CADASTRO = [
 
 // Quais campos pertencem a cada categoria escolhida nos botões de busca
 const CAMPOS_POR_CATEGORIA = {
-  IMOVEL: ['imv_rua','imv_bairro','imv_cidade','imv_cep','imv_matricula','imv_inscricao','imv_uc','imv_rgi',
-           'fins','data_contrato','prazo','inicio','termino','valor','valor_extenso','vencimento'],
+  IMOVEL: ['imv_rua','imv_bairro','imv_cidade','imv_cep','imv_matricula','imv_inscricao','imv_uc','imv_rgi'],
   LOCADOR: ['lcd1_sexo','lcd1_nome','lcd1_ec','lcd1_prof','lcd1_rg','lcd1_cpf','lcd1_tel','lcd1_email',
             'lcd2_sexo','lcd2_nome','lcd2_ec','lcd2_prof','lcd2_rg','lcd2_cpf','lcd2_tel','lcd2_email',
             'lcd_rua','lcd_bairro','lcd_cidade','num_lcd','lcd_casados','lcd_regime','lcd_data_casamento'],
   LOCATARIO: ['lct1_sexo','lct1_nome','lct1_ec','lct1_prof','lct1_rg','lct1_cpf','lct1_tel','lct1_email',
               'lct2_sexo','lct2_nome','lct2_ec','lct2_prof','lct2_rg','lct2_cpf','lct2_tel','lct2_email',
               'lct_rua_com','lct_bairro_com','lct_cidade_com','num_lct','lct_casados','lct_regime','lct_data_casamento'],
-  ENCARGOS: ['enc_agua','enc_gas','enc_condominio','enc_iptu'],
+  CONTRATO: ['fins','data_contrato','prazo','inicio','termino','valor','valor_extenso','vencimento',
+             'enc_agua','enc_gas','enc_condominio','enc_iptu'],
   GARANTIA: ['garantia','caucao_valor','caucao_extenso','caucao_banco','caucao_conta',
              'imgrt_descricao','imgrt_rua','imgrt_bairro','imgrt_cidade','imgrt_matricula'],
   FIADORES: ['fdr1_sexo','fdr1_nome','fdr1_ec','fdr1_prof','fdr1_rg','fdr1_cpf','fdr1_tel','fdr1_email',
              'fdr2_sexo','fdr2_nome','fdr2_ec','fdr2_prof','fdr2_rg','fdr2_cpf','fdr2_tel','fdr2_email',
              'fdr_rua','fdr_bairro','fdr_cidade','num_fdr','fdr_casados','fdr_regime','fdr_data_casamento'],
+  OBSERVACOES: ['observacoes'],
 };
 
 // Desfaz o texto montado por contaCaucaoCompleta() de volta em banco + número da conta
@@ -3005,8 +3316,7 @@ function separarContaCaucao(texto) {
 function normalizarEstadoCivilCadastro(t) {
   if (!t) return t;
   const s = t.replace(/\(a\)|\(o\)/gi, '').trim();
-  if (!s) return s;
-  return s.charAt(0).toLocaleUpperCase('pt-BR') + s.slice(1).toLocaleLowerCase('pt-BR');
+  return s.toLocaleLowerCase('pt-BR');
 }
 
 let cadastroDados = null;
@@ -3172,7 +3482,17 @@ function renderizarResultadosBusca(itens) {
 }
 
 function categoriasSelecionadas() {
-  return [...document.querySelectorAll('#buscaCategorias .categoria-btn.selecionada')].map(b => b.dataset.categoria);
+  return [...document.querySelectorAll('#buscaCategorias .categoria-btn.selecionada')]
+    .map(b => b.dataset.categoria)
+    .filter(c => c !== 'TODOS');
+}
+
+// Marca (ou desmarca, se já estiverem todas marcadas) todas as categorias de uma vez
+function selecionarTodasCategorias(btnTodos) {
+  const demais = document.querySelectorAll('#buscaCategorias .categoria-btn:not([data-categoria="TODOS"])');
+  const jaTodasMarcadas = [...demais].every(b => b.classList.contains('selecionada'));
+  demais.forEach(b => b.classList.toggle('selecionada', !jaTodasMarcadas));
+  btnTodos.classList.toggle('selecionada', !jaTodasMarcadas);
 }
 
 let resultadoSelecionadoIdx = null;
@@ -3189,6 +3509,10 @@ function selecionarResultadoBusca(idx) {
     el.classList.toggle('selecionado', parseInt(el.dataset.idx, 10) === idx);
   });
   atualizarBotaoImportar();
+
+  // Mostra o quadro de observações já na seleção, pra conferência antes mesmo de importar
+  const item = buscaCadastroResultadosAtuais[idx];
+  exibirObservacoesImportadas(item ? item.campos.observacoes : '');
 }
 
 // Chamado ao clicar no botão "Importar": aplica o resultado selecionado, considerando as categorias marcadas
@@ -3216,7 +3540,7 @@ function importarResultadoSelecionado() {
 
   const categorias = categoriasSelecionadas();
   if (categorias.length === 0) {
-    alert('Selecione ao menos uma categoria (Imóvel, Locador, Locatário, Encargos, Garantia ou Fiadores) antes de importar.');
+    alert('Selecione ao menos uma categoria (Imóvel, Locador, Locatário, Encargos, Garantia, Fiadores ou Observações) antes de importar.');
     return;
   }
 
@@ -3228,9 +3552,23 @@ function importarResultadoSelecionado() {
     if (idsPermitidos.has(id)) dadosParaAplicar[id] = item.campos[id];
   });
 
-  const qtd = Object.keys(dadosParaAplicar).length;
+  // Observações não substitui o que já está escrito — soma ao final
+  let observacoesParaSomar = null;
+  if (dadosParaAplicar.observacoes) {
+    observacoesParaSomar = dadosParaAplicar.observacoes;
+    delete dadosParaAplicar.observacoes;
+  }
+
+  const qtd = Object.keys(dadosParaAplicar).length + (observacoesParaSomar ? 1 : 0);
   aplicarDadosFormulario(dadosParaAplicar);
   reformatarCamposImportados(dadosParaAplicar);
+
+  if (observacoesParaSomar) {
+    const textareaObs = document.getElementById('observacoes');
+    const textoAtual = textareaObs.value.trim();
+    textareaObs.value = textoAtual ? textoAtual + '\n\n' + observacoesParaSomar : observacoesParaSomar;
+    atualizarAvisoPendencias();
+  }
 
   exibirObservacoesImportadas(item.campos.observacoes);
 
@@ -3306,6 +3644,15 @@ async function importarArquivo(event) {
       if (camposForm && Object.keys(camposForm).length > 0) {
         // PDF com campos de formulário reais (ex.: Formulário Interno) — extração exata
         const dados = mapearCamposAcroForm(camposForm);
+
+        // Em alguns geradores, o texto de "Observações" fica gravado como texto
+        // estático da página (não como valor do campo) — busca esse texto como reforço
+        if (!dados.observacoes) {
+          const textoPagina = await extrairTextoCorridoPDF(pdf);
+          const mObs = /OBSERVA[ÇC][ÕO]ES\s*\n([\s\S]+?)(?:\n\s*\n\s*\n|$)/i.exec(textoPagina);
+          if (mObs && mObs[1].trim()) dados.observacoes = mObs[1].trim();
+        }
+
         aplicarImportacaoGenerica(dados, status, arquivo.name);
       } else {
         // PDF "achatado": tenta como formulário de cliente (rótulos) e, se achar pouco,
@@ -3316,8 +3663,9 @@ async function importarArquivo(event) {
         const textoCorrido = await extrairTextoCorridoPDF(pdf);
         const resultadoContrato = analisarTextoContratoPronto(textoCorrido);
         const dadosContrato = montarDadosContratoPronto(resultadoContrato);
+        const dadosQuadroResumo = extrairQuadroResumo(textoCorrido);
 
-        const dados = { ...dadosLabel, ...dadosContrato };
+        const dados = { ...dadosLabel, ...dadosContrato, ...dadosQuadroResumo };
         aplicarImportacaoGenerica(dados, status, arquivo.name, resultadoContrato);
       }
 
@@ -3329,8 +3677,9 @@ async function importarArquivo(event) {
       const dadosLabel = mapearTextoPDF(textoCorrido);
       const resultadoContrato = analisarTextoContratoPronto(textoCorrido);
       const dadosContrato = montarDadosContratoPronto(resultadoContrato);
+      const dadosQuadroResumo = extrairQuadroResumo(textoCorrido);
 
-      const dados = { ...dadosLabel, ...dadosContrato };
+      const dados = { ...dadosLabel, ...dadosContrato, ...dadosQuadroResumo };
       aplicarImportacaoGenerica(dados, status, arquivo.name, resultadoContrato);
 
     } else if (nome.endsWith('.doc')) {
@@ -3426,8 +3775,8 @@ function mapearEstadoCivilContrato(txt) {
 // Converte a chave normalizada de estado civil (masculina) para a forma exibida
 // no app, já considerando o sexo da pessoa (ex.: 'casado' + F -> 'Casada')
 function estadoCivilParaFormulario(chave, sexo) {
-  const MAPA_M = { solteiro: 'Solteiro', casado: 'Casado', separado: 'Separado', divorciado: 'Divorciado', viuvo: 'Viúvo' };
-  const MAPA_F = { solteiro: 'Solteira', casado: 'Casada', separado: 'Separada', divorciado: 'Divorciada', viuvo: 'Viúva' };
+  const MAPA_M = { solteiro: 'solteiro', casado: 'casado', separado: 'separado', divorciado: 'divorciado', viuvo: 'viúvo' };
+  const MAPA_F = { solteiro: 'solteira', casado: 'casada', separado: 'separada', divorciado: 'divorciada', viuvo: 'viúva' };
   return (sexo === 'F' ? MAPA_F : MAPA_M)[chave] || '';
 }
 
@@ -3597,6 +3946,112 @@ function analisarTextoContratoPronto(textoOriginal) {
 
 // Monta o objeto de dados (no formato aceito por aplicarDadosFormulario) a partir
 // do resultado da análise do texto do contrato pronto
+// === Extração do "Quadro Resumo" (contratos no padrão da imobiliária) ===
+// Calibrado contra um contrato real: Fins (título), Prazo/Início (Quadro 04),
+// Valor (Quadro 05), Encargos (Quadro 08), Endereço dividido (Quadro 03) e
+// Matrícula/Inscrição Cadastral (Quadro 03)
+
+// Classifica o texto de um encargo no novo padrão resumido de pills
+function classificarEncargo(txt) {
+  if (!txt) return '';
+  const t = txt.toLowerCase();
+  if (t.includes('administradora') || t.includes('fica')) return 'Na IMOB (FICA)';
+  if (t.includes('não se aplica') || t.includes('nao se aplica')) return 'Não se Aplica';
+  if (t.includes('órgão') || t.includes('orgao') || t.includes('condomínio') || t.includes('condominio')) return 'Orgão Competente / Condomínio';
+  return '';
+}
+
+// Separa "Rua e nº – Bairro – Município/UF. CEP: 00000-000" nos 4 campos,
+// seguindo a ordem: primeiro o CEP (sempre por último no texto), depois o
+// Município/UF (sempre no formato Cidade/UF), depois o Bairro (o que vem
+// antes do último travessão) e por fim a Rua e nº (o que sobrar antes disso)
+function extrairEnderecoQuadroResumo(bloco) {
+  const resultado = { rua: '', bairro: '', cidade: '', cep: '' };
+  if (!bloco) return resultado;
+
+  const mCep = bloco.match(/CEP:?\s*(\d{5}-?\d{3})/i);
+  if (mCep) resultado.cep = mCep[1];
+  let resto = bloco.replace(/CEP:?\s*\d{5}-?\d{3}\.?/i, '').trim();
+
+  const mCidade = resto.match(/([A-ZÀ-Ú][A-Za-zÀ-ú]*(?:\s[A-Za-zÀ-ú]+)*\/[A-Z]{2})\s*\.?\s*$/);
+  if (mCidade) {
+    resultado.cidade = mCidade[1].trim();
+    resto = resto.slice(0, mCidade.index).trim();
+  }
+  resto = resto.replace(/[\s\u2013\u2014-]+$/, '').trim();
+
+  const partes = resto.split(/\s[\u2013\u2014]\s|\s--\s/);
+  if (partes.length >= 2) {
+    resultado.bairro = partes[partes.length - 1].trim();
+    resultado.rua = partes.slice(0, -1).join(' - ').trim();
+  } else {
+    resultado.rua = resto.trim();
+  }
+  return resultado;
+}
+
+function extrairQuadroResumo(texto) {
+  const dados = {};
+  const add = (id, regex, grupo) => {
+    const v = buscarNoPDF(regex, texto);
+    if (v) dados[id] = v;
+    return v;
+  };
+
+  // Fins: linha de título "...PARA FINS RESIDENCIAIS/COMERCIAIS"
+  const finsTxt = buscarNoPDF(/PARA\s+FINS\s+(RESIDENCIAIS|COMERCIAIS)/i, texto);
+  if (finsTxt) dados.fins = finsTxt.toUpperCase();
+
+  // Prazo e Início (Quadro 04)
+  const prazoNum = buscarNoPDF(/PRAZO:?\s*(\d{1,2})\s*\(/i, texto);
+  if (prazoNum === '30') dados.prazo = '30 (Trinta)';
+  else if (prazoNum === '60') dados.prazo = '60 (Sessenta)';
+
+  const inicioExtenso = buscarNoPDF(/IN[IÍ]CIO:?\s*([^\n.]+)\.?/i, texto);
+  if (inicioExtenso) {
+    const inicioDigitado = extensoParaDataDigitada(inicioExtenso.trim());
+    if (inicioDigitado) dados.inicio_data = inicioDigitado;
+  }
+
+  // Valor do aluguel (Quadro 05) — já vem no formato "1.550,00", igual ao campo usa
+  add('valor', /R\$\s*([\d.,]+)\s*\(/i);
+
+  // Encargos (Quadro 08)
+  const encAguaTxt = buscarNoPDF(/[ÁA]GUA E ENERGIA:?\s*([^\n]+?)\.\s*\n/i, texto);
+  const encGasTxt = buscarNoPDF(/G[ÁA]S:?\s*([^\n]+?)\.\s*\n/i, texto);
+  const encCondominioTxt = buscarNoPDF(/CONDOM[IÍ]NIO:?\s*([^\n]+?)\.\s*\n/i, texto);
+  const encIptuTxt = buscarNoPDF(/IPTU:?\s*([^\n]+?)\.\s*\n/i, texto);
+  if (classificarEncargo(encAguaTxt)) dados.enc_agua = classificarEncargo(encAguaTxt);
+  if (classificarEncargo(encGasTxt)) dados.enc_gas = classificarEncargo(encGasTxt);
+  if (classificarEncargo(encCondominioTxt)) dados.enc_condominio = classificarEncargo(encCondominioTxt);
+  if (classificarEncargo(encIptuTxt)) dados.enc_iptu = classificarEncargo(encIptuTxt);
+
+  // Endereço do imóvel locado, dividido em Rua/Bairro/Município-UF/CEP (Quadro 03)
+  const blocoEndereco = buscarNoPDF(/ENDERE[ÇC]O:?\s*([\s\S]+?CEP:?\s*\d{5}-?\d{3})/i, texto);
+  if (blocoEndereco) {
+    const end = extrairEnderecoQuadroResumo(blocoEndereco);
+    if (end.rua) dados.imv_rua = end.rua;
+    if (end.bairro) dados.imv_bairro = end.bairro;
+    if (end.cidade) dados.imv_cidade = end.cidade;
+    if (end.cep) dados.imv_cep = end.cep;
+  }
+
+  // Matrícula/Transcrição — só marca "Não tenho esse dado" quando o documento
+  // claramente tem um quadro de Imóvel (achou o endereço) mas essa linha específica
+  // não existe nele. Evita marcar "Não tenho" em documentos que nem tratam de imóvel.
+  const matriculaTxt = buscarNoPDF(/MATR[IÍ]CULA\/?TRANSCRI[ÇC][ÃA]O:?\s*([^\n]+?)\.\s*\n/i, texto);
+  if (matriculaTxt) {
+    dados.imv_matricula = matriculaTxt;
+  } else if (blocoEndereco) {
+    dados.imv_matricula_naotem = true;
+  }
+
+  // Inscrição Cadastral / Municipal
+  add('imv_inscricao', /INSCRI[ÇC][ÃA]O\s+MUNICIPAL:?\s*([^\n]+?)\.\s*\n/i);
+
+  return dados;
+}
+
 function montarDadosContratoPronto(resultado) {
   const dados = {};
   if (!resultado) return dados;
