@@ -261,7 +261,11 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   to { transform: translateY(0); opacity: 1; }
 }
 
+.section {
+  scroll-margin-top: 84px;
+}
 .contract-id-bar {
+  scroll-margin-top: 84px;
   display: flex; align-items: center; gap: 12px;
   background: var(--fundo2);
   border: 1px solid var(--fundo3);
@@ -489,6 +493,31 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   transition: all 0.15s;
 }
 .chip-atalho:hover { border-color: var(--primario2); border-style: solid; color: var(--primario); }
+
+.testemunha-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1.5px solid var(--fundo3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--fundo);
+}
+.testemunha-card:hover { border-color: var(--primario2); }
+.testemunha-card input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--verde); cursor: pointer; }
+.testemunha-card.marcada { background: #e8f7ea; border-color: #a8dab1; }
+.testemunha-info { display: flex; flex-direction: column; gap: 2px; }
+.testemunha-info strong { font-size: 0.88rem; color: var(--primario); }
+.testemunha-info span { font-size: 0.78rem; color: var(--texto2); }
+.testemunhas-contador {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.testemunhas-contador.ok { color: var(--verde); }
+.testemunhas-contador.pendente { color: var(--destaque); }
 
 .obs-subpainel {
   background: var(--fundo2);
@@ -739,7 +768,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v53</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v55</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -753,6 +782,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   <a href="#sec-locadores" class="sidebar-item" data-secao-check="sec-locadores" onclick="irParaSecao(event,'sec-locadores')"><span>🏡 Locadores</span><span class="sidebar-check" id="check-sec-locadores"></span></a>
   <a href="#sec-locatarios" class="sidebar-item" data-secao-check="sec-locatarios" onclick="irParaSecao(event,'sec-locatarios')"><span>🔑 Locatários</span><span class="sidebar-check" id="check-sec-locatarios"></span></a>
   <a href="#sec-fiadores" class="sidebar-item" id="sidebarItemFiadores" data-secao-check="sec-fiadores" style="display:none" onclick="irParaSecao(event,'sec-fiadores')"><span>🤝 Fiadores</span><span class="sidebar-check" id="check-sec-fiadores"></span></a>
+  <a href="#sec-testemunhas" class="sidebar-item" data-secao-check="sec-testemunhas" onclick="irParaSecao(event,'sec-testemunhas')"><span>✍️ Testemunhas</span><span class="sidebar-check" id="check-sec-testemunhas"></span></a>
   <a href="#sec-obs" class="sidebar-item" onclick="irParaSecao(event,'sec-obs')"><span>📝 Observações</span><span class="sidebar-check" id="check-sec-obs"></span></a>
 </aside>
 
@@ -1260,6 +1290,53 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>E-mail</label><input id="fdr2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr2_email_naotem_pill"><input type="checkbox" id="fdr2_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- TESTEMUNHAS -->
+  <div class="section" id="sec-testemunhas">
+    <div class="section-header" onclick="toggleSection('sec-testemunhas')">
+      <div class="section-dot"></div>
+      <span class="section-title">✍️ Testemunhas</span><button type="button" class="btn-limpar-secao" onclick="event.stopPropagation(); limparSecao(&quot;sec-testemunhas&quot;)">🗑️ Limpar dados</button>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="grid-2" style="gap:14px">
+        <label class="testemunha-card" id="testemunha1_card">
+          <input type="checkbox" id="testemunha1" onchange="atualizarTestemunhasValidacao()">
+          <div class="testemunha-info">
+            <strong>Linyston Luiz Cavallaro</strong>
+            <span>RG: 35.116.648-8</span>
+            <span>CPF: 406.955.348-74</span>
+          </div>
+        </label>
+        <label class="testemunha-card" id="testemunha2_card">
+          <input type="checkbox" id="testemunha2" onchange="atualizarTestemunhasValidacao()">
+          <div class="testemunha-info">
+            <strong>André Cesar Filietaz</strong>
+            <span>RG: 29.257.356-X</span>
+            <span>CPF: 380.827.298-80</span>
+          </div>
+        </label>
+        <label class="testemunha-card" id="testemunha3_card">
+          <input type="checkbox" id="testemunha3" onchange="atualizarTestemunhasValidacao()">
+          <div class="testemunha-info">
+            <strong>Vanilda de Fátima Filietaz</strong>
+            <span>RG: 15.434.930-6</span>
+            <span>CPF: 041.547.098-60</span>
+          </div>
+        </label>
+        <label class="testemunha-card" id="testemunha4_card">
+          <input type="checkbox" id="testemunha4" onchange="atualizarTestemunhasValidacao()">
+          <div class="testemunha-info">
+            <strong>Eliana Aparecida Filietaz</strong>
+            <span>RG: 10.722.219-X</span>
+            <span>CPF: 102.046.358-96</span>
+          </div>
+        </label>
+      </div>
+      <div class="testemunhas-contador" id="testemunhas_contador">⚠ Selecione exatamente 2 testemunhas (0 selecionadas)</div>
+      <input type="hidden" id="testemunhas_valido" value="">
     </div>
   </div>
 
@@ -2020,6 +2097,7 @@ function resetarCamposDaSecao(secao, sectionId) {
   if (sectionId === 'sec-fiadores') { toggleFdr2(); montarEstadoCivil('fdr1'); montarEstadoCivil('fdr2'); }
   if (sectionId === 'sec-garantia') { toggleGarantia(); }
   if (sectionId === 'sec-contrato') { recalcularDatasContrato(); recalcularDataContrato(); recalcularValorExtenso(); }
+  if (sectionId === 'sec-testemunhas') { atualizarTestemunhasValidacao(); }
 }
 
 function limparSecao(sectionId) {
@@ -2048,6 +2126,7 @@ function limparTudo() {
   contractIdEl.classList.remove('campo-preenchido');
 
   Object.keys(ESTADO_ANTERIOR_SECOES).forEach(k => delete ESTADO_ANTERIOR_SECOES[k]);
+  Object.keys(PRONTO_PARA_FECHAR).forEach(k => delete PRONTO_PARA_FECHAR[k]);
 
   atualizarAvisoPendencias();
   mostrarToast('🗑️ Todos os dados foram limpos.');
@@ -2218,11 +2297,35 @@ function handleNaoTemChange(id) {
 }
 
 // === Lista de campos obrigatórios, considerando o que está visível/aplicável no momento ===
+// Testemunhas: precisa ter exatamente 2 marcadas (nem menos, nem mais)
+function atualizarTestemunhasValidacao() {
+  const marcadas = [1, 2, 3, 4].filter(n => document.getElementById('testemunha' + n).checked);
+
+  [1, 2, 3, 4].forEach(n => {
+    document.getElementById('testemunha' + n + '_card').classList.toggle('marcada', document.getElementById('testemunha' + n).checked);
+  });
+
+  const hidden = document.getElementById('testemunhas_valido');
+  const contador = document.getElementById('testemunhas_contador');
+  if (marcadas.length === 2) {
+    hidden.value = '1';
+    contador.textContent = '✅ 2 testemunhas selecionadas';
+    contador.className = 'testemunhas-contador ok';
+  } else {
+    hidden.value = '';
+    const plural = marcadas.length === 1 ? 'selecionada' : 'selecionadas';
+    contador.textContent = `⚠ Selecione exatamente 2 testemunhas (${marcadas.length} ${plural})`;
+    contador.className = 'testemunhas-contador pendente';
+  }
+  atualizarAvisoPendencias();
+}
+
 function obterCamposObrigatorios() {
   const lista = [];
   const add = (id, label) => lista.push({ id, label });
 
   add('contractId', 'Nº do Contrato');
+  add('testemunhas_valido', 'Testemunhas (selecione exatamente 2)');
   add('imv_rua', 'Imóvel — Rua e nº');
   add('imv_bairro', 'Imóvel — Bairro');
   add('imv_cidade', 'Imóvel — Município/UF');
@@ -2371,6 +2474,7 @@ function calcularPendencias() {
 // === Destaque visual verde (campo preenchido / seção completa) ===
 // Mapeia cada campo obrigatório para a seção (.section) onde ele aparece na tela
 const FIELD_TO_SECAO = {
+  testemunhas_valido: 'sec-testemunhas',
   imv_rua: 'sec-imovel', imv_bairro: 'sec-imovel', imv_cidade: 'sec-imovel', imv_cep: 'sec-imovel',
   imv_matricula: 'sec-imovel', imv_inscricao: 'sec-imovel', imv_uc: 'sec-imovel', imv_rgi: 'sec-imovel',
 
@@ -2404,6 +2508,10 @@ const FIELD_TO_SECAO = {
 // fechar automaticamente na hora exata em que ela FICA completa (não toda vez)
 const ESTADO_ANTERIOR_SECOES = {};
 
+// Guarda quais seções acabaram de ficar completas e estão só esperando a
+// pessoa sair do campo (blur) para fechar sozinhas — ver PRONTO_PARA_FECHAR abaixo
+const PRONTO_PARA_FECHAR = {};
+
 function atualizarSecoesCompletas() {
   const gruposPorSecao = {};
   obterCamposObrigatorios().forEach(campo => {
@@ -2424,8 +2532,10 @@ function atualizarSecoesCompletas() {
     const secaoEl = document.getElementById(secaoId);
     if (secaoEl && completo) {
       secaoEl.classList.add('secao-completa');
-      // acabou de ficar completa agora (não estava completa na checagem anterior) -> fecha sozinha
-      if (!ESTADO_ANTERIOR_SECOES[secaoId]) secaoEl.classList.add('collapsed');
+      // Acabou de ficar completa agora (não estava completa na checagem anterior).
+      // Não fecha na hora (a pessoa pode ainda estar digitando o último campo) —
+      // só marca como "pronta pra fechar assim que sair do campo".
+      if (!ESTADO_ANTERIOR_SECOES[secaoId]) PRONTO_PARA_FECHAR[secaoId] = true;
     }
     const checkEl = document.getElementById('check-' + secaoId);
     if (checkEl && completo) checkEl.textContent = '✅';
@@ -2541,6 +2651,7 @@ function validarAntesDeGerar() {
     inicio: 'inicio_data', termino: 'inicio_data', vencimento: 'inicio_data',
     data_contrato: 'data_contrato_data',
     valor_extenso: 'valor',
+    testemunhas_valido: 'testemunhas_contador',
   };
 
   pendentes.forEach(campo => {
@@ -2583,6 +2694,16 @@ document.addEventListener('DOMContentLoaded', () => {
     e.target.classList.remove('campo-erro');
     atualizarAvisoPendencias();
   });
+  // Só fecha a aba sozinha quando a pessoa realmente SAI do campo (não a cada tecla
+  // digitada) — evita fechar no meio da digitação do último texto de uma seção
+  container.addEventListener('focusout', (e) => {
+    const secao = e.target.closest && e.target.closest('.section');
+    if (!secao) return;
+    if (PRONTO_PARA_FECHAR[secao.id]) {
+      secao.classList.add('collapsed');
+      PRONTO_PARA_FECHAR[secao.id] = false;
+    }
+  });
 });
 
 function v(id) { return document.getElementById(id)?.value?.trim() || '---'; }
@@ -2591,6 +2712,18 @@ function v(id) { return document.getElementById(id)?.value?.trim() || '---'; }
 function vMin(id) { const val = v(id); return val === '---' ? val : val.toLocaleLowerCase('pt-BR'); }
 function vNum(id) { const n = parseInt(document.getElementById(id)?.value); return isNaN(n)?1:n; }
 function nat(sexoVal) { return sexoVal === 'Feminino' ? 'brasileira' : 'brasileiro'; }
+
+// Converte o valor resumido do pill de Encargos (usado só na tela) para o
+// texto completo de sempre, que é o que deve ir para o Excel
+const MAPA_ENCARGOS_EXPORT = {
+  'Orgão Competente / Condomínio': 'Pagamento diretamente ao órgão competente ou boleto do condomínio',
+  'Na IMOB (FICA)': 'Pagamento na ADMINISTRADORA juntamente com o aluguel',
+  'Não se Aplica': 'Não se aplica',
+};
+function vEncargoCompleto(id) {
+  const val = v(id);
+  return MAPA_ENCARGOS_EXPORT[val] || val;
+}
 
 function buildDataRow() {
   const garantia = v('garantia');
@@ -2620,10 +2753,10 @@ function buildDataRow() {
     v('valor'),                              // O  - Valor R$
     v('valor_extenso'),                      // P  - Extenso
     v('vencimento'),                         // Q  - Dia Pgmto
-    v('enc_agua'),                           // R  - Água
-    v('enc_gas'),                            // S  - Gás
-    v('enc_condominio'),                     // T  - Condomínio
-    v('enc_iptu'),                           // U  - IPTU
+    vEncargoCompleto('enc_agua'),             // R  - Água
+    vEncargoCompleto('enc_gas'),              // S  - Gás
+    vEncargoCompleto('enc_condominio'),       // T  - Condomínio
+    vEncargoCompleto('enc_iptu'),             // U  - IPTU
     garantia,                                // V  - Garantia
     isFiador ? '---' : v('caucao_valor'),    // W  - Caução R$
     isFiador ? '---' : v('caucao_extenso'),  // X
@@ -3283,7 +3416,7 @@ const COLUNAS_CADASTRO = [
 
 // Quais campos pertencem a cada categoria escolhida nos botões de busca
 const CAMPOS_POR_CATEGORIA = {
-  IMOVEL: ['imv_rua','imv_bairro','imv_cidade','imv_cep','imv_matricula','imv_inscricao','imv_uc','imv_rgi'],
+  IMOVEL: ['imv_rua','imv_bairro','imv_cidade','imv_cep','imv_matricula','imv_inscricao','imv_uc','imv_rgi','imv_rgi_naotem'],
   LOCADOR: ['lcd1_sexo','lcd1_nome','lcd1_ec','lcd1_prof','lcd1_rg','lcd1_cpf','lcd1_tel','lcd1_email',
             'lcd2_sexo','lcd2_nome','lcd2_ec','lcd2_prof','lcd2_rg','lcd2_cpf','lcd2_tel','lcd2_email',
             'lcd_rua','lcd_bairro','lcd_cidade','num_lcd','lcd_casados','lcd_regime','lcd_data_casamento'],
@@ -3379,6 +3512,15 @@ async function carregarCadastroContratos() {
         COLUNAS_CADASTRO.forEach((id, idx) => {
           if (!id) return;
           let valor = (row[idx] || '').toString().trim();
+
+          // RGI / Fornecimento (SABESP): "---" significa que o imóvel realmente não
+          // tem RGI (preenche assim mesmo, ao pé da letra); já "???" ou "XXX" significa
+          // que não se sabe o dado, então marca "Não tenho esse dado" em vez de deixar vazio
+          if (id === 'imv_rgi') {
+            if (valor === '---') { campos.imv_rgi = '---'; return; }
+            if (valor === '???' || /^x+$/i.test(valor)) { campos.imv_rgi_naotem = true; return; }
+          }
+
           if (!valor || valor === '---' || valor === '???') return;
           if (CAMPOS_ESTADO_CIVIL_CADASTRO.includes(id)) valor = normalizarEstadoCivilCadastro(valor);
           campos[id] = valor;
