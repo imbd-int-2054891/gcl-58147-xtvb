@@ -768,7 +768,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v55</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v56</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1094,7 +1094,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field col-span-3"><label>Nome Completo</label><input id="lcd1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lcd1_ec"></select></div>
           <div class="field"><label>Profissão</label><input id="lcd1_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
-          <div class="field"><label>RG</label><input id="lcd1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_rg_naotem_pill"><input type="checkbox" id="lcd1_rg_naotem" onchange="handleRgNaoTem(&quot;lcd1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>RG</label><input id="lcd1_rg" value="" placeholder="Ex.: 00.123.456-8 ou 12.345.678-X"><label class="confirm-pill" id="lcd1_rg_naotem_pill"><input type="checkbox" id="lcd1_rg_naotem" onchange="handleRgNaoTem(&quot;lcd1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lcd1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd1&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lcd1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_tel_naotem_pill"><input type="checkbox" id="lcd1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lcd1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lcd1_email_naotem_pill"><input type="checkbox" id="lcd1_email_naotem" onchange="handleSemDadoGenerico(&quot;lcd1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
@@ -1114,7 +1114,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field col-span-3"><label>Nome Completo</label><input id="lcd2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lcd2_ec"></select></div>
           <div class="field"><label>Profissão</label><input id="lcd2_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
-          <div class="field"><label>RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8 ou 12.345.678-X"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lcd2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd2&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lcd2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_tel_naotem_pill"><input type="checkbox" id="lcd2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lcd2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lcd2_email_naotem_pill"><input type="checkbox" id="lcd2_email_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
@@ -1181,7 +1181,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field col-span-3"><label>Nome Completo</label><input id="lct1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lct1_ec"></select></div>
           <div class="field"><label>Profissão</label><input id="lct1_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
-          <div class="field"><label>RG</label><input id="lct1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_rg_naotem_pill"><input type="checkbox" id="lct1_rg_naotem" onchange="handleRgNaoTem(&quot;lct1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>RG</label><input id="lct1_rg" value="" placeholder="Ex.: 00.123.456-8 ou 12.345.678-X"><label class="confirm-pill" id="lct1_rg_naotem_pill"><input type="checkbox" id="lct1_rg_naotem" onchange="handleRgNaoTem(&quot;lct1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lct1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct1&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lct1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_tel_naotem_pill"><input type="checkbox" id="lct1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lct1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lct1_email_naotem_pill"><input type="checkbox" id="lct1_email_naotem" onchange="handleSemDadoGenerico(&quot;lct1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
@@ -1201,7 +1201,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field col-span-3"><label>Nome Completo</label><input id="lct2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="lct2_ec"></select></div>
           <div class="field"><label>Profissão</label><input id="lct2_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
-          <div class="field"><label>RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8 ou 12.345.678-X"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="lct2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct2&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="lct2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_tel_naotem_pill"><input type="checkbox" id="lct2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lct2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lct2_email_naotem_pill"><input type="checkbox" id="lct2_email_naotem" onchange="handleSemDadoGenerico(&quot;lct2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
@@ -1264,7 +1264,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field col-span-3"><label>Nome Completo</label><input id="fdr1_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="fdr1_ec"></select></div>
           <div class="field"><label>Profissão</label><input id="fdr1_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
-          <div class="field"><label>RG</label><input id="fdr1_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_rg_naotem_pill"><input type="checkbox" id="fdr1_rg_naotem" onchange="handleRgNaoTem(&quot;fdr1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>RG</label><input id="fdr1_rg" value="" placeholder="Ex.: 00.123.456-8 ou 12.345.678-X"><label class="confirm-pill" id="fdr1_rg_naotem_pill"><input type="checkbox" id="fdr1_rg_naotem" onchange="handleRgNaoTem(&quot;fdr1&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="fdr1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr1&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="fdr1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_tel_naotem_pill"><input type="checkbox" id="fdr1_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="fdr1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr1_email_naotem_pill"><input type="checkbox" id="fdr1_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
@@ -1284,7 +1284,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field col-span-3"><label>Nome Completo</label><input id="fdr2_nome" value="" placeholder="Ex.: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()"></div>
           <div class="field"><label>Estado Civil</label><select id="fdr2_ec"></select></div>
           <div class="field"><label>Profissão</label><input id="fdr2_prof" value="" placeholder="Ex.: Engenheiro" oninput="this.value = this.value.toLowerCase()"></div>
-          <div class="field"><label>RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8" oninput="formatarRG(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label>RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8 ou 12.345.678-X"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
           <div class="field"><label>CPF</label><input id="fdr2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr2&quot;)" inputmode="numeric"></div>
           <div class="field"><label>Telefone</label><input id="fdr2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_tel_naotem_pill"><input type="checkbox" id="fdr2_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="fdr2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr2_email_naotem_pill"><input type="checkbox" id="fdr2_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
@@ -1724,7 +1724,7 @@ function recalcularDatasContrato() {
   }
 
   document.getElementById('inicio').value = formatarDataExtenso(dataInicio);
-  document.getElementById('vencimento').value = `${dia} (${DIAS_EXTENSO[dia] || ''})`;
+  document.getElementById('vencimento').value = `${String(dia).padStart(2, '0')} (${DIAS_EXTENSO[dia] || ''})`;
 
   const prazoTxt = document.getElementById('prazo').value;
   const meses = prazoTxt.startsWith('30') ? 30 : (prazoTxt.startsWith('60') ? 60 : null);
@@ -2725,6 +2725,15 @@ function vEncargoCompleto(id) {
   return MAPA_ENCARGOS_EXPORT[val] || val;
 }
 
+// Exporta o telefone só com os números (sem parênteses, ponto ou traço) —
+// o Excel já tem a máscara pronta nas células que recebem esse dado
+function vTelefoneCompleto(id) {
+  const val = v(id);
+  if (val === '---') return val;
+  const digitos = val.replace(/\D/g, '');
+  return digitos || '---';
+}
+
 function buildDataRow() {
   const garantia = v('garantia');
   const isFiador = garantia === 'FIADOR';
@@ -2772,7 +2781,7 @@ function buildDataRow() {
     vMin('lcd1_prof'),                          // AH
     v('lcd1_rg'),                            // AI
     v('lcd1_cpf'),                           // AJ
-    v('lcd1_tel'),                           // AK
+    vTelefoneCompleto('lcd1_tel'),           // AK
     v('lcd1_email'),                         // AL
     nLcd===2 ? v('lcd2_sexo') : '---',       // AM - Loc2 Sexo
     nLcd===2 ? v('lcd2_nome') : '---',       // AN
@@ -2781,7 +2790,7 @@ function buildDataRow() {
     nLcd===2 ? vMin('lcd2_prof') : '---',       // AQ
     nLcd===2 ? v('lcd2_rg') : '---',         // AR
     nLcd===2 ? v('lcd2_cpf') : '---',        // AS
-    nLcd===2 ? v('lcd2_tel') : '---',        // AT
+    nLcd===2 ? vTelefoneCompleto('lcd2_tel') : '---', // AT
     nLcd===2 ? v('lcd2_email') : '---',      // AU
     v('lcd_rua'),                            // AV - Loc Endereço
     v('lcd_bairro'),                         // AW
@@ -2797,7 +2806,7 @@ function buildDataRow() {
     vMin('lct1_prof'),                          // BG
     v('lct1_rg'),                            // BH
     v('lct1_cpf'),                           // BI
-    v('lct1_tel'),                           // BJ
+    vTelefoneCompleto('lct1_tel'),           // BJ
     v('lct1_email'),                         // BK
     nLct===2 ? v('lct2_sexo') : '---',       // BL
     nLct===2 ? v('lct2_nome') : '---',       // BM
@@ -2806,7 +2815,7 @@ function buildDataRow() {
     nLct===2 ? vMin('lct2_prof') : '---',       // BP
     nLct===2 ? v('lct2_rg') : '---',         // BQ
     nLct===2 ? v('lct2_cpf') : '---',        // BR
-    nLct===2 ? v('lct2_tel') : '---',        // BS
+    nLct===2 ? vTelefoneCompleto('lct2_tel') : '---', // BS
     nLct===2 ? v('lct2_email') : '---',      // BT
     v('fins')==='COMERCIAIS'?v('lct_rua_com'):'---',   // BU - Lct end. comercial
     v('fins')==='COMERCIAIS'?v('lct_bairro_com'):'---',// BV
@@ -2822,7 +2831,7 @@ function buildDataRow() {
     isFiador ? vMin('fdr1_prof') : '---',       // CF
     isFiador ? v('fdr1_rg') : '---',         // CG
     isFiador ? v('fdr1_cpf') : '---',        // CH
-    isFiador ? v('fdr1_tel') : '---',        // CI
+    isFiador ? vTelefoneCompleto('fdr1_tel') : '---', // CI
     isFiador ? v('fdr1_email') : '---',      // CJ
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_sexo') : '---',    // CK
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_nome') : '---',    // CL
@@ -2831,7 +2840,7 @@ function buildDataRow() {
     (isFiador && parseInt(nFdr)===2) ? vMin('fdr2_prof') : '---',    // CO
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_rg') : '---',      // CP
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_cpf') : '---',     // CQ
-    (isFiador && parseInt(nFdr)===2) ? v('fdr2_tel') : '---',     // CR
+    (isFiador && parseInt(nFdr)===2) ? vTelefoneCompleto('fdr2_tel') : '---', // CR
     (isFiador && parseInt(nFdr)===2) ? v('fdr2_email') : '---',   // CS
     isFiador ? v('fdr_rua') : '---',         // CT - Fdr Endereço
     isFiador ? v('fdr_bairro') : '---',      // CU
@@ -3534,14 +3543,19 @@ async function carregarCadastroContratos() {
           delete campos.caucao_conta_completa;
         }
 
-        // Desfaz "Bairro - Município/UF" do Imóvel Garantia em 2 campos separados
+        // Desfaz "Bairro - Município/UF" do Imóvel Garantia em 2 campos separados,
+        // usando o ÚLTIMO traço como ponto de corte (o bairro pode ter traço no próprio
+        // nome). No Excel real esse traço aparece tanto como hífen "-" quanto travessão "–"
         if (campos.imgrt_bairro_cidade_completo) {
-          const partes = campos.imgrt_bairro_cidade_completo.split(' - ');
-          if (partes.length >= 2) {
-            campos.imgrt_bairro = partes[0].trim();
-            campos.imgrt_cidade = partes.slice(1).join(' - ').trim();
+          const textoCompleto = campos.imgrt_bairro_cidade_completo;
+          const regexTraco = /\s[-\u2013\u2014]\s/g;
+          let m, ultimoMatch = null;
+          while ((m = regexTraco.exec(textoCompleto)) !== null) ultimoMatch = m;
+          if (ultimoMatch) {
+            campos.imgrt_bairro = textoCompleto.slice(0, ultimoMatch.index).trim();
+            campos.imgrt_cidade = textoCompleto.slice(ultimoMatch.index + ultimoMatch[0].length).trim();
           } else {
-            campos.imgrt_bairro = campos.imgrt_bairro_cidade_completo.trim();
+            campos.imgrt_bairro = textoCompleto.trim();
           }
           delete campos.imgrt_bairro_cidade_completo;
         }
