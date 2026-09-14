@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v74</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v76</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1195,6 +1195,15 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>CPF</label><input id="lcd2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd2&quot;)" inputmode="numeric"></div>
           <div class="field"><label id="lcd2_rg_label">RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
         </div>
+
+        <div id="lcd2-endereco-pj-block" style="display:none;border-top:1px dashed var(--fundo3);padding-top:14px;margin-top:14px">
+          <div class="sublabel" style="margin-bottom:8px">Endereço do Representante</div>
+          <div class="grid-4" style="gap:14px">
+            <div class="field col-span-2"><label>Rua e nº</label><input id="lcd2_end_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+            <div class="field"><label>Bairro</label><input id="lcd2_end_bairro" value="" placeholder="Ex.: Centro"></div>
+            <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="lcd2_end_cidade" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;lcd2_end_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lcd2_end_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
+          </div>
+        </div>
       </div>
 
       <div id="lcd-endereco-block" style="display:none;grid-column:1/-1;border-top:1px dashed var(--fundo3);padding-top:16px;margin-top:6px">
@@ -1300,6 +1309,15 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>CPF</label><input id="lct2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct2&quot;)" inputmode="numeric"></div>
           <div class="field"><label id="lct2_rg_label">RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
         </div>
+
+        <div id="lct2-endereco-pj-block" style="display:none;border-top:1px dashed var(--fundo3);padding-top:14px;margin-top:14px">
+          <div class="sublabel" style="margin-bottom:8px">Endereço do Representante</div>
+          <div class="grid-4" style="gap:14px">
+            <div class="field col-span-2"><label>Rua e nº</label><input id="lct2_end_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+            <div class="field"><label>Bairro</label><input id="lct2_end_bairro" value="" placeholder="Ex.: Centro"></div>
+            <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="lct2_end_cidade" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;lct2_end_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lct2_end_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
+          </div>
+        </div>
       </div>
 
       <div id="lct-endereco-block" style="display:none;grid-column:1/-1;border-top:1px dashed var(--fundo3);padding-top:16px;margin-top:6px">
@@ -1404,6 +1422,15 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>E-mail</label><input id="fdr2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr2_email_naotem_pill"><input type="checkbox" id="fdr2_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>CPF</label><input id="fdr2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr2&quot;)" inputmode="numeric"></div>
           <div class="field"><label id="fdr2_rg_label">RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
+        </div>
+
+        <div id="fdr2-endereco-pj-block" style="display:none;border-top:1px dashed var(--fundo3);padding-top:14px;margin-top:14px">
+          <div class="sublabel" style="margin-bottom:8px">Endereço do Representante</div>
+          <div class="grid-4" style="gap:14px">
+            <div class="field col-span-2"><label>Rua e nº</label><input id="fdr2_end_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+            <div class="field"><label>Bairro</label><input id="fdr2_end_bairro" value="" placeholder="Ex.: Centro"></div>
+            <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="fdr2_end_cidade" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;fdr2_end_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;fdr2_end_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
+          </div>
         </div>
       </div>
 
@@ -2415,6 +2442,12 @@ function atualizarModoPJ(grupo) {
   if (enderecoTitulo) enderecoTitulo.textContent = isPJ ? 'Endereço da Sede' : 'Endereço Residencial';
   if (ruaLabel) ruaLabel.textContent = isPJ ? 'Endereço da Sede (Rua e nº)' : 'Endereço Residencial (Rua e nº)';
 
+  // Endereço do Representante: bloco novo, só aparece quando é PJ (o
+  // representante é uma pessoa física de verdade, precisa do seu próprio
+  // endereço — diferente do endereço da sede, que é da empresa)
+  const enderecoRepresentanteBlock = document.getElementById(grupo + '2-endereco-pj-block');
+  if (enderecoRepresentanteBlock) enderecoRepresentanteBlock.style.display = isPJ ? 'block' : 'none';
+
   atualizarAvisoPendencias();
 }
 
@@ -2822,6 +2855,11 @@ function obterCamposObrigatorios() {
     addCpfOuNacionalidadeObrigatorios(add, 'lcd2', 'Locador 2');
     add('lcd2_tel', 'Locador 2 — Telefone');
     add('lcd2_email', 'Locador 2 — E-mail');
+    if (numLcdVal === 'PJ') {
+      add('lcd2_end_rua', 'Locador — Endereço do Representante (Rua e nº)');
+      add('lcd2_end_bairro', 'Locador — Endereço do Representante (Bairro)');
+      add('lcd2_end_cidade', 'Locador — Endereço do Representante (Município/UF)');
+    }
   }
   if (numLcdVal === '2') {
     add('lcd_casados', 'Locadores — Casados entre si?');
@@ -2844,6 +2882,11 @@ function obterCamposObrigatorios() {
     addCpfOuNacionalidadeObrigatorios(add, 'lct2', 'Locatário 2');
     add('lct2_tel', 'Locatário 2 — Telefone');
     add('lct2_email', 'Locatário 2 — E-mail');
+    if (numLctVal === 'PJ') {
+      add('lct2_end_rua', 'Locatário — Endereço do Representante (Rua e nº)');
+      add('lct2_end_bairro', 'Locatário — Endereço do Representante (Bairro)');
+      add('lct2_end_cidade', 'Locatário — Endereço do Representante (Município/UF)');
+    }
   }
   if (numLctVal === '2') {
     add('lct_casados', 'Locatários — Casados entre si?');
@@ -2876,6 +2919,11 @@ function obterCamposObrigatorios() {
       addCpfOuNacionalidadeObrigatorios(add, 'fdr2', 'Fiador 2');
       add('fdr2_tel', 'Fiador 2 — Telefone');
       add('fdr2_email', 'Fiador 2 — E-mail');
+      if (numFdrVal === 'PJ') {
+        add('fdr2_end_rua', 'Fiador — Endereço do Representante (Rua e nº)');
+        add('fdr2_end_bairro', 'Fiador — Endereço do Representante (Bairro)');
+        add('fdr2_end_cidade', 'Fiador — Endereço do Representante (Município/UF)');
+      }
     }
     if (numFdrVal === '2') {
       add('fdr_casados', 'Fiadores — Casados entre si?');
@@ -2992,7 +3040,8 @@ function atualizarObservacoesCompleto() {
   const secaoObs = document.getElementById('sec-obs');
   const obsInput = document.getElementById('observacoes');
   if (!secaoObs || !obsInput) return;
-  const completo = obsInput.value.trim() !== '';
+  const temAnimaisRespondido = document.getElementById('tem_animais')?.value.trim() !== '';
+  const completo = obsInput.value.trim() !== '' && temAnimaisRespondido;
   secaoObs.classList.toggle('secao-completa', completo);
   if (completo && !ESTADO_ANTERIOR_SECOES['sec-obs']) PRONTO_PARA_FECHAR['sec-obs'] = true;
   ESTADO_ANTERIOR_SECOES['sec-obs'] = completo;
@@ -4603,7 +4652,10 @@ function montarDadosGrupo(grupo, enderecoGrupo, endereco2) {
       sedeRua: ruaGrupo, sedeBairro: bairroGrupo, sedeMunicipio: municipioGrupo,
       cargoRepresentante: document.getElementById(p1 + '_nacionalidade')?.value || '',
     };
-    const representante = { ...lerPessoaFisica(p2), rua: ruaGrupo, bairro: bairroGrupo, municipio: municipioGrupo };
+    const representante = {
+      ...lerPessoaFisica(p2),
+      rua: v(p2 + '_end_rua'), bairro: v(p2 + '_end_bairro'), municipio: v(p2 + '_end_cidade'),
+    };
     return {
       texto: textoQualificacaoPJ(empresa, representante, grupo !== 'lct'),
       forma: 'O', // PJ = feminino singular sempre
@@ -4805,7 +4857,8 @@ async function gerarContratoWord() {
     }
 
     // ---------- Gera o arquivo ----------
-    const nomeArquivo = `Contrato_${v('contractId') || 'Locacao'}.docx`;
+    const nomeArquivoSeguro = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim();
+    const nomeArquivo = `${nomeArquivoSeguro(v('lcd1_nome'))} - ${nomeArquivoSeguro(v('lct1_nome'))}.docx`;
     await gerarContratoDocx(
       URL_TEMPLATE_CONTRATO, substituicoes, nomeArquivo,
       { '#Imv1': 1700 }, paragrafosParaRemover, insercoes, null,
@@ -5228,6 +5281,10 @@ function aplicarDadosFormulario(dados) {
   toggleAnimalOutro();
   toggleTipoDesconto();
 
+  // Testemunhas: setar checkbox.checked por código não dispara o onchange
+  // sozinho, então precisa recalcular a validação/visual manualmente
+  atualizarTestemunhasValidacao();
+
   // Se o Endereço 2 veio preenchido (rascunho salvo, importação, etc.), abre a caixa
   // automaticamente em vez de deixar escondida atrás do "Não Possui"
   if (v('lcd_rua2') !== '---' || v('lcd_bairro2') !== '---' || v('lcd_cidade2') !== '---') abrirEndereco2('lcd');
@@ -5514,8 +5571,19 @@ function reformatarCamposImportados(dados) {
     const el = document.getElementById(id);
     if (!el) return;
     if (/_tel$/.test(id)) formatarTelefone(el);
-    else if (/_rg$/.test(id)) formatarRG(el);
-    else if (/_cpf$/.test(id)) formatarCPF(el);
+    else if (/_rg$/.test(id)) {
+      // Só reformata como RG brasileiro (00.000.000-0) quando a pessoa NÃO é
+      // PJ (nesse caso o campo é NIRE), NÃO é estrangeira (nesse caso é RNM,
+      // alfanumérico) e o valor não é o texto literal "Não Tem RG" — senão
+      // a formatação numérica-só apaga tudo isso sem querer
+      const prefixo = id.replace(/_rg$/, '');
+      const nacEl = document.getElementById(prefixo + '_nacionalidade');
+      const nac = nacEl ? nacEl.value : '';
+      const ehPJEsseGrupo = typeof ehModoPJ === 'function' && ehModoPJ(prefixo);
+      const naoTemRGTexto = /^n[ãa]o tem rg$/i.test((el.value || '').trim());
+      if (!ehPJEsseGrupo && !nac.startsWith('estrang') && !naoTemRGTexto) formatarRG(el);
+    }
+    else if (/_cpf$/.test(id)) formatarCpfOuCnpj(el);
   });
 }
 
@@ -5569,18 +5637,21 @@ const COLUNAS_CADASTRO = [
 // Quais campos pertencem a cada categoria escolhida nos botões de busca
 const CAMPOS_POR_CATEGORIA = {
   IMOVEL: ['imv_rua','imv_bairro','imv_cidade','imv_cep','imv_matricula','imv_inscricao','imv_uc','imv_rgi','imv_rgi_naotem','obs_area_inundacao'],
-  LOCADOR: ['lcd1_sexo','lcd1_nome','lcd1_nacionalidade','lcd1_nacionalidade_estrangeira','lcd1_ec','lcd1_prof','lcd1_rg','lcd1_rg_orgao','lcd1_cpf','lcd1_tel','lcd1_email',
-            'lcd2_sexo','lcd2_nome','lcd2_nacionalidade','lcd2_nacionalidade_estrangeira','lcd2_ec','lcd2_prof','lcd2_rg','lcd2_rg_orgao','lcd2_cpf','lcd2_tel','lcd2_email',
+  LOCADOR: ['lcd1_sexo','lcd1_nome','lcd1_nacionalidade','lcd1_nacionalidade_estrangeira','lcd1_ec','lcd1_natureza_juridica','lcd1_prof','lcd1_rg','lcd1_rg_naotem','lcd1_rg_orgao','lcd1_cpf','lcd1_tel','lcd1_email',
+            'lcd2_sexo','lcd2_nome','lcd2_nacionalidade','lcd2_nacionalidade_estrangeira','lcd2_ec','lcd2_prof','lcd2_rg','lcd2_rg_naotem','lcd2_rg_orgao','lcd2_cpf','lcd2_tel','lcd2_email',
+            'lcd2_end_rua','lcd2_end_bairro','lcd2_end_cidade',
             'lcd_rua','lcd_bairro','lcd_cidade','lcd_rua2','lcd_bairro2','lcd_cidade2','num_lcd','lcd_casados','lcd_regime','lcd_data_casamento'],
-  LOCATARIO: ['lct1_sexo','lct1_nome','lct1_nacionalidade','lct1_nacionalidade_estrangeira','lct1_ec','lct1_prof','lct1_rg','lct1_rg_orgao','lct1_cpf','lct1_tel','lct1_email',
-              'lct2_sexo','lct2_nome','lct2_nacionalidade','lct2_nacionalidade_estrangeira','lct2_ec','lct2_prof','lct2_rg','lct2_rg_orgao','lct2_cpf','lct2_tel','lct2_email',
+  LOCATARIO: ['lct1_sexo','lct1_nome','lct1_nacionalidade','lct1_nacionalidade_estrangeira','lct1_ec','lct1_natureza_juridica','lct1_prof','lct1_rg','lct1_rg_naotem','lct1_rg_orgao','lct1_cpf','lct1_tel','lct1_email',
+              'lct2_sexo','lct2_nome','lct2_nacionalidade','lct2_nacionalidade_estrangeira','lct2_ec','lct2_prof','lct2_rg','lct2_rg_naotem','lct2_rg_orgao','lct2_cpf','lct2_tel','lct2_email',
+              'lct2_end_rua','lct2_end_bairro','lct2_end_cidade',
               'lct_rua_com','lct_bairro_com','lct_cidade_com','lct_rua_com2','lct_bairro_com2','lct_cidade_com2','num_lct','lct_casados','lct_regime','lct_data_casamento'],
   CONTRATO: ['fins','data_contrato','prazo','inicio','termino','valor','valor_extenso','vencimento',
              'enc_agua','enc_gas','enc_condominio','enc_iptu','tipo_desconto','desconto_meses','desconto_valor'],
   GARANTIA: ['garantia','caucao_valor','caucao_extenso','caucao_banco','caucao_conta',
              'imgrt_descricao','imgrt_rua','imgrt_bairro','imgrt_cidade','imgrt_matricula'],
-  FIADORES: ['fdr1_sexo','fdr1_nome','fdr1_nacionalidade','fdr1_nacionalidade_estrangeira','fdr1_ec','fdr1_prof','fdr1_rg','fdr1_rg_orgao','fdr1_cpf','fdr1_tel','fdr1_email',
-             'fdr2_sexo','fdr2_nome','fdr2_nacionalidade','fdr2_nacionalidade_estrangeira','fdr2_ec','fdr2_prof','fdr2_rg','fdr2_rg_orgao','fdr2_cpf','fdr2_tel','fdr2_email',
+  FIADORES: ['fdr1_sexo','fdr1_nome','fdr1_nacionalidade','fdr1_nacionalidade_estrangeira','fdr1_ec','fdr1_natureza_juridica','fdr1_prof','fdr1_rg','fdr1_rg_naotem','fdr1_rg_orgao','fdr1_cpf','fdr1_tel','fdr1_email',
+             'fdr2_sexo','fdr2_nome','fdr2_nacionalidade','fdr2_nacionalidade_estrangeira','fdr2_ec','fdr2_prof','fdr2_rg','fdr2_rg_naotem','fdr2_rg_orgao','fdr2_cpf','fdr2_tel','fdr2_email',
+             'fdr2_end_rua','fdr2_end_bairro','fdr2_end_cidade',
              'fdr_rua','fdr_bairro','fdr_cidade','fdr_rua2','fdr_bairro2','fdr_cidade2','num_fdr','fdr_casados','fdr_regime','fdr_data_casamento'],
   TESTEMUNHAS: ['testemunha1','testemunha2','testemunha3','testemunha4'],
   OBSERVACOES: ['observacoes'],
@@ -5706,8 +5777,31 @@ async function carregarCadastroContratos() {
 
         // Desfaz a Nacionalidade "crua" do cadastro em brasileiro(a)/estrangeiro(a) +
         // (se for o caso) a nacionalidade específica digitada, usando o Sexo já lido
-        // dessa mesma pessoa para decidir a forma certa (masculina/feminina)
+        // dessa mesma pessoa para decidir a forma certa (masculina/feminina).
+        // Exceção: pessoa 1 de um grupo em modo PJ não tem "nacionalidade" nesse
+        // campo — é o Cargo Representante (administrador/administradora/sócio
+        // proprietário/sócia proprietária), então não deve passar pela conversão
+        // de nacionalidade; e o campo de Estado Civil dessa pessoa é na verdade
+        // a Natureza Jurídica (campo diferente no formulário).
         ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(pref => {
+          const grupoDele = pref.slice(0, 3);
+          const ehPessoa1PJ = pref.endsWith('1') && campos['num_' + grupoDele] === 'PJ';
+
+          if (ehPessoa1PJ) {
+            // Cargo Representante: mantém o valor bruto tal como veio (já deve
+            // vir no gênero certo — administrador/a, sócio/sócia proprietário/a)
+            const cargoBruto = campos[pref + '_nacionalidade_raw'];
+            if (cargoBruto) campos[pref + '_nacionalidade'] = cargoBruto.toLocaleLowerCase('pt-BR').trim();
+            delete campos[pref + '_nacionalidade_raw'];
+            // Natureza Jurídica: o cadastro guarda no mesmo lugar do Estado
+            // Civil normal (coluna EC), mas no formulário é um campo à parte
+            if (campos[pref + '_ec'] !== undefined) {
+              campos[pref + '_natureza_juridica'] = campos[pref + '_ec'];
+              delete campos[pref + '_ec'];
+            }
+            return;
+          }
+
           const bruto = campos[pref + '_nacionalidade_raw'];
           if (bruto) {
             const feminino = (campos[pref + '_sexo'] || '') === 'Feminino';
@@ -5723,6 +5817,16 @@ async function carregarCadastroContratos() {
             }
           }
           delete campos[pref + '_nacionalidade_raw'];
+        });
+
+        // "Não Tem RG": o texto vem certo no campo, mas precisa também marcar
+        // o checkbox/pill correspondente (senão a tela mostra a opção como
+        // se não tivesse sido escolhida, mesmo com o texto certo no campo)
+        ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(pref => {
+          const rg = (campos[pref + '_rg'] || '').toLocaleLowerCase('pt-BR').trim();
+          if (rg === 'não tem rg' || rg === 'nao tem rg') {
+            campos[pref + '_rg_naotem'] = true;
+          }
         });
 
         // Testemunhas: compara nome/RG/CPF importados com as 4 testemunhas fixas
@@ -5753,6 +5857,37 @@ async function carregarCadastroContratos() {
           delete campos.clausula_inundacao_raw;
         }
 
+        // Animais de estimação: não tem coluna própria no cadastro — a info
+        // só existe dentro do texto livre de Observações (que o app gera
+        // automaticamente nesse formato: "- Possui N animal(is) de
+        // estimação. Espécie(s): X, Y. Porte(s): Z."). Faz o caminho
+        // inverso pra pré-preencher a pergunta em vez de deixá-la em branco.
+        if (campos.observacoes) {
+          const matchAnimais = campos.observacoes.match(/Possui (\d+) animal\(is\) de estimação\.(?: Espécie\(s\): ([^.]+)\.)?(?: Porte\(s\): ([^.]+)\.)?/);
+          if (matchAnimais) {
+            campos.tem_animais = 'Sim';
+            campos.animais_qtd = matchAnimais[1];
+            if (matchAnimais[2]) {
+              const especies = matchAnimais[2].split(',').map(s => s.trim());
+              const outros = [];
+              especies.forEach(e => {
+                if (e === 'Cachorro') campos.animais_especie_cachorro = true;
+                else if (e === 'Gato') campos.animais_especie_gato = true;
+                else outros.push(e);
+              });
+              if (outros.length) { campos.animais_especie_outro_chk = true; campos.animais_especie_outro = outros.join(', '); }
+            }
+            if (matchAnimais[3]) {
+              const portes = matchAnimais[3].split(',').map(s => s.trim());
+              if (portes.includes('Pequeno')) campos.animais_porte_pequeno = true;
+              if (portes.includes('Médio')) campos.animais_porte_medio = true;
+              if (portes.includes('Grande')) campos.animais_porte_grande = true;
+            }
+          } else {
+            campos.tem_animais = 'Não';
+          }
+        }
+
         const semPlaceholder = (v) => {
           const s = (v || '').toString().trim();
           return (s === '---' || s === '???') ? '' : s;
@@ -5761,8 +5896,14 @@ async function carregarCadastroContratos() {
         const contractId = semPlaceholder(row[0]);
         const enderecoImovel = [row[1], row[2], row[3]].map(semPlaceholder).filter(Boolean).join(', ');
         const nomeLocador = semPlaceholder(row[30]);
-        const nomeLocatario = semPlaceholder(row[55]);
-        const nomeLocatario2 = semPlaceholder(row[64]);
+        const nomeLocatario = semPlaceholder(row[60]);
+        const nomeLocatario2 = semPlaceholder(row[70]);
+        const garantiaRaw = semPlaceholder(row[21]);
+        const nomeFiador1 = semPlaceholder(row[90]);
+        const nomeFiador2 = semPlaceholder(row[100]);
+        const nomeGarantia = /fiador/i.test(garantiaRaw)
+          ? [nomeFiador1, nomeFiador2].filter(Boolean).join(' e ')
+          : 'Caução';
 
         if (!enderecoImovel && !nomeLocador && !nomeLocatario) continue; // linha sem nada útil
 
@@ -5772,6 +5913,7 @@ async function carregarCadastroContratos() {
           nomeLocador,
           nomeLocatario,
           nomeLocatario2,
+          nomeGarantia,
           campos,
         });
       }
@@ -5820,7 +5962,11 @@ function renderizarResultadosBusca(itens) {
     el.innerHTML = '<div class="busca-resultado-vazio">Nenhum resultado encontrado.</div>';
   } else {
     el.innerHTML = itens.map((item, idx) => {
-      const pessoas = [item.nomeLocador, [item.nomeLocatario, item.nomeLocatario2].filter(Boolean).join(' e ')].filter(Boolean).join(' / ');
+      const pessoas = [
+        item.nomeLocador,
+        [item.nomeLocatario, item.nomeLocatario2].filter(Boolean).join(' e '),
+        item.nomeGarantia,
+      ].filter(Boolean).join(' / ');
       return '<div class="busca-resultado-item" data-idx="' + idx + '">' +
         '<strong>' + escapeHtmlBusca(item.contractId || '—') + '</strong> — ' + escapeHtmlBusca(item.enderecoImovel || 'Endereço não informado') +
         (pessoas ? '<span class="busca-resultado-sub">' + escapeHtmlBusca(pessoas) + '</span>' : '') +
