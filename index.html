@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v78</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v79</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -2523,7 +2523,9 @@ function toggleLct2() {
   }
 
   const fins = document.getElementById('fins').value;
-  document.getElementById('lct-endereco-block').style.display = (fins === 'COMERCIAIS' && (n === '1' || n === '2' || n === 'PJ')) ? 'block' : 'none';
+  const ehPJResidencial = (n === 'PJ' && fins !== 'COMERCIAIS');
+  document.getElementById('lct-endereco-block').style.display =
+    (fins === 'COMERCIAIS' && (n === '1' || n === '2' || n === 'PJ')) || ehPJResidencial ? 'block' : 'none';
   atualizarModoPJ('lct');
   atualizarVisibilidadeEndereco2('lct');
   atualizarAvisoPendencias();
@@ -2867,7 +2869,7 @@ function obterCamposObrigatorios() {
     addCpfOuNacionalidadeObrigatorios(add, 'lct2', 'Locatário 2');
     add('lct2_tel', 'Locatário 2 — Telefone');
     add('lct2_email', 'Locatário 2 — E-mail');
-    if (numLctVal === 'PJ') {
+    if (numLctVal === 'PJ' && document.getElementById('fins').value === 'COMERCIAIS') {
       add('lct_rua_com2', 'Locatário — Endereço do Representante (Rua e nº)');
       add('lct_bairro_com2', 'Locatário — Endereço do Representante (Bairro)');
       add('lct_cidade_com2', 'Locatário — Endereço do Representante (Município/UF)');
@@ -3419,11 +3421,13 @@ function textoQualificacaoPJ(empresa, representante, enderecoSedeSempre) {
     textoNirePJ(empresa.nire) + empresa.cnpj + textoSede +
     `; neste ato representada por ${textoCargoRepresentante(empresa.cargoRepresentante)} `;
 
+  const textoEnderecoRepresentante = textoEnderecoPJ(', residente na ', representante.rua, representante.bairro, representante.municipio);
+
   const fim =
     `, ${representante.nacionalidade}, ${representante.estadoCivil}, ${representante.profissao}, ` +
     (representante.sexo === 'Feminino' ? 'portadora ' : 'portador ') +
     textoDocumentoRgCpf(representante.nacionalidade, representante.rg, representante.cpf, representante.sexo === 'Feminino' ? 'inscrita' : 'inscrito', representante.orgaoEmissorUF) +
-    `, residente na ${representante.rua} – ${representante.bairro} – ${representante.municipio}.`;
+    textoEnderecoRepresentante + '.';
 
   return [
     { negrito: nomeEmpresaMaiusculo },
@@ -4715,10 +4719,39 @@ function montarAjustesRotulo(grupo, dadosGrupo) {
   return { ajustesRgRnm, ajustesPJ };
 }
 
+// Verifica se, num grupo específico, a locação é Residencial mas o Locatário
+// é PJ com os endereços (Sede e/ou Representante) em branco/xxx/--- — nesse
+// caso, mostra um aviso perguntando se quer continuar mesmo assim (os
+// endereços simplesmente não vão aparecer no contrato, igual já acontece
+// pra Locatário pessoa física em locação Residencial)
+function confirmarSeEnderecoPJResidencialVazio() {
+  const num = v('num_lct');
+  const fins = v('fins');
+  if (num !== 'PJ' || fins === 'COMERCIAIS') return true; // não se aplica, segue normal
+
+  const vazio = s => !s || s.trim() === '' || s.trim().toLowerCase() === 'xxx' || s.trim() === '---';
+  const sedeVazia = vazio(v('lct_rua_com'));
+  const representanteVazio = vazio(v('lct_rua_com2'));
+
+  if (!sedeVazia && !representanteVazio) return true; // os dois preenchidos, segue normal
+
+  const partes = [];
+  if (sedeVazia) partes.push('Endereço da Sede');
+  if (representanteVazio) partes.push('Endereço do Representante');
+
+  return confirm(
+    `O(s) campo(s) "${partes.join('" e "')}" da Locatária (PJ) está(ão) em branco.\n\n` +
+    'Como a locação é Residencial, isso é opcional — mas se continuar, esse(s) ' +
+    'endereço(s) simplesmente não vão aparecer no texto do contrato.\n\n' +
+    'Deseja continuar mesmo assim?'
+  );
+}
+
 async function gerarContratoWord() {
   const btn = document.getElementById('btn-gerar-contrato');
   const textoOriginalBtn = btn ? btn.textContent : '';
   if (!validarAntesDeGerar()) return;
+  if (!confirmarSeEnderecoPJResidencialVazio()) return;
   try {
     if (btn) { btn.disabled = true; btn.textContent = '⏳ Gerando contrato...'; }
 
@@ -4729,7 +4762,7 @@ async function gerarContratoWord() {
     // ---------- Endereços de cada grupo ----------
     const enderecoLcd = enderecoTexto(v('lcd_rua'), v('lcd_bairro'), v('lcd_cidade'));
     const endereco2Lcd = (v('lcd_rua2') !== '---' && v('lcd_rua2').trim()) ? enderecoTexto(v('lcd_rua2'), v('lcd_bairro2'), v('lcd_cidade2')) : '';
-    const enderecoLct = fins === 'COMERCIAIS' ? enderecoTexto(v('lct_rua_com'), v('lct_bairro_com'), v('lct_cidade_com')) : '';
+    const enderecoLct = enderecoTexto(v('lct_rua_com'), v('lct_bairro_com'), v('lct_cidade_com'));
     const endereco2Lct = (fins === 'COMERCIAIS' && v('lct_rua_com2') !== '---' && v('lct_rua_com2').trim()) ? enderecoTexto(v('lct_rua_com2'), v('lct_bairro_com2'), v('lct_cidade_com2')) : '';
     const enderecoFdr = isFiador ? enderecoTexto(v('fdr_rua'), v('fdr_bairro'), v('fdr_cidade')) : '';
     const endereco2Fdr = (isFiador && v('fdr_rua2') !== '---' && v('fdr_rua2').trim()) ? enderecoTexto(v('fdr_rua2'), v('fdr_bairro2'), v('fdr_cidade2')) : '';
