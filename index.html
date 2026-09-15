@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v76</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v78</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -832,8 +832,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
        ondragleave="this.classList.remove('arrastando')"
        ondrop="tratarDropImportacao(event)">
     <label for="arquivo_importar">📎 <b>Arraste um arquivo aqui</b> ou clique para escolher</label>
-    <input type="file" id="arquivo_importar" accept=".json,.pdf,.docx,.doc" style="display:none" onchange="importarArquivo(event)">
-    <span class="dica-dropzone">Aceita: rascunho salvo (.json), formulário do cliente ou resumo interno (.pdf), ou contrato já pronto (.pdf ou .docx). Sempre confira os dados antes de gerar o Excel.</span>
+    <input type="file" id="arquivo_importar" accept=".json,.pdf,.docx,.doc,.xlsx" style="display:none" onchange="importarArquivo(event)">
+    <span class="dica-dropzone">Aceita: rascunho salvo (.json), Excel gerado pelo próprio botão "Gerar Excel" (.xlsx), formulário do cliente ou resumo interno (.pdf), ou contrato já pronto (.pdf ou .docx). Sempre confira os dados antes de gerar o Excel.</span>
     <div class="status-import" id="status_import_arquivo"></div>
   </div>
 
@@ -1196,14 +1196,6 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label id="lcd2_rg_label">RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
         </div>
 
-        <div id="lcd2-endereco-pj-block" style="display:none;border-top:1px dashed var(--fundo3);padding-top:14px;margin-top:14px">
-          <div class="sublabel" style="margin-bottom:8px">Endereço do Representante</div>
-          <div class="grid-4" style="gap:14px">
-            <div class="field col-span-2"><label>Rua e nº</label><input id="lcd2_end_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
-            <div class="field"><label>Bairro</label><input id="lcd2_end_bairro" value="" placeholder="Ex.: Centro"></div>
-            <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="lcd2_end_cidade" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;lcd2_end_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lcd2_end_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
-          </div>
-        </div>
       </div>
 
       <div id="lcd-endereco-block" style="display:none;grid-column:1/-1;border-top:1px dashed var(--fundo3);padding-top:16px;margin-top:6px">
@@ -1215,15 +1207,15 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         </div>
 
         <div id="lcd-endereco2-block" style="display:none;margin-top:16px">
-          <div class="sublabel" style="margin-bottom:8px">Endereço 2 (opcional)</div>
+          <div class="sublabel" style="margin-bottom:8px" id="lcd_endereco2_titulo">Endereço 2 (opcional)</div>
           <button type="button" class="pill-naopossui active" id="lcd_endereco2_pill" onclick="abrirEndereco2('lcd')">✓ Não Possui</button>
           <div id="lcd_endereco2_ativo" style="display:none">
             <div class="grid-4" style="gap:14px;margin-top:10px">
-              <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="lcd_rua2" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+              <div class="field col-span-2"><label id="lcd_endereco2_rua_label">Endereço Residencial (Rua e nº)</label><input id="lcd_rua2" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
               <div class="field"><label>Bairro</label><input id="lcd_bairro2" value="" placeholder="Ex.: Centro"></div>
               <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="lcd_cidade2" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;lcd_cidade2&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lcd_cidade2&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
             </div>
-            <button type="button" class="endereco2-desfazer" onclick="fecharEndereco2('lcd')">↺ Marcar como "Não Possui"</button>
+            <button type="button" class="endereco2-desfazer" id="lcd_endereco2_desfazer_btn" onclick="fecharEndereco2('lcd')">↺ Marcar como "Não Possui"</button>
           </div>
         </div>
       </div>
@@ -1310,14 +1302,6 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label id="lct2_rg_label">RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
         </div>
 
-        <div id="lct2-endereco-pj-block" style="display:none;border-top:1px dashed var(--fundo3);padding-top:14px;margin-top:14px">
-          <div class="sublabel" style="margin-bottom:8px">Endereço do Representante</div>
-          <div class="grid-4" style="gap:14px">
-            <div class="field col-span-2"><label>Rua e nº</label><input id="lct2_end_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
-            <div class="field"><label>Bairro</label><input id="lct2_end_bairro" value="" placeholder="Ex.: Centro"></div>
-            <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="lct2_end_cidade" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;lct2_end_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lct2_end_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
-          </div>
-        </div>
       </div>
 
       <div id="lct-endereco-block" style="display:none;grid-column:1/-1;border-top:1px dashed var(--fundo3);padding-top:16px;margin-top:6px">
@@ -1329,15 +1313,15 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         </div>
 
         <div id="lct-endereco2-block" style="display:none;margin-top:16px">
-          <div class="sublabel" style="margin-bottom:8px">Endereço 2 (opcional)</div>
+          <div class="sublabel" style="margin-bottom:8px" id="lct_endereco2_titulo">Endereço 2 (opcional)</div>
           <button type="button" class="pill-naopossui active" id="lct_endereco2_pill" onclick="abrirEndereco2('lct')">✓ Não Possui</button>
           <div id="lct_endereco2_ativo" style="display:none">
             <div class="grid-4" style="gap:14px;margin-top:10px">
-              <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="lct_rua_com2" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+              <div class="field col-span-2"><label id="lct_endereco2_rua_label">Endereço Residencial (Rua e nº)</label><input id="lct_rua_com2" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
               <div class="field"><label>Bairro</label><input id="lct_bairro_com2" value="" placeholder="Ex.: Centro"></div>
               <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="lct_cidade_com2" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;lct_cidade_com2&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;lct_cidade_com2&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
             </div>
-            <button type="button" class="endereco2-desfazer" onclick="fecharEndereco2('lct')">↺ Marcar como "Não Possui"</button>
+            <button type="button" class="endereco2-desfazer" id="lct_endereco2_desfazer_btn" onclick="fecharEndereco2('lct')">↺ Marcar como "Não Possui"</button>
           </div>
         </div>
       </div>
@@ -1424,14 +1408,6 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label id="fdr2_rg_label">RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
         </div>
 
-        <div id="fdr2-endereco-pj-block" style="display:none;border-top:1px dashed var(--fundo3);padding-top:14px;margin-top:14px">
-          <div class="sublabel" style="margin-bottom:8px">Endereço do Representante</div>
-          <div class="grid-4" style="gap:14px">
-            <div class="field col-span-2"><label>Rua e nº</label><input id="fdr2_end_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
-            <div class="field"><label>Bairro</label><input id="fdr2_end_bairro" value="" placeholder="Ex.: Centro"></div>
-            <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="fdr2_end_cidade" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;fdr2_end_cidade&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;fdr2_end_cidade&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
-          </div>
-        </div>
       </div>
 
       <div id="fdr-endereco-block" style="display:none;grid-column:1/-1;border-top:1px dashed var(--fundo3);padding-top:16px;margin-top:6px">
@@ -1443,15 +1419,15 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         </div>
 
         <div id="fdr-endereco2-block" style="display:none;margin-top:16px">
-          <div class="sublabel" style="margin-bottom:8px">Endereço 2 (opcional)</div>
+          <div class="sublabel" style="margin-bottom:8px" id="fdr_endereco2_titulo">Endereço 2 (opcional)</div>
           <button type="button" class="pill-naopossui active" id="fdr_endereco2_pill" onclick="abrirEndereco2('fdr')">✓ Não Possui</button>
           <div id="fdr_endereco2_ativo" style="display:none">
             <div class="grid-4" style="gap:14px;margin-top:10px">
-              <div class="field col-span-2"><label>Endereço Residencial (Rua e nº)</label><input id="fdr_rua2" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
+              <div class="field col-span-2"><label id="fdr_endereco2_rua_label">Endereço Residencial (Rua e nº)</label><input id="fdr_rua2" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
               <div class="field"><label>Bairro</label><input id="fdr_bairro2" value="" placeholder="Ex.: Centro"></div>
               <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="fdr_cidade2" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;fdr_cidade2&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;fdr_cidade2&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
             </div>
-            <button type="button" class="endereco2-desfazer" onclick="fecharEndereco2('fdr')">↺ Marcar como "Não Possui"</button>
+            <button type="button" class="endereco2-desfazer" id="fdr_endereco2_desfazer_btn" onclick="fecharEndereco2('fdr')">↺ Marcar como "Não Possui"</button>
           </div>
         </div>
       </div>
@@ -2442,11 +2418,20 @@ function atualizarModoPJ(grupo) {
   if (enderecoTitulo) enderecoTitulo.textContent = isPJ ? 'Endereço da Sede' : 'Endereço Residencial';
   if (ruaLabel) ruaLabel.textContent = isPJ ? 'Endereço da Sede (Rua e nº)' : 'Endereço Residencial (Rua e nº)';
 
-  // Endereço do Representante: bloco novo, só aparece quando é PJ (o
-  // representante é uma pessoa física de verdade, precisa do seu próprio
-  // endereço — diferente do endereço da sede, que é da empresa)
-  const enderecoRepresentanteBlock = document.getElementById(grupo + '2-endereco-pj-block');
-  if (enderecoRepresentanteBlock) enderecoRepresentanteBlock.style.display = isPJ ? 'block' : 'none';
+  // Endereço do Representante: reaproveita o mesmo bloco de "Endereço 2"
+  // que já existia (opcional pra 2 pessoas não casadas) — quando é PJ, ele
+  // vira obrigatório, relabelado, e sempre aberto (sem a opção "Não Possui")
+  const endereco2Titulo = document.getElementById(grupo + '_endereco2_titulo');
+  const endereco2RuaLabel = document.getElementById(grupo + '_endereco2_rua_label');
+  const endereco2Pill = document.getElementById(grupo + '_endereco2_pill');
+  const endereco2Ativo = document.getElementById(grupo + '_endereco2_ativo');
+  const endereco2DesfazerBtn = document.getElementById(grupo + '_endereco2_desfazer_btn');
+  if (endereco2Titulo) endereco2Titulo.textContent = isPJ ? 'Endereço do Representante' : 'Endereço 2 (opcional)';
+  if (endereco2RuaLabel) endereco2RuaLabel.textContent = isPJ ? 'Endereço do Representante (Rua e nº)' : 'Endereço Residencial (Rua e nº)';
+  if (endereco2Pill) endereco2Pill.style.display = isPJ ? 'none' : '';
+  if (endereco2DesfazerBtn) endereco2DesfazerBtn.style.display = isPJ ? 'none' : '';
+  if (isPJ && endereco2Ativo) endereco2Ativo.style.display = 'block';
+  atualizarVisibilidadeEndereco2(grupo);
 
   atualizarAvisoPendencias();
 }
@@ -2501,7 +2486,7 @@ function atualizarVisibilidadeEndereco2(grupo) {
   if (!bloco) return;
   const num = document.getElementById('num_' + grupo)?.value;
   const casados = document.getElementById(grupo + '_casados')?.value || '';
-  bloco.style.display = (num === '2' && casados !== 'Sim') ? 'block' : 'none';
+  bloco.style.display = ((num === '2' && casados !== 'Sim') || num === 'PJ') ? 'block' : 'none';
 }
 
 function abrirEndereco2(grupo) {
@@ -2856,9 +2841,9 @@ function obterCamposObrigatorios() {
     add('lcd2_tel', 'Locador 2 — Telefone');
     add('lcd2_email', 'Locador 2 — E-mail');
     if (numLcdVal === 'PJ') {
-      add('lcd2_end_rua', 'Locador — Endereço do Representante (Rua e nº)');
-      add('lcd2_end_bairro', 'Locador — Endereço do Representante (Bairro)');
-      add('lcd2_end_cidade', 'Locador — Endereço do Representante (Município/UF)');
+      add('lcd_rua2', 'Locador — Endereço do Representante (Rua e nº)');
+      add('lcd_bairro2', 'Locador — Endereço do Representante (Bairro)');
+      add('lcd_cidade2', 'Locador — Endereço do Representante (Município/UF)');
     }
   }
   if (numLcdVal === '2') {
@@ -2883,9 +2868,9 @@ function obterCamposObrigatorios() {
     add('lct2_tel', 'Locatário 2 — Telefone');
     add('lct2_email', 'Locatário 2 — E-mail');
     if (numLctVal === 'PJ') {
-      add('lct2_end_rua', 'Locatário — Endereço do Representante (Rua e nº)');
-      add('lct2_end_bairro', 'Locatário — Endereço do Representante (Bairro)');
-      add('lct2_end_cidade', 'Locatário — Endereço do Representante (Município/UF)');
+      add('lct_rua_com2', 'Locatário — Endereço do Representante (Rua e nº)');
+      add('lct_bairro_com2', 'Locatário — Endereço do Representante (Bairro)');
+      add('lct_cidade_com2', 'Locatário — Endereço do Representante (Município/UF)');
     }
   }
   if (numLctVal === '2') {
@@ -2920,9 +2905,9 @@ function obterCamposObrigatorios() {
       add('fdr2_tel', 'Fiador 2 — Telefone');
       add('fdr2_email', 'Fiador 2 — E-mail');
       if (numFdrVal === 'PJ') {
-        add('fdr2_end_rua', 'Fiador — Endereço do Representante (Rua e nº)');
-        add('fdr2_end_bairro', 'Fiador — Endereço do Representante (Bairro)');
-        add('fdr2_end_cidade', 'Fiador — Endereço do Representante (Município/UF)');
+        add('fdr_rua2', 'Fiador — Endereço do Representante (Rua e nº)');
+        add('fdr_bairro2', 'Fiador — Endereço do Representante (Bairro)');
+        add('fdr_cidade2', 'Fiador — Endereço do Representante (Município/UF)');
       }
     }
     if (numFdrVal === '2') {
@@ -4652,9 +4637,12 @@ function montarDadosGrupo(grupo, enderecoGrupo, endereco2) {
       sedeRua: ruaGrupo, sedeBairro: bairroGrupo, sedeMunicipio: municipioGrupo,
       cargoRepresentante: document.getElementById(p1 + '_nacionalidade')?.value || '',
     };
+    const sufixoRua2 = grupo === 'lct' ? 'rua_com2' : 'rua2';
+    const sufixoBairro2 = grupo === 'lct' ? 'bairro_com2' : 'bairro2';
+    const sufixoCidade2 = grupo === 'lct' ? 'cidade_com2' : 'cidade2';
     const representante = {
       ...lerPessoaFisica(p2),
-      rua: v(p2 + '_end_rua'), bairro: v(p2 + '_end_bairro'), municipio: v(p2 + '_end_cidade'),
+      rua: v(grupo + '_' + sufixoRua2), bairro: v(grupo + '_' + sufixoBairro2), municipio: v(grupo + '_' + sufixoCidade2),
     };
     return {
       texto: textoQualificacaoPJ(empresa, representante, grupo !== 'lct'),
@@ -4730,6 +4718,7 @@ function montarAjustesRotulo(grupo, dadosGrupo) {
 async function gerarContratoWord() {
   const btn = document.getElementById('btn-gerar-contrato');
   const textoOriginalBtn = btn ? btn.textContent : '';
+  if (!validarAntesDeGerar()) return;
   try {
     if (btn) { btn.disabled = true; btn.textContent = '⏳ Gerando contrato...'; }
 
@@ -4866,6 +4855,11 @@ async function gerarContratoWord() {
     );
 
     mostrarToast('✅ Contrato gerado com sucesso!');
+
+    // Rede de segurança: gera também o rascunho JSON e o Excel junto com o
+    // Word, caso a pessoa esqueça de salvar e feche o app depois
+    salvarProgresso();
+    gerarExcel();
   } catch (erro) {
     console.error('Erro ao gerar contrato:', erro);
     mostrarToast('❌ Erro ao gerar contrato: ' + erro.message);
@@ -5107,6 +5101,16 @@ function gerarExcel() {
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(aoaData);
+
+  // Força TODAS as células da linha de dados como TEXTO — sem isso, valores
+  // como "10.500.100" (RG) ou "11.000,00" (Valor R$) podem ser interpretados
+  // como número pelo Excel/SheetJS, perdendo os pontos/vírgula na hora de
+  // reabrir o arquivo (ex.: vira "10500100" ou "11000")
+  const LINHA_DADOS_AOA = 9; // índice 0-based (linha 10 na planilha)
+  for (let col = 0; col < 130; col++) {
+    const endereco = XLSX.utils.encode_cell({ r: LINHA_DADOS_AOA, c: col });
+    if (ws[endereco]) { ws[endereco].t = 's'; delete ws[endereco].w; }
+  }
 
   // Style column widths
   ws['!cols'] = [{ wch: 12 }];
@@ -5639,11 +5643,9 @@ const CAMPOS_POR_CATEGORIA = {
   IMOVEL: ['imv_rua','imv_bairro','imv_cidade','imv_cep','imv_matricula','imv_inscricao','imv_uc','imv_rgi','imv_rgi_naotem','obs_area_inundacao'],
   LOCADOR: ['lcd1_sexo','lcd1_nome','lcd1_nacionalidade','lcd1_nacionalidade_estrangeira','lcd1_ec','lcd1_natureza_juridica','lcd1_prof','lcd1_rg','lcd1_rg_naotem','lcd1_rg_orgao','lcd1_cpf','lcd1_tel','lcd1_email',
             'lcd2_sexo','lcd2_nome','lcd2_nacionalidade','lcd2_nacionalidade_estrangeira','lcd2_ec','lcd2_prof','lcd2_rg','lcd2_rg_naotem','lcd2_rg_orgao','lcd2_cpf','lcd2_tel','lcd2_email',
-            'lcd2_end_rua','lcd2_end_bairro','lcd2_end_cidade',
             'lcd_rua','lcd_bairro','lcd_cidade','lcd_rua2','lcd_bairro2','lcd_cidade2','num_lcd','lcd_casados','lcd_regime','lcd_data_casamento'],
   LOCATARIO: ['lct1_sexo','lct1_nome','lct1_nacionalidade','lct1_nacionalidade_estrangeira','lct1_ec','lct1_natureza_juridica','lct1_prof','lct1_rg','lct1_rg_naotem','lct1_rg_orgao','lct1_cpf','lct1_tel','lct1_email',
               'lct2_sexo','lct2_nome','lct2_nacionalidade','lct2_nacionalidade_estrangeira','lct2_ec','lct2_prof','lct2_rg','lct2_rg_naotem','lct2_rg_orgao','lct2_cpf','lct2_tel','lct2_email',
-              'lct2_end_rua','lct2_end_bairro','lct2_end_cidade',
               'lct_rua_com','lct_bairro_com','lct_cidade_com','lct_rua_com2','lct_bairro_com2','lct_cidade_com2','num_lct','lct_casados','lct_regime','lct_data_casamento'],
   CONTRATO: ['fins','data_contrato','prazo','inicio','termino','valor','valor_extenso','vencimento',
              'enc_agua','enc_gas','enc_condominio','enc_iptu','tipo_desconto','desconto_meses','desconto_valor'],
@@ -5651,7 +5653,6 @@ const CAMPOS_POR_CATEGORIA = {
              'imgrt_descricao','imgrt_rua','imgrt_bairro','imgrt_cidade','imgrt_matricula'],
   FIADORES: ['fdr1_sexo','fdr1_nome','fdr1_nacionalidade','fdr1_nacionalidade_estrangeira','fdr1_ec','fdr1_natureza_juridica','fdr1_prof','fdr1_rg','fdr1_rg_naotem','fdr1_rg_orgao','fdr1_cpf','fdr1_tel','fdr1_email',
              'fdr2_sexo','fdr2_nome','fdr2_nacionalidade','fdr2_nacionalidade_estrangeira','fdr2_ec','fdr2_prof','fdr2_rg','fdr2_rg_naotem','fdr2_rg_orgao','fdr2_cpf','fdr2_tel','fdr2_email',
-             'fdr2_end_rua','fdr2_end_bairro','fdr2_end_cidade',
              'fdr_rua','fdr_bairro','fdr_cidade','fdr_rua2','fdr_bairro2','fdr_cidade2','num_fdr','fdr_casados','fdr_regime','fdr_data_casamento'],
   TESTEMUNHAS: ['testemunha1','testemunha2','testemunha3','testemunha4'],
   OBSERVACOES: ['observacoes'],
@@ -5678,6 +5679,196 @@ function normalizarEstadoCivilCadastro(t) {
 
 let cadastroDados = null;
 let cadastroCarregandoPromise = null;
+
+function processarLinhaCadastro(row) {
+  const campos = {};
+  const CAMPOS_ESTADO_CIVIL_CADASTRO = ['lcd1_ec', 'lcd2_ec', 'lct1_ec', 'lct2_ec', 'fdr1_ec', 'fdr2_ec'];
+  COLUNAS_CADASTRO.forEach((id, idx) => {
+    if (!id) return;
+    let valor = (row[idx] || '').toString().trim();
+
+    // RGI / Fornecimento (SABESP): "---" significa que o imóvel realmente não
+    // tem RGI (preenche assim mesmo, ao pé da letra); já "???" ou "XXX" significa
+    // que não se sabe o dado, então marca "Não tenho esse dado" em vez de deixar vazio
+    if (id === 'imv_rgi') {
+      if (valor === '---') { campos.imv_rgi = '---'; return; }
+      if (valor === '???' || /^x+$/i.test(valor)) { campos.imv_rgi_naotem = true; return; }
+    }
+
+    if (!valor || valor === '---' || valor === '???') return;
+    if (CAMPOS_ESTADO_CIVIL_CADASTRO.includes(id)) valor = normalizarEstadoCivilCadastro(valor);
+    campos[id] = valor;
+  });
+
+  // Desfaz o texto da conta bancária da caução em banco + número
+  if (campos.caucao_conta_completa) {
+    const { banco, conta } = separarContaCaucao(campos.caucao_conta_completa);
+    if (banco) campos.caucao_banco = banco;
+    if (conta) campos.caucao_conta = conta;
+    delete campos.caucao_conta_completa;
+  }
+
+  // Desfaz "Bairro - Município/UF" do Imóvel Garantia em 2 campos separados,
+  // usando o ÚLTIMO traço como ponto de corte (o bairro pode ter traço no próprio
+  // nome). No Excel real esse traço aparece tanto como hífen "-" quanto travessão "–"
+  if (campos.imgrt_bairro_cidade_completo) {
+    const textoCompleto = campos.imgrt_bairro_cidade_completo;
+    const regexTraco = /\s[-\u2013\u2014]\s/g;
+    let m, ultimoMatch = null;
+    while ((m = regexTraco.exec(textoCompleto)) !== null) ultimoMatch = m;
+    if (ultimoMatch) {
+      campos.imgrt_bairro = textoCompleto.slice(0, ultimoMatch.index).trim();
+      campos.imgrt_cidade = textoCompleto.slice(ultimoMatch.index + ultimoMatch[0].length).trim();
+    } else {
+      campos.imgrt_bairro = textoCompleto.trim();
+    }
+    delete campos.imgrt_bairro_cidade_completo;
+  }
+
+  // Desfaz a Nacionalidade "crua" do cadastro em brasileiro(a)/estrangeiro(a) +
+  // (se for o caso) a nacionalidade específica digitada, usando o Sexo já lido
+  // dessa mesma pessoa para decidir a forma certa (masculina/feminina).
+  // Exceção: pessoa 1 de um grupo em modo PJ não tem "nacionalidade" nesse
+  // campo — é o Cargo Representante (administrador/administradora/sócio
+  // proprietário/sócia proprietária), então não deve passar pela conversão
+  // de nacionalidade; e o campo de Estado Civil dessa pessoa é na verdade
+  // a Natureza Jurídica (campo diferente no formulário).
+  ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(pref => {
+    const grupoDele = pref.slice(0, 3);
+    const ehPessoa1PJ = pref.endsWith('1') && campos['num_' + grupoDele] === 'PJ';
+
+    if (ehPessoa1PJ) {
+      // Cargo Representante: mantém o valor bruto tal como veio (já deve
+      // vir no gênero certo — administrador/a, sócio/sócia proprietário/a)
+      const cargoBruto = campos[pref + '_nacionalidade_raw'];
+      if (cargoBruto) campos[pref + '_nacionalidade'] = cargoBruto.toLocaleLowerCase('pt-BR').trim();
+      delete campos[pref + '_nacionalidade_raw'];
+      // Natureza Jurídica: o cadastro guarda no mesmo lugar do Estado
+      // Civil normal (coluna EC), mas no formulário é um campo à parte
+      if (campos[pref + '_ec'] !== undefined) {
+        campos[pref + '_natureza_juridica'] = campos[pref + '_ec'];
+        delete campos[pref + '_ec'];
+      }
+      // NIRE: se veio vazio/---/??? na planilha (o valor bruto já foi
+      // descartado antes de chegar aqui), marca "Não tenho esse dado"
+      // em vez de deixar o campo sem nenhuma resposta
+      if (campos[pref + '_rg'] === undefined) {
+        const idxRg = COLUNAS_CADASTRO.indexOf(pref + '_rg');
+        const rgBruto = (row[idxRg] || '').toString().trim();
+        if (!rgBruto || rgBruto === '---' || rgBruto === '???') {
+          campos[pref + '_rg_naotem'] = true;
+        }
+      }
+      return;
+    }
+
+    const bruto = campos[pref + '_nacionalidade_raw'];
+    if (bruto) {
+      const feminino = (campos[pref + '_sexo'] || '') === 'Feminino';
+      const t = bruto.toLocaleLowerCase('pt-BR').trim();
+      if (t.startsWith('brasil')) {
+        campos[pref + '_nacionalidade'] = feminino ? 'brasileira' : 'brasileiro';
+      } else if (t.startsWith('estrang')) {
+        campos[pref + '_nacionalidade'] = feminino ? 'estrangeira' : 'estrangeiro';
+      } else {
+        // veio uma nacionalidade específica (ex.: "italiano") — considera estrangeiro(a)
+        campos[pref + '_nacionalidade'] = feminino ? 'estrangeira' : 'estrangeiro';
+        campos[pref + '_nacionalidade_estrangeira'] = t;
+      }
+    }
+    delete campos[pref + '_nacionalidade_raw'];
+  });
+
+  // "Não Tem RG": o texto vem certo no campo, mas precisa também marcar
+  // o checkbox/pill correspondente (senão a tela mostra a opção como
+  // se não tivesse sido escolhida, mesmo com o texto certo no campo)
+  ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(pref => {
+    const rg = (campos[pref + '_rg'] || '').toLocaleLowerCase('pt-BR').trim();
+    if (rg === 'não tem rg' || rg === 'nao tem rg') {
+      campos[pref + '_rg_naotem'] = true;
+    }
+  });
+
+  // Testemunhas: compara nome/RG/CPF importados com as 4 testemunhas fixas
+  // cadastradas no app e marca o checkbox correspondente
+  [1, 2].forEach(n => {
+    const nomeRaw = (campos['testemunha' + n + '_nome_raw'] || '').trim().toLocaleLowerCase('pt-BR');
+    if (nomeRaw) {
+      const idx = TESTEMUNHAS_FIXAS.findIndex(t => t.nome.toLocaleLowerCase('pt-BR') === nomeRaw);
+      if (idx !== -1) campos['testemunha' + (idx + 1)] = true;
+    }
+    delete campos['testemunha' + n + '_nome_raw'];
+    delete campos['testemunha' + n + '_rg_raw'];
+    delete campos['testemunha' + n + '_cpf_raw'];
+  });
+
+  // Cláusulas Especiais: "D/C?"="Sim" define o Tipo de Desconto (Carência se não
+  // tem valor, Desconto se tem); "Inundação?" vira Sim/Não direto no novo campo
+  if (campos.clausula_dc_raw) {
+    if (/^sim/i.test(campos.clausula_dc_raw)) {
+      campos.tipo_desconto = campos.desconto_valor ? 'Desconto' : 'Carência';
+    } else {
+      campos.tipo_desconto = 'Não';
+    }
+    delete campos.clausula_dc_raw;
+  }
+  if (campos.clausula_inundacao_raw) {
+    campos.obs_area_inundacao = /^sim/i.test(campos.clausula_inundacao_raw) ? 'Sim' : 'Não';
+    delete campos.clausula_inundacao_raw;
+  }
+
+  // Animais de estimação: não tem coluna própria no cadastro — a info
+  // só existe dentro do texto livre de Observações (que o app gera
+  // automaticamente nesse formato: "- Possui N animal(is) de
+  // estimação. Espécie(s): X, Y. Porte(s): Z."). Faz o caminho
+  // inverso pra pré-preencher a pergunta em vez de deixá-la em branco.
+  if (campos.observacoes) {
+    const matchAnimais = campos.observacoes.match(/Possui (\d+) animal\(is\) de estimação\.(?: Espécie\(s\): ([^.]+)\.)?(?: Porte\(s\): ([^.]+)\.)?/);
+    if (matchAnimais) {
+      campos.tem_animais = 'Sim';
+      campos.animais_qtd = matchAnimais[1];
+      if (matchAnimais[2]) {
+        const especies = matchAnimais[2].split(',').map(s => s.trim());
+        const outros = [];
+        especies.forEach(e => {
+          if (e === 'Cachorro') campos.animais_especie_cachorro = true;
+          else if (e === 'Gato') campos.animais_especie_gato = true;
+          else outros.push(e);
+        });
+        if (outros.length) { campos.animais_especie_outro_chk = true; campos.animais_especie_outro = outros.join(', '); }
+      }
+      if (matchAnimais[3]) {
+        const portes = matchAnimais[3].split(',').map(s => s.trim());
+        if (portes.includes('Pequeno')) campos.animais_porte_pequeno = true;
+        if (portes.includes('Médio')) campos.animais_porte_medio = true;
+        if (portes.includes('Grande')) campos.animais_porte_grande = true;
+      }
+    } else {
+      campos.tem_animais = 'Não';
+    }
+  }
+
+  const semPlaceholder = (v) => {
+    const s = (v || '').toString().trim();
+    return (s === '---' || s === '???') ? '' : s;
+  };
+
+  const contractId = semPlaceholder(row[0]);
+  const enderecoImovel = [row[1], row[2], row[3]].map(semPlaceholder).filter(Boolean).join(', ');
+  const nomeLocador = semPlaceholder(row[30]);
+  const nomeLocatario = semPlaceholder(row[60]);
+  const nomeLocatario2 = semPlaceholder(row[70]);
+  const garantiaRaw = semPlaceholder(row[21]);
+  const nomeFiador1 = semPlaceholder(row[90]);
+  const nomeFiador2 = semPlaceholder(row[100]);
+  const nomeGarantia = /fiador/i.test(garantiaRaw)
+    ? [nomeFiador1, nomeFiador2].filter(Boolean).join(' e ')
+    : 'Caução';
+
+  if (!enderecoImovel && !nomeLocador && !nomeLocatario) return null; // linha sem nada útil
+
+  return { contractId, enderecoImovel, nomeLocador, nomeLocatario, nomeLocatario2, nomeGarantia, campos };
+}
 
 async function carregarCadastroContratos() {
   if (cadastroDados) return cadastroDados;
@@ -5727,195 +5918,15 @@ async function carregarCadastroContratos() {
       }
       if (inicioDados === -1) inicioDados = 3; // não achou cabeçalho: assume o padrão de 3 linhas de cabeçalho
 
+// Processa 1 linha de dados (no formato de 130 colunas usado tanto pelo
+// cadastro real quanto pelo Excel exportado pelo botão "Gerar Excel" do
+// próprio app) e devolve os campos já tratados, prontos pra aplicarDadosFormulario.
+// Devolve null se a linha não tiver nada útil.
       for (let i = inicioDados; i < linhas.length; i++) {
         const row = linhas[i];
         if (!row || row.every(c => !c)) continue; // linha em branco, ignora
-
-        const campos = {};
-        const CAMPOS_ESTADO_CIVIL_CADASTRO = ['lcd1_ec', 'lcd2_ec', 'lct1_ec', 'lct2_ec', 'fdr1_ec', 'fdr2_ec'];
-        COLUNAS_CADASTRO.forEach((id, idx) => {
-          if (!id) return;
-          let valor = (row[idx] || '').toString().trim();
-
-          // RGI / Fornecimento (SABESP): "---" significa que o imóvel realmente não
-          // tem RGI (preenche assim mesmo, ao pé da letra); já "???" ou "XXX" significa
-          // que não se sabe o dado, então marca "Não tenho esse dado" em vez de deixar vazio
-          if (id === 'imv_rgi') {
-            if (valor === '---') { campos.imv_rgi = '---'; return; }
-            if (valor === '???' || /^x+$/i.test(valor)) { campos.imv_rgi_naotem = true; return; }
-          }
-
-          if (!valor || valor === '---' || valor === '???') return;
-          if (CAMPOS_ESTADO_CIVIL_CADASTRO.includes(id)) valor = normalizarEstadoCivilCadastro(valor);
-          campos[id] = valor;
-        });
-
-        // Desfaz o texto da conta bancária da caução em banco + número
-        if (campos.caucao_conta_completa) {
-          const { banco, conta } = separarContaCaucao(campos.caucao_conta_completa);
-          if (banco) campos.caucao_banco = banco;
-          if (conta) campos.caucao_conta = conta;
-          delete campos.caucao_conta_completa;
-        }
-
-        // Desfaz "Bairro - Município/UF" do Imóvel Garantia em 2 campos separados,
-        // usando o ÚLTIMO traço como ponto de corte (o bairro pode ter traço no próprio
-        // nome). No Excel real esse traço aparece tanto como hífen "-" quanto travessão "–"
-        if (campos.imgrt_bairro_cidade_completo) {
-          const textoCompleto = campos.imgrt_bairro_cidade_completo;
-          const regexTraco = /\s[-\u2013\u2014]\s/g;
-          let m, ultimoMatch = null;
-          while ((m = regexTraco.exec(textoCompleto)) !== null) ultimoMatch = m;
-          if (ultimoMatch) {
-            campos.imgrt_bairro = textoCompleto.slice(0, ultimoMatch.index).trim();
-            campos.imgrt_cidade = textoCompleto.slice(ultimoMatch.index + ultimoMatch[0].length).trim();
-          } else {
-            campos.imgrt_bairro = textoCompleto.trim();
-          }
-          delete campos.imgrt_bairro_cidade_completo;
-        }
-
-        // Desfaz a Nacionalidade "crua" do cadastro em brasileiro(a)/estrangeiro(a) +
-        // (se for o caso) a nacionalidade específica digitada, usando o Sexo já lido
-        // dessa mesma pessoa para decidir a forma certa (masculina/feminina).
-        // Exceção: pessoa 1 de um grupo em modo PJ não tem "nacionalidade" nesse
-        // campo — é o Cargo Representante (administrador/administradora/sócio
-        // proprietário/sócia proprietária), então não deve passar pela conversão
-        // de nacionalidade; e o campo de Estado Civil dessa pessoa é na verdade
-        // a Natureza Jurídica (campo diferente no formulário).
-        ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(pref => {
-          const grupoDele = pref.slice(0, 3);
-          const ehPessoa1PJ = pref.endsWith('1') && campos['num_' + grupoDele] === 'PJ';
-
-          if (ehPessoa1PJ) {
-            // Cargo Representante: mantém o valor bruto tal como veio (já deve
-            // vir no gênero certo — administrador/a, sócio/sócia proprietário/a)
-            const cargoBruto = campos[pref + '_nacionalidade_raw'];
-            if (cargoBruto) campos[pref + '_nacionalidade'] = cargoBruto.toLocaleLowerCase('pt-BR').trim();
-            delete campos[pref + '_nacionalidade_raw'];
-            // Natureza Jurídica: o cadastro guarda no mesmo lugar do Estado
-            // Civil normal (coluna EC), mas no formulário é um campo à parte
-            if (campos[pref + '_ec'] !== undefined) {
-              campos[pref + '_natureza_juridica'] = campos[pref + '_ec'];
-              delete campos[pref + '_ec'];
-            }
-            return;
-          }
-
-          const bruto = campos[pref + '_nacionalidade_raw'];
-          if (bruto) {
-            const feminino = (campos[pref + '_sexo'] || '') === 'Feminino';
-            const t = bruto.toLocaleLowerCase('pt-BR').trim();
-            if (t.startsWith('brasil')) {
-              campos[pref + '_nacionalidade'] = feminino ? 'brasileira' : 'brasileiro';
-            } else if (t.startsWith('estrang')) {
-              campos[pref + '_nacionalidade'] = feminino ? 'estrangeira' : 'estrangeiro';
-            } else {
-              // veio uma nacionalidade específica (ex.: "italiano") — considera estrangeiro(a)
-              campos[pref + '_nacionalidade'] = feminino ? 'estrangeira' : 'estrangeiro';
-              campos[pref + '_nacionalidade_estrangeira'] = t;
-            }
-          }
-          delete campos[pref + '_nacionalidade_raw'];
-        });
-
-        // "Não Tem RG": o texto vem certo no campo, mas precisa também marcar
-        // o checkbox/pill correspondente (senão a tela mostra a opção como
-        // se não tivesse sido escolhida, mesmo com o texto certo no campo)
-        ['lcd1', 'lcd2', 'lct1', 'lct2', 'fdr1', 'fdr2'].forEach(pref => {
-          const rg = (campos[pref + '_rg'] || '').toLocaleLowerCase('pt-BR').trim();
-          if (rg === 'não tem rg' || rg === 'nao tem rg') {
-            campos[pref + '_rg_naotem'] = true;
-          }
-        });
-
-        // Testemunhas: compara nome/RG/CPF importados com as 4 testemunhas fixas
-        // cadastradas no app e marca o checkbox correspondente
-        [1, 2].forEach(n => {
-          const nomeRaw = (campos['testemunha' + n + '_nome_raw'] || '').trim().toLocaleLowerCase('pt-BR');
-          if (nomeRaw) {
-            const idx = TESTEMUNHAS_FIXAS.findIndex(t => t.nome.toLocaleLowerCase('pt-BR') === nomeRaw);
-            if (idx !== -1) campos['testemunha' + (idx + 1)] = true;
-          }
-          delete campos['testemunha' + n + '_nome_raw'];
-          delete campos['testemunha' + n + '_rg_raw'];
-          delete campos['testemunha' + n + '_cpf_raw'];
-        });
-
-        // Cláusulas Especiais: "D/C?"="Sim" define o Tipo de Desconto (Carência se não
-        // tem valor, Desconto se tem); "Inundação?" vira Sim/Não direto no novo campo
-        if (campos.clausula_dc_raw) {
-          if (/^sim/i.test(campos.clausula_dc_raw)) {
-            campos.tipo_desconto = campos.desconto_valor ? 'Desconto' : 'Carência';
-          } else {
-            campos.tipo_desconto = 'Não';
-          }
-          delete campos.clausula_dc_raw;
-        }
-        if (campos.clausula_inundacao_raw) {
-          campos.obs_area_inundacao = /^sim/i.test(campos.clausula_inundacao_raw) ? 'Sim' : 'Não';
-          delete campos.clausula_inundacao_raw;
-        }
-
-        // Animais de estimação: não tem coluna própria no cadastro — a info
-        // só existe dentro do texto livre de Observações (que o app gera
-        // automaticamente nesse formato: "- Possui N animal(is) de
-        // estimação. Espécie(s): X, Y. Porte(s): Z."). Faz o caminho
-        // inverso pra pré-preencher a pergunta em vez de deixá-la em branco.
-        if (campos.observacoes) {
-          const matchAnimais = campos.observacoes.match(/Possui (\d+) animal\(is\) de estimação\.(?: Espécie\(s\): ([^.]+)\.)?(?: Porte\(s\): ([^.]+)\.)?/);
-          if (matchAnimais) {
-            campos.tem_animais = 'Sim';
-            campos.animais_qtd = matchAnimais[1];
-            if (matchAnimais[2]) {
-              const especies = matchAnimais[2].split(',').map(s => s.trim());
-              const outros = [];
-              especies.forEach(e => {
-                if (e === 'Cachorro') campos.animais_especie_cachorro = true;
-                else if (e === 'Gato') campos.animais_especie_gato = true;
-                else outros.push(e);
-              });
-              if (outros.length) { campos.animais_especie_outro_chk = true; campos.animais_especie_outro = outros.join(', '); }
-            }
-            if (matchAnimais[3]) {
-              const portes = matchAnimais[3].split(',').map(s => s.trim());
-              if (portes.includes('Pequeno')) campos.animais_porte_pequeno = true;
-              if (portes.includes('Médio')) campos.animais_porte_medio = true;
-              if (portes.includes('Grande')) campos.animais_porte_grande = true;
-            }
-          } else {
-            campos.tem_animais = 'Não';
-          }
-        }
-
-        const semPlaceholder = (v) => {
-          const s = (v || '').toString().trim();
-          return (s === '---' || s === '???') ? '' : s;
-        };
-
-        const contractId = semPlaceholder(row[0]);
-        const enderecoImovel = [row[1], row[2], row[3]].map(semPlaceholder).filter(Boolean).join(', ');
-        const nomeLocador = semPlaceholder(row[30]);
-        const nomeLocatario = semPlaceholder(row[60]);
-        const nomeLocatario2 = semPlaceholder(row[70]);
-        const garantiaRaw = semPlaceholder(row[21]);
-        const nomeFiador1 = semPlaceholder(row[90]);
-        const nomeFiador2 = semPlaceholder(row[100]);
-        const nomeGarantia = /fiador/i.test(garantiaRaw)
-          ? [nomeFiador1, nomeFiador2].filter(Boolean).join(' e ')
-          : 'Caução';
-
-        if (!enderecoImovel && !nomeLocador && !nomeLocatario) continue; // linha sem nada útil
-
-        dados.push({
-          contractId,
-          enderecoImovel,
-          nomeLocador,
-          nomeLocatario,
-          nomeLocatario2,
-          nomeGarantia,
-          campos,
-        });
+        const item = processarLinhaCadastro(row);
+        if (item) dados.push(item);
       }
 
       cadastroDados = dados;
@@ -6130,6 +6141,30 @@ async function importarArquivo(event) {
       status.className = 'status-import sucesso';
       status.textContent = `✅ Rascunho "${arquivo.name}" carregado com sucesso!`;
       mostrarToast('📂 Rascunho carregado com sucesso!');
+
+    } else if (nome.endsWith('.xlsx')) {
+      // Arquivo Excel gerado pelo próprio botão "Gerar Excel" do app — tem
+      // sempre exatamente 1 linha de dados, e ela é sempre a ÚLTIMA linha da
+      // planilha (o Excel "compacta" as linhas em branco do início ao
+      // gravar/reler o arquivo, então um índice fixo não é confiável — a
+      // última linha, sim, é sempre a linha de dados nesse formato)
+      const buffer = await arquivo.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const linhas = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
+      const row = linhas[linhas.length - 1];
+      const item = row ? processarLinhaCadastro(row) : null;
+
+      if (!item) {
+        status.className = 'status-import erro';
+        status.textContent = '⚠️ Não encontrei dados nesse Excel. Confirme se é o arquivo exportado pelo botão "Gerar Excel" do app.';
+      } else {
+        aplicarDadosFormulario(item.campos);
+        reformatarCamposImportados(item.campos);
+        status.className = 'status-import sucesso';
+        status.textContent = `✅ Excel "${arquivo.name}" (contrato ${item.contractId || '—'}) carregado com sucesso!`;
+        mostrarToast('📂 Excel carregado com sucesso!');
+      }
 
     } else if (nome.endsWith('.pdf')) {
       const buffer = await arquivo.arrayBuffer();
