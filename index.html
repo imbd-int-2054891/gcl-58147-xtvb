@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v79</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v82</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1525,7 +1525,6 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       <div class="field"><label>Observações Padrão</label>
         <div class="opcoes-grupo">
           <label class="confirm-pill"><input type="checkbox" id="obs_sem_garantia" onchange="atualizarAvisoPendencias()"> Locação sem Imóvel Garantia</label>
-          <label class="confirm-pill"><input type="checkbox" id="obs_matricula_atualizada" onchange="atualizarAvisoPendencias()"> Solicitar Matrícula Atualizada</label>
         </div>
       </div>
 
@@ -2154,7 +2153,6 @@ function calcularLinhasObservacoesPadrao() {
   });
 
   if (marcado('obs_sem_garantia')) linhas.push('- Locação sem Imóvel Garantia.');
-  if (marcado('obs_matricula_atualizada')) linhas.push('- Solicitar Matrícula Atualizada.');
 
   return linhas;
 }
@@ -2451,6 +2449,10 @@ function toggleLcd2() {
     document.querySelectorAll('.opcao-btn[data-for="lcd_casados"]').forEach(btn => btn.classList.remove('selecionada'));
     aplicarCasados('lcd');
   }
+  // Garante que os pills de Nacionalidade da pessoa 2 sempre reflitam o estado
+  // atual — aplicarCasados (acima) só roda quando n!=='2', então sem isso os
+  // pills do Locador 2 ficariam desatualizados justamente ao entrar em "2"
+  montarNacionalidade('lcd2');
 
   atualizarModoPJ('lcd');
   atualizarVisibilidadeEndereco2('lcd');
@@ -2521,6 +2523,9 @@ function toggleLct2() {
     document.querySelectorAll('.opcao-btn[data-for="lct_casados"]').forEach(btn => btn.classList.remove('selecionada'));
     aplicarCasados('lct');
   }
+  // Garante que os pills de Nacionalidade da pessoa 2 sempre reflitam o estado
+  // atual (aplicarCasados só roda quando n!=='2')
+  montarNacionalidade('lct2');
 
   const fins = document.getElementById('fins').value;
   const ehPJResidencial = (n === 'PJ' && fins !== 'COMERCIAIS');
@@ -2545,6 +2550,9 @@ function toggleFdr2() {
     document.querySelectorAll('.opcao-btn[data-for="fdr_casados"]').forEach(btn => btn.classList.remove('selecionada'));
     aplicarCasados('fdr');
   }
+  // Garante que os pills de Nacionalidade da pessoa 2 sempre reflitam o estado
+  // atual (aplicarCasados só roda quando n!=='2')
+  montarNacionalidade('fdr2');
 
   atualizarModoPJ('fdr');
   atualizarVisibilidadeEndereco2('fdr');
@@ -3303,12 +3311,12 @@ function textoDocumentoRgCpf(nacionalidade, rg, cpf, palavraInscrito, orgaoEmiss
 // Réplica de "Y11" — texto de qualificação completo de 1 pessoa física
 // (retorna { negrito: 'NOME', resto: ', nacionalidade, ...' } pra permitir
 // aplicar o negrito só no nome, igual o VBA fazia com .Characters(...).Bold)
-function textoQualificacaoPessoaFisica(p) {
+function textoQualificacaoPessoaFisica(p, omitirEndereco) {
   const nomeMaiusculo = (p.nome || '').toUpperCase();
-  const resto =
-    `, ${p.nacionalidade}, ${p.estadoCivil}, ${p.profissao}, portador ` +
-    textoDocumentoRgCpf(p.nacionalidade, p.rg, p.cpf, p.sexo === 'Feminino' ? 'inscrita' : 'inscrito', p.orgaoEmissorUF) +
-    `, residente na ${p.rua} – ${p.bairro} – ${p.municipio}.`;
+  const docRgCpf = textoDocumentoRgCpf(p.nacionalidade, p.rg, p.cpf, p.sexo === 'Feminino' ? 'inscrita' : 'inscrito', p.orgaoEmissorUF);
+  const resto = omitirEndereco
+    ? `, ${p.nacionalidade}, ${p.estadoCivil}, ${p.profissao}, portador ${docRgCpf}.`
+    : `, ${p.nacionalidade}, ${p.estadoCivil}, ${p.profissao}, portador ${docRgCpf}, residente na ${p.rua} – ${p.bairro} – ${p.municipio}.`;
   return { negrito: nomeMaiusculo, resto };
 }
 
@@ -3334,7 +3342,7 @@ function textoQualificacaoPessoaFisica(p) {
 //   ausente), os dois usam o MESMO endereço (enderecoGrupo) no final,
 //   juntos ("residentes na X"). Se enderecoPessoa2 FOR informado, cada um
 //   termina com o seu próprio endereço ("residente na X; e closest ...").
-function textoQualificacao2Pessoas(pessoa1, pessoa2, casadosEntreSi, regime, dataCasamento, enderecoGrupo, enderecoPessoa2) {
+function textoQualificacao2Pessoas(pessoa1, pessoa2, casadosEntreSi, regime, dataCasamento, enderecoGrupo, enderecoPessoa2, omitirEndereco) {
   const nome1 = (pessoa1.nome || '').toUpperCase();
   const nome2 = (pessoa2.nome || '').toUpperCase();
   const portador = p => (p.sexo === 'Feminino' ? 'portadora' : 'portador');
@@ -3347,7 +3355,8 @@ function textoQualificacao2Pessoas(pessoa1, pessoa2, casadosEntreSi, regime, dat
       `, e ${termoConjuge} `;
     const meio2 = `, ${pessoa2.nacionalidade}, ${pessoa2.profissao}, ${portador(pessoa2)} ` +
       textoDocumentoRgCpf(pessoa2.nacionalidade, pessoa2.rg, pessoa2.cpf, inscrito(pessoa2), pessoa2.orgaoEmissorUF) +
-      `, casados sob o regime da ${regime} no dia ${dataCasamento}, residentes na ${enderecoGrupo}.`;
+      `, casados sob o regime da ${regime} no dia ${dataCasamento}` +
+      (omitirEndereco ? '.' : `, residentes na ${enderecoGrupo}.`);
     return [{ negrito: nome1 }, { texto: meio1 }, { negrito: nome2 }, { texto: meio2 }];
   }
 
@@ -3355,6 +3364,13 @@ function textoQualificacao2Pessoas(pessoa1, pessoa2, casadosEntreSi, regime, dat
     textoDocumentoRgCpf(pessoa1.nacionalidade, pessoa1.rg, pessoa1.cpf, inscrito(pessoa1), pessoa1.orgaoEmissorUF);
   const meio2Base = `, ${pessoa2.nacionalidade}, ${pessoa2.estadoCivil}, ${pessoa2.profissao}, ${portador(pessoa2)} ` +
     textoDocumentoRgCpf(pessoa2.nacionalidade, pessoa2.rg, pessoa2.cpf, inscrito(pessoa2), pessoa2.orgaoEmissorUF);
+
+  if (omitirEndereco) {
+    return [
+      { negrito: nome1 }, { texto: `${meio1Base}, e ` },
+      { negrito: nome2 }, { texto: `${meio2Base}.` },
+    ];
+  }
 
   const temEndereco2Proprio = (enderecoPessoa2 || '').trim() !== '';
   if (temEndereco2Proprio) {
@@ -3681,7 +3697,7 @@ function removerParagrafoComTexto(xml, marcador) {
 // si (Caução ou Fiador), a conta bancária da caução, o foro e o trecho das
 // chaves — e devolve também quais parágrafos precisam ser apagados (só no
 // caso Caução, os 3 parágrafos exclusivos de Fiador)
-function montarDadosGarantia(garantia, contaCaucaoCompleta, caucaoValor, caucaoExtenso, partesQualificacaoFiadores) {
+function montarDadosGarantia(garantia, contaCaucaoCompleta, caucaoValor, caucaoExtenso, partesQualificacaoFiadores, rotuloFiador) {
   const TEXTO_CAUCAO = '#Lct_maio #Locatário #Lct_deposita a título de caução, a importância mencionada no QUADRO RESUMO (ITEM 9), no banco: #Cau3, sendo vetada sua retirada ou utilização enquanto perdurar o presente instrumento, posto que, #Lct_lhe será restituída na rescisão contratual, após vistoria do bem locado, e, somente quando não confirmado qualquer avaria, prejuízo ou perda patrimonial, hipótese em que, será dito valor restituído com os devidos acréscimos percebidos pela correção da caderneta de poupança, bem como com os descontos de reparação do imóvel se necessários.';
   const TEXTO_FIADOR = 'Como garantia #Fdr_assina também na qualidade de #Fiador e #Fdr_principal #Fdr_pagador, #Fdr_omi #Fdr_qualificado no QUADRO RESUMO (ITEM 9), sendo #Fdr_solidário com #Lct_omi #Locatário em todas as obrigações aqui assumidas.';
 
@@ -3702,7 +3718,7 @@ function montarDadosGarantia(garantia, contaCaucaoCompleta, caucaoValor, caucaoE
   // cada fiador (dentro da qualificação) também, igual o #Texto_Lcd/#Texto_Lct
   return {
     textoGarantia: TEXTO_FIADOR,
-    partesGrt1: [{ negrito: 'FIADOR:' }, { texto: ' ' }, ...partesQualificacaoFiadores],
+    partesGrt1: [{ negrito: `${rotuloFiador}:` }, { texto: ' ' }, ...partesQualificacaoFiadores],
     cau3: null,
     foroContratantes: 'contratantes e fiadores.',
     textoChaves: 'será feita caução das importâncias apuradas.',
@@ -3860,7 +3876,8 @@ function montarAssinaturasFiador(fiador1, fiador2) {
       '#Fdr_Und': '', '#Fdr_1': '', '#Fdr_RG': '', '#Fdr_CPF': '', '#Fdr_5': '', '#Fdr_6': '',
     };
   }
-  const rotulo = fiador1.sexo === 'Feminino' ? 'FIADORA:' : 'FIADOR:';
+  const formaFiador = formaConcordancia(fiador2 ? '2' : '1', fiador1.sexo, fiador2 ? fiador2.sexo : null);
+  const rotulo = TABELA_CONCORDANCIA_FDR['#Fiador'][formaFiador] + ':';
   const base = {
     '#Ass_Fiador': rotulo,
     '#Fdrund': '_________________________________',
@@ -4655,13 +4672,18 @@ function montarDadosGrupo(grupo, enderecoGrupo, endereco2) {
     };
   }
 
+  // Locatário (pessoa física) em locação Residencial não menciona endereço
+  // de forma alguma na qualificação — regra que já existia no VBA original
+  // (só aparece endereço do Locatário quando Fins=Comercial ou quando é PJ)
+  const omitirEndereco = (grupo === 'lct' && v('fins') !== 'COMERCIAIS');
+
   if (num === '2') {
     const pessoa1 = lerPessoaFisica(p1);
     const pessoa2 = lerPessoaFisica(p2);
     const casados = v(grupo + '_casados');
     const texto = textoQualificacao2Pessoas(
       pessoa1, pessoa2, casados, v(grupo + '_regime'), v(grupo + '_data_casamento'),
-      enderecoGrupo, casados === 'Sim' ? '' : endereco2
+      enderecoGrupo, casados === 'Sim' ? '' : endereco2, omitirEndereco
     );
     return { texto, forma: formaConcordancia('2', pessoa1.sexo, pessoa2.sexo), ehPJ: false, pessoa1, pessoa2 };
   }
@@ -4669,7 +4691,7 @@ function montarDadosGrupo(grupo, enderecoGrupo, endereco2) {
   // 1 pessoa
   const pessoa1 = lerPessoaFisica(p1);
   const [rua, bairro, municipio] = enderecoGrupo.split(' – ');
-  const txt = textoQualificacaoPessoaFisica({ ...pessoa1, rua, bairro, municipio });
+  const txt = textoQualificacaoPessoaFisica({ ...pessoa1, rua, bairro, municipio }, omitirEndereco);
   return {
     texto: [{ negrito: txt.negrito }, { texto: txt.resto }],
     forma: formaConcordancia('1', pessoa1.sexo, null), ehPJ: false, pessoa1,
@@ -4781,7 +4803,7 @@ async function gerarContratoWord() {
 
     // ---------- Garantia (Cláusula 8ª) ----------
     const dadosGarantia = isFiador
-      ? montarDadosGarantia(garantia, null, null, null, dadosFdr.texto)
+      ? montarDadosGarantia(garantia, null, null, null, dadosFdr.texto, TABELA_CONCORDANCIA_FDR['#Fiador'][dadosFdr.forma])
       : montarDadosGarantia(garantia, contaCaucaoCompleta(), v('caucao_valor'), v('caucao_extenso'));
 
     if (dadosGarantia.cau3) concordancia['#Cau3'] = dadosGarantia.cau3;
@@ -4808,7 +4830,7 @@ async function gerarContratoWord() {
       '#Texto_chaves': dadosGarantia.textoChaves,
       '#Comercial': 'afins, não cabendo qualquer indenização ou compensação pelo tempo e formação de fundo de comércio.',
       ...(isFiador ? {
-        '#Fdr_imóvel': v('imgrt_descricao').toUpperCase(),
+        '#Fdr_imóvel': v('imgrt_descricao'),
         '#Fdr_endereço': v('imgrt_rua'),
         '#Fdr_bairro': imgrtBairroCidadeCompleto(),
         '#Fdr_matrícula': v('imgrt_matricula'),
@@ -4840,8 +4862,10 @@ async function gerarContratoWord() {
       // não a genérica (que é só pra Locador/Locatário)
       if (dadosFdr.ehPJ) {
         const r = montarAssinaturaPJ('Fdr', dadosFdr.empresa.nome, dadosFdr.empresa.cnpj, dadosFdr.representante);
-        // #Ass_Fiador não existe na função de PJ — ajusta separado
-        const rotuloFiador = dadosFdr.representante.sexo === 'Feminino' ? 'FIADORA:' : 'FIADOR:';
+        // #Ass_Fiador não existe na função de PJ — ajusta separado. PJ é
+        // sempre feminino singular (a empresa é "a fiadora"), independente
+        // do gênero do representante que assina por ela
+        const rotuloFiador = TABELA_CONCORDANCIA_FDR['#Fiador']['O'] + ':';
         Object.assign(substituicoes, r.substituicoes, { '#Ass_Fiador': rotuloFiador });
         insercoes.push({ marcador: r.insercao.marcador, listaPartes: r.insercao.listaPartes });
         paragrafosParaRemover.push(...r.paragrafosParaRemover);
@@ -4862,6 +4886,17 @@ async function gerarContratoWord() {
     // ---------- Testemunhas ----------
     const testemunhas = testemunhasSelecionadas();
     Object.assign(substituicoes, montarTestemunhas(testemunhas[0], testemunhas[1]));
+
+    // ---------- Cláusula da Utilização do Imóvel: "Parágrafo Único" sobre
+    // providenciar documentação junto aos órgãos competentes (Prefeitura,
+    // Corpo de Bombeiros, Vigilância Sanitária, CETESB etc.) para exercer
+    // atividade comercial no imóvel — só existe quando a locação é Comercial;
+    // em Residencial esse parágrafo inteiro precisa sumir do contrato
+    if (fins === 'COMERCIAIS') {
+      substituicoes['#Parágrafo_Único'] = 'Parágrafo Único';
+    } else {
+      paragrafosParaRemover.push('a providenciar por sua conta e responsabilidade toda a documentação');
+    }
 
     // ---------- Cláusulas condicionais (Inundação / Desconto-Carência) ----------
     if (v('obs_area_inundacao') === 'Sim') {
@@ -5389,7 +5424,72 @@ function valorCampoPDF(campos, nome) {
   return entry ? entry.value : undefined;
 }
 
-function mapearCamposAcroForm(campos) {
+// Processa o texto de Observações do Formulário Interno (que junta várias
+// informações estruturadas em linhas de texto padronizadas: inundação,
+// desconto/carência, animais) — detecta cada uma, preenche os campos certos,
+// e devolve o texto SEM essas linhas (só o que sobra é observação livre de
+// verdade, tipo "RG do Locatário é SSP/GO" ou "Documentação incompleta")
+function processarObservacoesInternas(obsTexto) {
+  const dados = {};
+  let texto = obsTexto || '';
+
+  // Área de Inundação: se não mencionar, é Não
+  const temInundacao = /inunda[çc][ãa]o/i.test(texto);
+  dados.obs_area_inundacao = temInundacao ? 'Sim' : 'Não';
+  texto = texto.replace(/^-?\s*Im[óo]vel em [áa]rea de inunda[çc][ãa]o\.[^\n]*\n?/im, '');
+
+  // Desconto ou Carência: se não mencionar nenhum, é Não
+  const mDesconto = texto.match(/Desconto\s+de\s+R\$\s*([\d.,]+)\s+por\s+(\d+)\s+m[êe]s(?:es)?\.?/i);
+  const mCarencia = texto.match(/Car[êe]ncia\s+de\s+(\d+)\s+m[êe]s(?:es)?\.?/i);
+  if (mDesconto) {
+    dados.tipo_desconto = 'Desconto';
+    dados.desconto_valor = mDesconto[1];
+    dados.desconto_meses = mDesconto[2];
+    texto = texto.replace(mDesconto[0], '');
+  } else if (mCarencia) {
+    dados.tipo_desconto = 'Carência';
+    dados.desconto_meses = mCarencia[1];
+    texto = texto.replace(mCarencia[0], '');
+  } else {
+    dados.tipo_desconto = 'Não';
+  }
+
+  // Animais de Estimação: se não mencionar, é Não
+  const mAnimal = texto.match(/Possui\s+(\d+)\s+Animal(?:is)?\.(?:\s*Esp[ée]cie:\s*([^.]+)\.)?(?:\s*Porte:\s*([^.]+)\.)?/i);
+  if (mAnimal) {
+    dados.tem_animais = 'Sim';
+    dados.animais_qtd = mAnimal[1];
+    if (mAnimal[2]) {
+      const especies = mAnimal[2].split(',').map(s => s.trim());
+      const outros = [];
+      especies.forEach(e => {
+        if (/cachorro/i.test(e)) dados.animais_especie_cachorro = true;
+        else if (/gato/i.test(e)) dados.animais_especie_gato = true;
+        else outros.push(e);
+      });
+      if (outros.length) { dados.animais_especie_outro_chk = true; dados.animais_especie_outro = outros.join(', '); }
+    }
+    if (mAnimal[3]) {
+      const porte = mAnimal[3].toLowerCase();
+      if (porte.includes('pequeno')) dados.animais_porte_pequeno = true;
+      if (porte.includes('médio') || porte.includes('medio')) dados.animais_porte_medio = true;
+      if (porte.includes('grande')) dados.animais_porte_grande = true;
+    }
+    texto = texto.replace(mAnimal[0], '');
+  } else {
+    dados.tem_animais = 'Não';
+  }
+
+  // Remove a linha do dia de pagamento (já vira campo próprio, não observação)
+  texto = texto.replace(/^-?\s*Dia\s+de\s+pagamento\s+preferido:?[^\n]*\n?/im, '');
+
+  // Limpa linhas em branco/traços soltos que sobraram e junta o que restou
+  dados.observacoes = texto.split('\n').map(l => l.trim()).filter(l => l && l !== '-').join('\n');
+
+  return dados;
+}
+
+function mapearCamposAcroForm(campos, textoPagina) {
   const dados = {};
   // Normaliza o texto do Estado Civil: tira "(a)/(o)" e deixa em minúsculo,
   // batendo com as opções da lista suspensa do app
@@ -5450,7 +5550,34 @@ function mapearCamposAcroForm(campos) {
     dados.fdr_casados = 'Sim';
   }
 
-  if (v = txt('f42_observacoes')) dados.observacoes = v;
+  // Busca por padrão de nome (não índice fixo) — o "Formulário Interno" às
+  // vezes muda a numeração dos campos (ex.: f42_observacoes numa versão,
+  // f43_observacoes noutra, dependendo de quantos campos vêm antes)
+  const buscarCampoPorPadrao = (padrao) => {
+    const chave = Object.keys(campos).find(k => padrao.test(k));
+    return chave ? txt(chave) : null;
+  };
+
+  const diaPagamento = buscarCampoPorPadrao(/dia_pagamento/i);
+  if (diaPagamento) dados.vencimento = diaPagamento;
+
+  let obsBruta = buscarCampoPorPadrao(/observ/i) || '';
+  // Animais de Estimação no Formulário Interno não é um campo de formulário —
+  // é texto estático da página (montado a partir de checkboxes em outro
+  // sistema), então busca também ali e junta com o texto de observações
+  // antes de processar tudo junto
+  if (textoPagina) {
+    const mAnimalPagina = textoPagina.match(/Possui\s+\d+\s+Animal(?:is)?\.[^\n]*/i);
+    if (mAnimalPagina && !obsBruta.includes(mAnimalPagina[0])) {
+      obsBruta = mAnimalPagina[0] + '\n' + obsBruta;
+    }
+  }
+  Object.assign(dados, processarObservacoesInternas(obsBruta));
+
+  // Nome do Locador e Endereço do imóvel costumam vir num formato diferente
+  // do necessário pra gerar o contrato (o Formulário Interno busca isso de
+  // outra base) — sinaliza que precisa revisar
+  if (dados.lcd1_nome || dados.imv_rua) dados.avisoRevisarLocadorEndereco = true;
 
   if (dados.lct2_nome) dados.num_lct = '2'; else if (dados.lct1_nome) dados.num_lct = '1';
   if (dados.fdr1_nome) { dados.garantia = 'FIADOR'; dados.num_fdr = dados.fdr2_nome ? '2' : '1'; }
@@ -6206,30 +6333,46 @@ async function importarArquivo(event) {
       const camposForm = await pdf.getFieldObjects();
       if (camposForm && Object.keys(camposForm).length > 0) {
         // PDF com campos de formulário reais (ex.: Formulário Interno) — extração exata
-        const dados = mapearCamposAcroForm(camposForm);
+        const textoPagina = await extrairTextoCorridoPDF(pdf);
+        const dados = mapearCamposAcroForm(camposForm, textoPagina);
 
-        // Em alguns geradores, o texto de "Observações" fica gravado como texto
-        // estático da página (não como valor do campo) — busca esse texto como reforço
-        if (!dados.observacoes) {
-          const textoPagina = await extrairTextoCorridoPDF(pdf);
-          const mObs = /OBSERVA[ÇC][ÕO]ES\s*\n([\s\S]+?)(?:\n\s*\n\s*\n|$)/i.exec(textoPagina);
-          if (mObs && mObs[1].trim()) dados.observacoes = mObs[1].trim();
+        const avisos = [];
+        if (dados.avisoRevisarLocadorEndereco) {
+          avisos.push('O Nome do Locador e o Endereço vieram do Formulário Interno, que busca esses dados de outra base — costumam vir em formato diferente do necessário para gerar o contrato. Revise com atenção.');
+        }
+        delete dados.avisoRevisarLocadorEndereco;
+        if ((dados.observacoes || '').trim()) {
+          avisos.push('As Observações internas foram copiadas para o formulário. Revise antes de gerar o contrato — alguma pendência (ex.: documentação faltante) pode já ter sido resolvida desde que a observação foi escrita.');
         }
 
         aplicarImportacaoGenerica(dados, status, arquivo.name);
+        if (avisos.length) {
+          alert('⚠️ Atenção antes de gerar o contrato:\n\n' + avisos.map((a, i) => `${i + 1}. ${a}`).join('\n\n'));
+        }
       } else {
-        // PDF "achatado": tenta como formulário de cliente (rótulos) e, se achar pouco,
-        // tenta como contrato já pronto (texto corrido com qualificação das partes)
+        // PDF "achatado": tenta como formulário de cliente (rótulos) primeiro.
+        // Só tenta como "contrato já pronto" (texto corrido, heurísticas mais
+        // soltas) quando o formulário não achou nomes de Locatário/Fiador —
+        // isso evita que documentos anexados ao formulário (holerite, conta
+        // de água, CNH etc.) sejam lidos por engano como se fossem o próprio
+        // contrato, contaminando campos como a Data do Contrato (a heurística
+        // de "contrato pronto" pega a ÚLTIMA data do documento inteiro,
+        // pensando ser a data da assinatura — mas nesse caso pegaria a data
+        // de pagamento de algum holerite anexado, por exemplo)
         const textoColunas = await extrairTextoComColunas(pdf);
         const dadosLabel = mapearTextoPDF(textoColunas);
 
-        const textoCorrido = await extrairTextoCorridoPDF(pdf);
-        const resultadoContrato = analisarTextoContratoPronto(textoCorrido);
-        const dadosContrato = montarDadosContratoPronto(resultadoContrato);
-        const dadosQuadroResumo = extrairQuadroResumo(textoCorrido);
-
-        const dados = { ...dadosLabel, ...dadosContrato, ...dadosQuadroResumo };
-        aplicarImportacaoGenerica(dados, status, arquivo.name, resultadoContrato);
+        let dados = dadosLabel;
+        if (!dadosLabel.lct1_nome && !dadosLabel.fdr1_nome) {
+          const textoCorrido = await extrairTextoCorridoPDF(pdf);
+          const resultadoContrato = analisarTextoContratoPronto(textoCorrido);
+          const dadosContrato = montarDadosContratoPronto(resultadoContrato);
+          const dadosQuadroResumo = extrairQuadroResumo(textoCorrido);
+          dados = { ...dadosLabel, ...dadosContrato, ...dadosQuadroResumo };
+          aplicarImportacaoGenerica(dados, status, arquivo.name, resultadoContrato);
+        } else {
+          aplicarImportacaoGenerica(dados, status, arquivo.name);
+        }
       }
 
     } else if (nome.endsWith('.docx')) {
