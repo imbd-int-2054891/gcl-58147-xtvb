@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v84</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v86</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1682,6 +1682,11 @@ function handleSemImovelGarantiaChange() {
   });
   if (pill) pill.classList.toggle('marcada', marcado);
 
+  // A observação só é gerada ao clicar em "Gerar Observações" (ou, se a
+  // pessoa esquecer, automaticamente ao gerar o Excel/Contrato de verdade —
+  // buildDataRow() já chama sincronizarObservacoesPadrao() antes de exportar).
+  // Marcar este botão sozinho não deve reescrever o texto de Observações.
+
   atualizarAvisoPendencias();
 }
 
@@ -2216,7 +2221,13 @@ function calcularLinhasObservacoesPadrao() {
     }
   });
 
-  if (marcado('obs_sem_garantia')) linhas.push('- Locação sem Imóvel Garantia.');
+  if (marcado('obs_sem_garantia')) {
+    const numFdr = document.getElementById('num_fdr')?.value || '';
+    const nomeFdr1 = primeiroNome(document.getElementById('fdr1_nome')?.value || '');
+    const nomeFdr2 = primeiroNome(document.getElementById('fdr2_nome')?.value || '');
+    const nomesFiadores = (numFdr === '2' || numFdr === 'PJ') ? `${nomeFdr1} e ${nomeFdr2}` : nomeFdr1;
+    linhas.push(`- Locação sem imóvel Garantia - FDR (${nomesFiadores}).`);
+  }
 
   return linhas;
 }
@@ -3788,7 +3799,7 @@ function removerParagrafoComTexto(xml, marcador) {
 // si (Caução ou Fiador), a conta bancária da caução, o foro e o trecho das
 // chaves — e devolve também quais parágrafos precisam ser apagados (só no
 // caso Caução, os 3 parágrafos exclusivos de Fiador)
-function montarDadosGarantia(garantia, contaCaucaoCompleta, caucaoValor, caucaoExtenso, partesQualificacaoFiadores, rotuloFiador) {
+function montarDadosGarantia(garantia, contaCaucaoCompleta, caucaoValor, caucaoExtenso, partesQualificacaoFiadores, rotuloFiador, semImovelGarantia) {
   const TEXTO_CAUCAO = '#Lct_maio #Locatário #Lct_deposita a título de caução, a importância mencionada no QUADRO RESUMO (ITEM 9), no banco: #Cau3, sendo vetada sua retirada ou utilização enquanto perdurar o presente instrumento, posto que, #Lct_lhe será restituída na rescisão contratual, após vistoria do bem locado, e, somente quando não confirmado qualquer avaria, prejuízo ou perda patrimonial, hipótese em que, será dito valor restituído com os devidos acréscimos percebidos pela correção da caderneta de poupança, bem como com os descontos de reparação do imóvel se necessários.';
   const TEXTO_FIADOR = 'Como garantia #Fdr_assina também na qualidade de #Fiador e #Fdr_principal #Fdr_pagador, #Fdr_omi #Fdr_qualificado no QUADRO RESUMO (ITEM 9), sendo #Fdr_solidário com #Lct_omi #Locatário em todas as obrigações aqui assumidas.';
 
@@ -3807,18 +3818,30 @@ function montarDadosGarantia(garantia, contaCaucaoCompleta, caucaoValor, caucaoE
   // Item 09 do Fiador agora usa a qualificação completa (nome+RG+CPF+endereço),
   // igual acontece com o Locador — "#Fiador:" fica em negrito, e o nome de
   // cada fiador (dentro da qualificação) também, igual o #Texto_Lcd/#Texto_Lct
+  //
+  // Parágrafo Terceiro é o único dos 3 que fala do imóvel dado em garantia
+  // pelo Fiador — quando a locação está marcada como "sem Imóvel Garantia",
+  // não faz sentido substituir os valores dele (ficaria "XXX" espalhado no
+  // contrato): o parágrafo inteiro é removido, sobrando só Primeiro e Segundo.
+  const textosParagrafos = {
+    '#Parágrafo_Primeiro': 'Parágrafo Primeiro',
+    '#Parágrafo_Segundo': 'Parágrafo Segundo',
+  };
+  const paragrafosParaRemover = [];
+  if (semImovelGarantia) {
+    paragrafosParaRemover.push('#Parágrafo_Terceiro');
+  } else {
+    textosParagrafos['#Parágrafo_Terceiro'] = 'Parágrafo Terceiro';
+  }
+
   return {
     textoGarantia: TEXTO_FIADOR,
     partesGrt1: [{ negrito: `${rotuloFiador}:` }, { texto: ' ' }, ...partesQualificacaoFiadores],
     cau3: null,
     foroContratantes: 'contratantes e fiadores.',
     textoChaves: 'será feita caução das importâncias apuradas.',
-    paragrafosParaRemover: [],
-    textosParagrafos: {
-      '#Parágrafo_Primeiro': 'Parágrafo Primeiro',
-      '#Parágrafo_Segundo': 'Parágrafo Segundo',
-      '#Parágrafo_Terceiro': 'Parágrafo Terceiro',
-    },
+    paragrafosParaRemover,
+    textosParagrafos,
   };
 }
 
@@ -4894,7 +4917,7 @@ async function gerarContratoWord() {
 
     // ---------- Garantia (Cláusula 8ª) ----------
     const dadosGarantia = isFiador
-      ? montarDadosGarantia(garantia, null, null, null, dadosFdr.texto, TABELA_CONCORDANCIA_FDR['#Fiador'][dadosFdr.forma])
+      ? montarDadosGarantia(garantia, null, null, null, dadosFdr.texto, TABELA_CONCORDANCIA_FDR['#Fiador'][dadosFdr.forma], document.getElementById('obs_sem_garantia')?.checked)
       : montarDadosGarantia(garantia, contaCaucaoCompleta(), v('caucao_valor'), v('caucao_extenso'));
 
     if (dadosGarantia.cau3) concordancia['#Cau3'] = dadosGarantia.cau3;
