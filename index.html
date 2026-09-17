@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v82</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v84</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1024,6 +1024,14 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="opcao-btn" data-for="garantia" data-valor="CAUÇÃO" onclick="selecionarOpcao('garantia','CAUÇÃO',toggleGarantia)">Caução</div>
         </div>
         <input type="hidden" id="garantia" value="">
+      </div>
+
+      <div class="field" id="obs_sem_garantia_field" style="display:none">
+        <label>&nbsp;</label>
+        <label class="confirm-pill" id="obs_sem_garantia_pill">
+          <input type="checkbox" id="obs_sem_garantia" onchange="handleSemImovelGarantiaChange()"> Locação sem Imóvel Garantia
+        </label>
+        <span class="campo-dica">Marque quando não houver imóvel dado em garantia pelo Fiador — os campos abaixo são bloqueados e preenchidos com "XXX" automaticamente</span>
       </div>
 
       <div id="caucao-fields" style="display:none;grid-column:1/-1">
@@ -1522,12 +1530,6 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 
       <div class="divider" style="margin: 16px 0 16px"></div>
 
-      <div class="field"><label>Observações Padrão</label>
-        <div class="opcoes-grupo">
-          <label class="confirm-pill"><input type="checkbox" id="obs_sem_garantia" onchange="atualizarAvisoPendencias()"> Locação sem Imóvel Garantia</label>
-        </div>
-      </div>
-
       <button type="button" class="btn-secundario" style="margin: 6px 0 16px; flex:none; width:fit-content;" onclick="gerarObservacoesPadrao()">🔄 Gerar Observações</button>
 
       <div class="field"><label>Observações no Contrato</label><textarea id="observacoes"></textarea></div>
@@ -1636,7 +1638,69 @@ function toggleGarantia() {
   document.getElementById('sec-fiadores').style.display = g === 'FIADOR' ? '' : 'none';
   const linkFiadores = document.getElementById('sidebarItemFiadores');
   if (linkFiadores) linkFiadores.style.display = g === 'FIADOR' ? 'flex' : 'none';
+
+  // "Locação sem Imóvel Garantia" só faz sentido com Fiador (Caução não tem
+  // imóvel garantia pra bloquear) — some o botão e desfaz o bloqueio se a
+  // pessoa mudar pra Caução com o botão ainda marcado
+  const campoSemGarantia = document.getElementById('obs_sem_garantia_field');
+  if (campoSemGarantia) campoSemGarantia.style.display = g === 'FIADOR' ? '' : 'none';
+  if (g !== 'FIADOR' && document.getElementById('obs_sem_garantia')?.checked) {
+    document.getElementById('obs_sem_garantia').checked = false;
+    handleSemImovelGarantiaChange();
+  }
+
   atualizarAvisoPendencias();
+}
+
+// Campos do Imóvel Garantia que o botão "Locação sem Imóvel Garantia" bloqueia
+// e preenche como "XXX". Município/UF fica de fora de propósito: ele só é usado
+// somado dentro da célula "Bairro - Município/UF" na exportação (imgrtBairroCidadeCompleto),
+// então não precisa de "XXX" próprio — fica em branco sem gerar pendência.
+const CAMPOS_IMGRT_BLOQUEAVEIS = ['imgrt_descricao', 'imgrt_matricula', 'imgrt_rua', 'imgrt_bairro'];
+
+// Chamado ao marcar/desmarcar "Locação sem Imóvel Garantia": bloqueia (ou libera)
+// os campos do Imóvel Garantia, preenchendo com "XXX" tudo que a pessoa não tem
+// (mesmo padrão visual das outras "Não tenho esse dado" da Matrícula/Inscrição/UC/RGI)
+function handleSemImovelGarantiaChange() {
+  const chk = document.getElementById('obs_sem_garantia');
+  const pill = document.getElementById('obs_sem_garantia_pill');
+  const marcado = !!chk?.checked;
+
+  CAMPOS_IMGRT_BLOQUEAVEIS.forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    if (marcado) {
+      input.value = 'XXX';
+      input.readOnly = true;
+      input.classList.add('campo-confirmado');
+      input.classList.remove('campo-erro');
+    } else {
+      input.value = '';
+      input.readOnly = false;
+      input.classList.remove('campo-confirmado');
+    }
+  });
+  if (pill) pill.classList.toggle('marcada', marcado);
+
+  atualizarAvisoPendencias();
+}
+
+// Detecta se os campos do Imóvel Garantia já vieram todos como "XXX" (de uma
+// importação — rascunho, PDF, Excel, cadastro) e, se sim, marca sozinho o
+// botão "Locação sem Imóvel Garantia" (em vez de deixar a pessoa reabrir a
+// aba e clicar na mão em algo que os dados já deixam claro)
+function detectarSemImovelGarantiaAoImportar() {
+  if (document.getElementById('garantia')?.value !== 'FIADOR') return;
+  const ehXXX = (id) => {
+    const val = (document.getElementById(id)?.value || '').trim();
+    return /^x+$/i.test(val);
+  };
+  const todosXXX = CAMPOS_IMGRT_BLOQUEAVEIS.every(ehXXX);
+  const chk = document.getElementById('obs_sem_garantia');
+  if (todosXXX && chk && !chk.checked) {
+    chk.checked = true;
+    handleSemImovelGarantiaChange();
+  }
 }
 
 // Atualiza o exemplo da Conta Bancária de acordo com o banco escolhido na Caução
@@ -2598,6 +2662,13 @@ function montarEstadoCivil(prefixo) {
 // com o gênero igual ao do Representante (pessoa 2 do mesmo grupo), reaproveitando
 // o mesmo campo escondido da Nacionalidade (que não é usado nesse modo)
 function montarCargoRepresentante(grupo) {
+  // Só mexe nos pills da pessoa 1 quando o grupo REALMENTE está em modo PJ.
+  // Sem essa checagem, clicar no Sexo da pessoa 2 (que sempre chama esta função,
+  // pois o gênero do Cargo Representante depende do sexo do representante)
+  // reescrevia os pills de Nacionalidade da pessoa 1 para Administrador/Sócio
+  // Proprietário mesmo em contratos normais (não-PJ), apagando o Brasileiro/
+  // Estrangeiro que já estava selecionado.
+  if (document.getElementById('num_' + grupo)?.value !== 'PJ') return;
   const p = grupo + '1';
   const repPrefixo = grupo + '2';
   const feminino = (document.getElementById(repPrefixo + '_sexo')?.value || '') === 'Feminino';
@@ -2759,6 +2830,17 @@ function addCpfOuNacionalidadeObrigatorios(add, prefixo, rotulo) {
   }
 }
 
+// Órgão Emissor/UF do RG: só é exigido de quem é brasileiro (estrangeiro usa a
+// caixa "Qual Nacionalidade" no lugar dessa célula, e não tem Órgão Emissor/UF
+// de RG brasileiro pra preencher) — faltava esta checagem, então a aba fechava
+// como "completa" mesmo com essa célula em branco
+function addRgOrgaoObrigatorio(add, prefixo, rotulo) {
+  const nac = document.getElementById(prefixo + '_nacionalidade')?.value || '';
+  if (!nac.startsWith('estrang')) {
+    add(prefixo + '_rg_orgao', rotulo + ' — Órgão Emissor/UF do RG');
+  }
+}
+
 // Valida a pessoa 1 de Locador/Locatário/Fiador, considerando o modo PJ: troca as
 // exigências de Sexo/Estado Civil/Nacionalidade/RG pelas de Natureza Jurídica/Cargo
 // Representante/CNPJ (RG vira NIRE e fica opcional, já que nem toda empresa tem)
@@ -2776,6 +2858,7 @@ function addPessoa1Obrigatorios(add, grupo, prefixo, rotulo) {
     add(prefixo + '_prof', rotulo + ' — Profissão');
     add(prefixo + '_rg', rotulo + ' — RG');
     addCpfOuNacionalidadeObrigatorios(add, prefixo, rotulo);
+    addRgOrgaoObrigatorio(add, prefixo, rotulo);
   }
   add(prefixo + '_tel', rotulo + ' — Telefone');
   add(prefixo + '_email', rotulo + ' — E-mail');
@@ -2830,7 +2913,12 @@ function obterCamposObrigatorios() {
     add('imgrt_descricao', 'Imóvel Garantia — Descrição');
     add('imgrt_rua', 'Imóvel Garantia — Rua e nº');
     add('imgrt_bairro', 'Imóvel Garantia — Bairro');
-    add('imgrt_cidade', 'Imóvel Garantia — Município/UF');
+    // Município/UF fica de fora quando "Locação sem Imóvel Garantia" está marcado:
+    // esse campo não é bloqueado com "XXX" (só é usado somado dentro da célula
+    // "Bairro - Município/UF" na exportação), então não pode gerar pendência sozinho
+    if (!document.getElementById('obs_sem_garantia')?.checked) {
+      add('imgrt_cidade', 'Imóvel Garantia — Município/UF');
+    }
     add('imgrt_matricula', 'Imóvel Garantia — Matrícula');
   }
 
@@ -2848,6 +2936,7 @@ function obterCamposObrigatorios() {
     add('lcd2_prof', 'Locador 2 — Profissão');
     add('lcd2_rg', 'Locador 2 — RG');
     addCpfOuNacionalidadeObrigatorios(add, 'lcd2', 'Locador 2');
+    addRgOrgaoObrigatorio(add, 'lcd2', 'Locador 2');
     add('lcd2_tel', 'Locador 2 — Telefone');
     add('lcd2_email', 'Locador 2 — E-mail');
     if (numLcdVal === 'PJ') {
@@ -2875,6 +2964,7 @@ function obterCamposObrigatorios() {
     add('lct2_prof', 'Locatário 2 — Profissão');
     add('lct2_rg', 'Locatário 2 — RG');
     addCpfOuNacionalidadeObrigatorios(add, 'lct2', 'Locatário 2');
+    addRgOrgaoObrigatorio(add, 'lct2', 'Locatário 2');
     add('lct2_tel', 'Locatário 2 — Telefone');
     add('lct2_email', 'Locatário 2 — E-mail');
     if (numLctVal === 'PJ' && document.getElementById('fins').value === 'COMERCIAIS') {
@@ -2912,6 +3002,7 @@ function obterCamposObrigatorios() {
       add('fdr2_prof', 'Fiador 2 — Profissão');
       add('fdr2_rg', 'Fiador 2 — RG');
       addCpfOuNacionalidadeObrigatorios(add, 'fdr2', 'Fiador 2');
+      addRgOrgaoObrigatorio(add, 'fdr2', 'Fiador 2');
       add('fdr2_tel', 'Fiador 2 — Telefone');
       add('fdr2_email', 'Fiador 2 — E-mail');
       if (numFdrVal === 'PJ') {
@@ -2964,17 +3055,17 @@ const FIELD_TO_SECAO = {
   imgrt_descricao: 'sec-garantia', imgrt_rua: 'sec-garantia', imgrt_bairro: 'sec-garantia', imgrt_cidade: 'sec-garantia', imgrt_matricula: 'sec-garantia',
 
   lcd_rua: 'sec-locadores', lcd_bairro: 'sec-locadores', lcd_cidade: 'sec-locadores', num_lcd: 'sec-locadores',
-  lcd1_sexo: 'sec-locadores', lcd1_nome: 'sec-locadores', lcd1_ec: 'sec-locadores', lcd1_prof: 'sec-locadores', lcd1_rg: 'sec-locadores', lcd1_cpf: 'sec-locadores', lcd1_nacionalidade: 'sec-locadores', lcd1_nacionalidade_estrangeira: 'sec-locadores', lcd1_tel: 'sec-locadores', lcd1_email: 'sec-locadores',
-  lcd2_sexo: 'sec-locadores', lcd2_nome: 'sec-locadores', lcd2_ec: 'sec-locadores', lcd2_prof: 'sec-locadores', lcd2_rg: 'sec-locadores', lcd2_cpf: 'sec-locadores', lcd2_nacionalidade: 'sec-locadores', lcd2_nacionalidade_estrangeira: 'sec-locadores', lcd2_tel: 'sec-locadores', lcd2_email: 'sec-locadores',
+  lcd1_sexo: 'sec-locadores', lcd1_nome: 'sec-locadores', lcd1_ec: 'sec-locadores', lcd1_prof: 'sec-locadores', lcd1_rg: 'sec-locadores', lcd1_rg_orgao: 'sec-locadores', lcd1_cpf: 'sec-locadores', lcd1_nacionalidade: 'sec-locadores', lcd1_nacionalidade_estrangeira: 'sec-locadores', lcd1_tel: 'sec-locadores', lcd1_email: 'sec-locadores',
+  lcd2_sexo: 'sec-locadores', lcd2_nome: 'sec-locadores', lcd2_ec: 'sec-locadores', lcd2_prof: 'sec-locadores', lcd2_rg: 'sec-locadores', lcd2_rg_orgao: 'sec-locadores', lcd2_cpf: 'sec-locadores', lcd2_nacionalidade: 'sec-locadores', lcd2_nacionalidade_estrangeira: 'sec-locadores', lcd2_tel: 'sec-locadores', lcd2_email: 'sec-locadores',
   lcd_casados: 'sec-locadores', lcd_regime: 'sec-locadores', lcd_data_casamento: 'sec-locadores',
 
-  lct1_sexo: 'sec-locatarios', lct1_nome: 'sec-locatarios', lct1_ec: 'sec-locatarios', lct1_prof: 'sec-locatarios', lct1_rg: 'sec-locatarios', lct1_cpf: 'sec-locatarios', lct1_nacionalidade: 'sec-locatarios', lct1_nacionalidade_estrangeira: 'sec-locatarios', lct1_tel: 'sec-locatarios', lct1_email: 'sec-locatarios',
-  lct2_sexo: 'sec-locatarios', lct2_nome: 'sec-locatarios', lct2_ec: 'sec-locatarios', lct2_prof: 'sec-locatarios', lct2_rg: 'sec-locatarios', lct2_cpf: 'sec-locatarios', lct2_nacionalidade: 'sec-locatarios', lct2_nacionalidade_estrangeira: 'sec-locatarios', lct2_tel: 'sec-locatarios', lct2_email: 'sec-locatarios',
+  lct1_sexo: 'sec-locatarios', lct1_nome: 'sec-locatarios', lct1_ec: 'sec-locatarios', lct1_prof: 'sec-locatarios', lct1_rg: 'sec-locatarios', lct1_rg_orgao: 'sec-locatarios', lct1_cpf: 'sec-locatarios', lct1_nacionalidade: 'sec-locatarios', lct1_nacionalidade_estrangeira: 'sec-locatarios', lct1_tel: 'sec-locatarios', lct1_email: 'sec-locatarios',
+  lct2_sexo: 'sec-locatarios', lct2_nome: 'sec-locatarios', lct2_ec: 'sec-locatarios', lct2_prof: 'sec-locatarios', lct2_rg: 'sec-locatarios', lct2_rg_orgao: 'sec-locatarios', lct2_cpf: 'sec-locatarios', lct2_nacionalidade: 'sec-locatarios', lct2_nacionalidade_estrangeira: 'sec-locatarios', lct2_tel: 'sec-locatarios', lct2_email: 'sec-locatarios',
   lct_rua_com: 'sec-locatarios', lct_bairro_com: 'sec-locatarios', lct_cidade_com: 'sec-locatarios', num_lct: 'sec-locatarios',
   lct_casados: 'sec-locatarios', lct_regime: 'sec-locatarios', lct_data_casamento: 'sec-locatarios',
 
-  fdr1_sexo: 'sec-fiadores', fdr1_nome: 'sec-fiadores', fdr1_ec: 'sec-fiadores', fdr1_prof: 'sec-fiadores', fdr1_rg: 'sec-fiadores', fdr1_cpf: 'sec-fiadores', fdr1_nacionalidade: 'sec-fiadores', fdr1_nacionalidade_estrangeira: 'sec-fiadores', fdr1_tel: 'sec-fiadores', fdr1_email: 'sec-fiadores',
-  fdr2_sexo: 'sec-fiadores', fdr2_nome: 'sec-fiadores', fdr2_ec: 'sec-fiadores', fdr2_prof: 'sec-fiadores', fdr2_rg: 'sec-fiadores', fdr2_cpf: 'sec-fiadores', fdr2_nacionalidade: 'sec-fiadores', fdr2_nacionalidade_estrangeira: 'sec-fiadores', fdr2_tel: 'sec-fiadores', fdr2_email: 'sec-fiadores',
+  fdr1_sexo: 'sec-fiadores', fdr1_nome: 'sec-fiadores', fdr1_ec: 'sec-fiadores', fdr1_prof: 'sec-fiadores', fdr1_rg: 'sec-fiadores', fdr1_rg_orgao: 'sec-fiadores', fdr1_cpf: 'sec-fiadores', fdr1_nacionalidade: 'sec-fiadores', fdr1_nacionalidade_estrangeira: 'sec-fiadores', fdr1_tel: 'sec-fiadores', fdr1_email: 'sec-fiadores',
+  fdr2_sexo: 'sec-fiadores', fdr2_nome: 'sec-fiadores', fdr2_ec: 'sec-fiadores', fdr2_prof: 'sec-fiadores', fdr2_rg: 'sec-fiadores', fdr2_rg_orgao: 'sec-fiadores', fdr2_cpf: 'sec-fiadores', fdr2_nacionalidade: 'sec-fiadores', fdr2_nacionalidade_estrangeira: 'sec-fiadores', fdr2_tel: 'sec-fiadores', fdr2_email: 'sec-fiadores',
   fdr_rua: 'sec-fiadores', fdr_bairro: 'sec-fiadores', fdr_cidade: 'sec-fiadores', num_fdr: 'sec-fiadores',
   fdr_casados: 'sec-fiadores', fdr_regime: 'sec-fiadores', fdr_data_casamento: 'sec-fiadores',
 };
@@ -5363,7 +5454,24 @@ function aplicarDadosFormulario(dados) {
   if (v('lct_rua_com2') !== '---' || v('lct_bairro_com2') !== '---' || v('lct_cidade_com2') !== '---') abrirEndereco2('lct');
   if (v('fdr_rua2') !== '---' || v('fdr_bairro2') !== '---' || v('fdr_cidade2') !== '---') abrirEndereco2('fdr');
 
+  // Se os dados importados já vieram com o Imóvel Garantia todo "XXX" (contrato
+  // sem imóvel garantia de verdade), marca sozinho o botão correspondente
+  detectarSemImovelGarantiaAoImportar();
+
   atualizarAvisoPendencias();
+
+  // Fecha imediatamente qualquer aba que tenha acabado de ficar completa com
+  // esta importação. O fechamento automático normalmente só acontece no
+  // "focusout" (a pessoa sai do campo digitando) — mas ao carregar dados por
+  // código (rascunho, PDF, Excel, cadastro) nenhum campo recebe foco/blur de
+  // verdade, então as abas ficavam verdes (completas) só que nunca fechavam
+  // sozinhas, obrigando a fechar na mão.
+  Object.keys(PRONTO_PARA_FECHAR).forEach(secaoId => {
+    if (!PRONTO_PARA_FECHAR[secaoId]) return;
+    const secaoEl = document.getElementById(secaoId);
+    if (secaoEl) secaoEl.classList.add('collapsed');
+    PRONTO_PARA_FECHAR[secaoId] = false;
+  });
 }
 
 // ==========================================================
@@ -6256,7 +6364,8 @@ document.getElementById('busca_cadastro').addEventListener('input', async functi
     (item.enderecoImovel || '').toLowerCase().includes(termo) ||
     (item.nomeLocador || '').toLowerCase().includes(termo) ||
     (item.nomeLocatario || '').toLowerCase().includes(termo) ||
-    (item.nomeLocatario2 || '').toLowerCase().includes(termo)
+    (item.nomeLocatario2 || '').toLowerCase().includes(termo) ||
+    (item.nomeGarantia || '').toLowerCase().includes(termo)
   ).slice(0, 20);
   renderizarResultadosBusca(filtrados);
 });
