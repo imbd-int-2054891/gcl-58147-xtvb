@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v86</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v88</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -2841,13 +2841,15 @@ function addCpfOuNacionalidadeObrigatorios(add, prefixo, rotulo) {
   }
 }
 
-// Órgão Emissor/UF do RG: só é exigido de quem é brasileiro (estrangeiro usa a
-// caixa "Qual Nacionalidade" no lugar dessa célula, e não tem Órgão Emissor/UF
-// de RG brasileiro pra preencher) — faltava esta checagem, então a aba fechava
-// como "completa" mesmo com essa célula em branco
+// Órgão Emissor/UF do RG: só é exigido de quem é brasileiro E tem RG de fato
+// (estrangeiro usa a caixa "Qual Nacionalidade" no lugar dessa célula, e quem
+// marcou "Não Tem RG" não tem Órgão Emissor/UF nenhum pra informar) —
+// faltava esta checagem, então a aba fechava como "completa" mesmo com essa
+// célula em branco
 function addRgOrgaoObrigatorio(add, prefixo, rotulo) {
   const nac = document.getElementById(prefixo + '_nacionalidade')?.value || '';
-  if (!nac.startsWith('estrang')) {
+  const naoTemRg = document.getElementById(prefixo + '_rg_naotem')?.checked;
+  if (!nac.startsWith('estrang') && !naoTemRg) {
     add(prefixo + '_rg_orgao', rotulo + ' — Órgão Emissor/UF do RG');
   }
 }
@@ -3410,15 +3412,24 @@ function textoDocumentoRgCpf(nacionalidade, rg, cpf, palavraInscrito, orgaoEmiss
   }
 }
 
-// Réplica de "Y11" — texto de qualificação completo de 1 pessoa física
+// Réplica de "Y11"/"Y12" — texto de qualificação completo de 1 pessoa física
 // (retorna { negrito: 'NOME', resto: ', nacionalidade, ...' } pra permitir
 // aplicar o negrito só no nome, igual o VBA fazia com .Characters(...).Bold)
+//
+// "portador(a)" varia com o sexo da pessoa — o VBA original tinha DUAS
+// células só pra isso (Y11 com "portador", Y12 com "portadora"), escolhendo
+// uma ou outra conforme o sexo. Um comentário antigo aqui dizia (errado) que
+// o Excel usava "portador" fixo mesmo pra 1 pessoa só; conferido de novo no
+// VBA extraído e não é esse o caso — sempre conjuga, igual já era feito no
+// "inscrito(a)" logo depois.
 function textoQualificacaoPessoaFisica(p, omitirEndereco) {
   const nomeMaiusculo = (p.nome || '').toUpperCase();
-  const docRgCpf = textoDocumentoRgCpf(p.nacionalidade, p.rg, p.cpf, p.sexo === 'Feminino' ? 'inscrita' : 'inscrito', p.orgaoEmissorUF);
+  const feminino = p.sexo === 'Feminino';
+  const portador = feminino ? 'portadora' : 'portador';
+  const docRgCpf = textoDocumentoRgCpf(p.nacionalidade, p.rg, p.cpf, feminino ? 'inscrita' : 'inscrito', p.orgaoEmissorUF);
   const resto = omitirEndereco
-    ? `, ${p.nacionalidade}, ${p.estadoCivil}, ${p.profissao}, portador ${docRgCpf}.`
-    : `, ${p.nacionalidade}, ${p.estadoCivil}, ${p.profissao}, portador ${docRgCpf}, residente na ${p.rua} – ${p.bairro} – ${p.municipio}.`;
+    ? `, ${p.nacionalidade}, ${p.estadoCivil}, ${p.profissao}, ${portador} ${docRgCpf}.`
+    : `, ${p.nacionalidade}, ${p.estadoCivil}, ${p.profissao}, ${portador} ${docRgCpf}, residente na ${p.rua} – ${p.bairro} – ${p.municipio}.`;
   return { negrito: nomeMaiusculo, resto };
 }
 
@@ -3428,17 +3439,15 @@ function textoQualificacaoPessoaFisica(p, omitirEndereco) {
 //   profissão, ligados por "e", com UM endereço só no final (o do grupo)
 // - Casados entre si: só a 1ª pessoa leva nacionalidade (a 2ª nem isso),
 //   NENHUMA leva estado civil (é substituído por "e sua mulher"/"e seu
-//   marido" + "casados sob o regime de X no dia Y"), e "portador(a)" AQUI
-//   varia com o gênero de cada um (diferente do texto de 1 pessoa sozinha,
-//   que sempre usa "portador" fixo — replica exatamente o Excel original)
+//   marido" + "casados sob o regime de X no dia Y"), e "portador(a)" varia
+//   com o gênero de cada um (igual ao texto de 1 pessoa sozinha)
 // Texto de qualificação de 2 pessoas do MESMO papel (Locador/Locatário/
 // Fiador) — bem diferente conforme estão ou não CASADOS ENTRE SI:
 // - Casados entre si: NENHUMA leva estado civil (some — é substituído por
 //   "e sua mulher"/"e seu marido" + "casados sob o regime de X no dia Y"),
 //   mas AMBAS levam nacionalidade normalmente. "portador(a)" aqui varia com
-//   o gênero de cada um (diferente do texto de 1 pessoa sozinha, que usa
-//   "portador" fixo — replica exatamente o Excel original). Sempre usa o
-//   endereço único do grupo (Endereço 2 não existe pra casados no app).
+//   o gênero de cada um. Sempre usa o endereço único do grupo (Endereço 2
+//   não existe pra casados no app).
 // - Não casados: cada um com nacionalidade/estado civil/profissão
 //   próprios. Endereço: se "enderecoPessoa2" NÃO for informado (vazio ou
 //   ausente), os dois usam o MESMO endereço (enderecoGrupo) no final,
@@ -4956,6 +4965,15 @@ async function gerarContratoWord() {
 
     // ---------- Assinaturas ----------
     let paragrafosParaRemover = [...dadosGarantia.paragrafosParaRemover];
+
+    // Quando a Matrícula/Transcrição do imóvel está marcada como "Não tenho
+    // esse dado" (fica com o padrão "xxx - CRI de XXXX/SP"), a linha inteira
+    // "MATRÍCULA/TRANSCRIÇÃO: #Imv5" some do memorial — igual o VBA fazia —
+    // porque senão a pessoa precisaria apagar isso manualmente. Qualquer
+    // outro valor real preenchido mantém a linha normalmente.
+    if (v('imv_matricula').trim().toLowerCase() === CAMPOS_CONFIRMAVEIS.imv_matricula.padrao.toLowerCase()) {
+      paragrafosParaRemover.push('#Imv5');
+    }
     let insercoes = [];
     let ajustesRgRnmTotal = [];
     let ajustesPJTotal = [];
