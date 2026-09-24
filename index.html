@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v88</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v90</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -2232,20 +2232,36 @@ function calcularLinhasObservacoesPadrao() {
   return linhas;
 }
 
-// Junta o texto manual (antes do marcador) com as linhas padrão calculadas agora,
-// sem duplicar nem apagar o que a pessoa escreveu — usada tanto pelo botão
-// "Atualizar Texto Padrão" quanto silenciosamente antes de gerar o Excel
+// Junta o texto manual com as linhas padrão calculadas agora, sem duplicar
+// nem apagar o que a pessoa escreveu — usada tanto pelo botão "Gerar
+// Observações" quanto silenciosamente antes de gerar o Excel. Não usa mais
+// nenhum texto de cabeçalho/marcador visível: guarda só em memória (nesta
+// mesma sessão da página) qual foi o último bloco automático inserido, pra
+// conseguir trocá-lo pelo novo sem duplicar as linhas nem mexer no texto
+// manual escrito acima.
+let ULTIMO_BLOCO_OBS_AUTO = '';
 function sincronizarObservacoesPadrao() {
   const linhas = calcularLinhasObservacoesPadrao();
   const textarea = document.getElementById('observacoes');
-  const marcador = '--- OBSERVAÇÕES PADRÃO (geradas automaticamente) ---';
-  const idx = textarea.value.indexOf(marcador);
-  const textoManual = (idx >= 0 ? textarea.value.slice(0, idx) : textarea.value).trim();
+  const valorAtual = textarea.value;
 
+  let textoManual = valorAtual;
+  if (ULTIMO_BLOCO_OBS_AUTO) {
+    const sufixo = '\n\n' + ULTIMO_BLOCO_OBS_AUTO;
+    if (valorAtual.endsWith(sufixo)) {
+      textoManual = valorAtual.slice(0, -sufixo.length);
+    } else if (valorAtual.trim() === ULTIMO_BLOCO_OBS_AUTO.trim()) {
+      textoManual = '';
+    }
+  }
+  textoManual = textoManual.trim();
+
+  const novoBloco = linhas.join('\n');
   const partes = [];
   if (textoManual) partes.push(textoManual);
-  if (linhas.length) partes.push(marcador + '\n' + linhas.join('\n'));
+  if (novoBloco) partes.push(novoBloco);
   textarea.value = partes.length ? partes.join('\n\n') : '---';
+  ULTIMO_BLOCO_OBS_AUTO = novoBloco;
 }
 
 function gerarObservacoesPadrao() {
