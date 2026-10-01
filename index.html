@@ -807,7 +807,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v90</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v91</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -5659,74 +5659,80 @@ function mapearCamposAcroForm(campos, textoPagina) {
   // Normaliza o texto do Estado Civil: tira "(a)/(o)" e deixa em minúsculo,
   // batendo com as opções da lista suspensa do app
   const norm = (t) => (t || '').toString().replace(/\(a\)|\(o\)/gi, '').trim().toLocaleLowerCase('pt-BR');
-  const marcado = (nome) => { const v = valorCampoPDF(campos, nome); return v === true || v === 'Yes' || v === 'On'; };
-  const txt = (nome) => {
-    const v = valorCampoPDF(campos, nome);
+
+  // Acha o campo pelo NOME (ex.: "fiador1_nome"), não pelo número "fNN_" na
+  // frente — o "Formulário Interno" muda a numeração dependendo de quais
+  // seções existem no PDF (ex.: sem Locatário 2, tudo que vem depois anda
+  // pra trás: o que seria "f24_fiador1_nome" vira "f16_fiador1_nome"), e um
+  // índice fixo simplesmente para de bater e o campo não é mais importado.
+  const buscarChave = (sufixo) => Object.keys(campos).find(k => k.toLowerCase().includes(sufixo.toLowerCase()));
+  const marcado = (sufixo) => {
+    const chave = buscarChave(sufixo);
+    if (!chave) return false;
+    const v = valorCampoPDF(campos, chave);
+    return v === true || v === 'Yes' || v === 'On';
+  };
+  const txt = (sufixo) => {
+    const chave = buscarChave(sufixo);
+    if (!chave) return null;
+    const v = valorCampoPDF(campos, chave);
     return (v !== undefined && v !== null && String(v).trim() !== '') ? String(v).trim() : null;
   };
   let v;
 
-  if (v = txt('f1_imovel_endereco')) dados.imv_rua = v;
-  if (v = txt('f2_imovel_valor')) dados.valor = v;
-  if (v = txt('f3_imovel_data_inicio')) dados.inicio_data = v;
-  if (v = txt('f7_proprietario_codigo')) dados.contractId = v;
+  if (v = txt('imovel_endereco')) dados.imv_rua = v;
+  if (v = txt('imovel_valor')) dados.valor = v;
+  if (v = txt('imovel_data_inicio')) dados.inicio_data = v;
+  if (v = txt('proprietario_codigo')) dados.contractId = v;
 
   let residencial = false;
-  if (marcado('f4_utilizacao_residencial')) { dados.fins = 'RESIDENCIAIS'; residencial = true; }
-  else if (marcado('f5_utilizacao_comercial')) dados.fins = 'COMERCIAIS';
+  if (marcado('utilizacao_residencial')) { dados.fins = 'RESIDENCIAIS'; residencial = true; }
+  else if (marcado('utilizacao_comercial')) dados.fins = 'COMERCIAIS';
   // Regra pedida: locação Residencial já vem com Prazo de 30 meses automaticamente
   if (residencial) dados.prazo = '30 (Trinta)';
 
-  if (v = txt('f6_proprietario_nome')) dados.lcd1_nome = v.toUpperCase();
+  if (v = txt('proprietario_nome')) dados.lcd1_nome = v.toUpperCase();
 
-  if (v = txt('f8_loc1_nome')) dados.lct1_nome = v.toUpperCase();
-  const loc1Ec = txt('f9_loc1_estado_civil_txt');
+  if (v = txt('loc1_nome')) dados.lct1_nome = v.toUpperCase();
+  const loc1Ec = txt('loc1_estado_civil_txt');
   if (loc1Ec) dados.lct1_ec = norm(loc1Ec);
-  if (v = txt('f10_loc1_profissao')) dados.lct1_prof = v.toLocaleLowerCase('pt-BR');
-  if (v = txt('f11_loc1_tel')) dados.lct1_tel = v;
-  if (v = txt('f12_loc1_email')) dados.lct1_email = v;
+  if (v = txt('loc1_profissao')) dados.lct1_prof = v.toLocaleLowerCase('pt-BR');
+  if (v = txt('loc1_tel')) dados.lct1_tel = v;
+  if (v = txt('loc1_email')) dados.lct1_email = v;
 
-  if (v = txt('f13_loc2_nome')) dados.lct2_nome = v.toUpperCase();
-  const loc2Ec = txt('f14_loc2_estado_civil_txt');
+  if (v = txt('loc2_nome')) dados.lct2_nome = v.toUpperCase();
+  const loc2Ec = txt('loc2_estado_civil_txt');
   if (loc2Ec) dados.lct2_ec = norm(loc2Ec);
-  if (v = txt('f15_loc2_profissao')) dados.lct2_prof = v.toLocaleLowerCase('pt-BR');
-  if (v = txt('f16_loc2_tel')) dados.lct2_tel = v;
-  if (v = txt('f17_loc2_email')) dados.lct2_email = v;
+  if (v = txt('loc2_profissao')) dados.lct2_prof = v.toLocaleLowerCase('pt-BR');
+  if (v = txt('loc2_tel')) dados.lct2_tel = v;
+  if (v = txt('loc2_email')) dados.lct2_email = v;
   // Se os 2 locatários constam como casados(as), considera "casados entre si"
   if (dados.lct2_nome && loc1Ec && loc2Ec && loc1Ec.toLowerCase().startsWith('casad') && loc2Ec.toLowerCase().startsWith('casad')) {
     dados.lct_casados = 'Sim';
   }
 
-  if (v = txt('f24_fiador1_nome')) dados.fdr1_nome = v.toUpperCase();
-  const fdr1Ec = txt('f25_fiador1_estado_civil_txt');
+  if (v = txt('fiador1_nome')) dados.fdr1_nome = v.toUpperCase();
+  const fdr1Ec = txt('fiador1_estado_civil_txt');
   if (fdr1Ec) dados.fdr1_ec = norm(fdr1Ec);
-  if (v = txt('f26_fiador1_profissao')) dados.fdr1_prof = v.toLocaleLowerCase('pt-BR');
-  if (v = txt('f27_fiador1_tel')) dados.fdr1_tel = v;
-  if (v = txt('f28_fiador1_email')) dados.fdr1_email = v;
+  if (v = txt('fiador1_profissao')) dados.fdr1_prof = v.toLocaleLowerCase('pt-BR');
+  if (v = txt('fiador1_tel')) dados.fdr1_tel = v;
+  if (v = txt('fiador1_email')) dados.fdr1_email = v;
 
-  if (v = txt('f29_fiador2_nome')) dados.fdr2_nome = v.toUpperCase();
-  const fdr2Ec = txt('f30_fiador2_estado_civil_txt');
+  if (v = txt('fiador2_nome')) dados.fdr2_nome = v.toUpperCase();
+  const fdr2Ec = txt('fiador2_estado_civil_txt');
   if (fdr2Ec) dados.fdr2_ec = norm(fdr2Ec);
-  if (v = txt('f31_fiador2_profissao')) dados.fdr2_prof = v.toLocaleLowerCase('pt-BR');
-  if (v = txt('f32_fiador2_tel')) dados.fdr2_tel = v;
-  if (v = txt('f33_fiador2_email')) dados.fdr2_email = v;
+  if (v = txt('fiador2_profissao')) dados.fdr2_prof = v.toLocaleLowerCase('pt-BR');
+  if (v = txt('fiador2_tel')) dados.fdr2_tel = v;
+  if (v = txt('fiador2_email')) dados.fdr2_email = v;
   // Mesma regra de "casados entre si" para os fiadores
   if (dados.fdr2_nome && fdr1Ec && fdr2Ec && fdr1Ec.toLowerCase().startsWith('casad') && fdr2Ec.toLowerCase().startsWith('casad')) {
     dados.fdr_casados = 'Sim';
   }
 
-  // Busca por padrão de nome (não índice fixo) — o "Formulário Interno" às
-  // vezes muda a numeração dos campos (ex.: f42_observacoes numa versão,
-  // f43_observacoes noutra, dependendo de quantos campos vêm antes)
-  const buscarCampoPorPadrao = (padrao) => {
-    const chave = Object.keys(campos).find(k => padrao.test(k));
-    return chave ? txt(chave) : null;
-  };
-
-  const diaPagamento = buscarCampoPorPadrao(/dia_pagamento/i);
+  const diaPagamento = txt('dia_pagamento');
   if (diaPagamento) dados.vencimento = diaPagamento;
 
-  let obsBruta = buscarCampoPorPadrao(/observ/i) || '';
+  let obsBruta = txt('observ') || '';
   // Animais de Estimação no Formulário Interno não é um campo de formulário —
   // é texto estático da página (montado a partir de checkboxes em outro
   // sistema), então busca também ali e junta com o texto de observações
