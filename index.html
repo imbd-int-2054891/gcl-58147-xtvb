@@ -173,6 +173,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 }
 
 .field textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+#observacoes { min-height: 300px; overflow-y: hidden; }
 
 .campo-dica {
   font-size: 0.72rem;
@@ -914,7 +915,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v93</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v95</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1652,7 +1653,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 
       <button type="button" class="btn-secundario" style="margin: 6px 0 16px; flex:none; width:fit-content;" onclick="gerarObservacoesPadrao()">🔄 Gerar Observações</button>
 
-      <div class="field"><label>Observações no Contrato</label><textarea id="observacoes"></textarea></div>
+      <div class="field"><label>Observações no Contrato</label><textarea id="observacoes" rows="12"></textarea></div>
     </div>
   </div>
 
@@ -2355,6 +2356,16 @@ function calcularLinhasObservacoesPadrao() {
       const nacTexto = especifica.trim() || nac;
       linhas.push(`- ${rotulo} (${primeiroNome(nome)}) é ${nacTexto}.`);
     }
+  });
+
+  // Casamento sem data (Lei 6.515/77): registra na observação
+  [['lcd', 'Locadores'], ['lct', 'Locatários'], ['fdr', 'Fiadores']].forEach(([g, plural]) => {
+    if (g === 'fdr' && v('garantia') !== 'FIADOR') return;
+    if (v('num_' + g) !== '2' || v(g + '_casados') !== 'Sim') return;
+    const chave = chaveCasamentoLei(v(g + '_data_casamento'));
+    if (!chave) return;
+    const n1 = primeiroNome(v(g + '1_nome')), n2 = primeiroNome(v(g + '2_nome'));
+    linhas.push(`- ${plural} (${n1} e ${n2}) casados ${CASAMENTO_LEI[chave].texto} (data do casamento não informada).`);
   });
 
   if (marcado('obs_sem_garantia')) {
@@ -6711,6 +6722,7 @@ const IE_PADROES_OBS_AUTOMATICAS = [
   /^[-•*]\s*(Desconto de R\$|Carência de)/i,
   /^[-•*]\s*Imóvel em área de inundação/i,
   /^[-•*]\s*Locação sem imóvel Garantia/i,
+  /^[-•*]\s*(Locadores|Locatários|Fiadores)\s*\([^)]*\)\s+casados\s+(na|antes da)\s+vig[êe]ncia/i,
   /^-{2,}\s*OBSERVA[ÇC][ÕO]ES PADR[ÃA]O/i,
 ];
 const IE_MAX_RESULTADOS = 40;
@@ -7763,6 +7775,19 @@ montarNacionalidade('lct2');
 montarNacionalidade('fdr1');
 montarNacionalidade('fdr2');
 atualizarAvisoPendencias();
+
+// Caixa de Observações: cresce junto com o texto (sem barra de rolagem), mínimo 300px
+function ajustarAlturaObservacoes() {
+  const ta = document.getElementById('observacoes');
+  if (!ta || ta.offsetParent === null) return;
+  ta.style.height = 'auto';
+  ta.style.height = Math.max(300, ta.scrollHeight + 4) + 'px';
+}
+document.getElementById('observacoes').addEventListener('input', ajustarAlturaObservacoes);
+setInterval(() => {
+  const ta = document.getElementById('observacoes');
+  if (ta && ta.offsetParent !== null && Math.abs(ta.scrollHeight - ta.clientHeight) > 6) ajustarAlturaObservacoes();
+}, 400);
 </script>
 
 </body>
