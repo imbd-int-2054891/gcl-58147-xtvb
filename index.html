@@ -915,7 +915,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v95</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v96</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -5305,6 +5305,18 @@ async function gerarContratoWord() {
 }
 
 
+// Endereço do Locatário no Excel: Comercial exporta sempre; Residencial só exporta quando o
+// Locatário é PJ e o endereço (sede/representante) foi realmente informado (não vazio, "---" ou "xxx").
+// Nos demais casos exporta "---", igual ao padrão.
+function enderecoLctExcel(idRua, idCampo) {
+  const fins = v('fins');
+  if (fins === 'COMERCIAIS') return v(idCampo);
+  if (v('num_lct') !== 'PJ') return '---';
+  const rua = v(idRua).trim();
+  if (!rua || rua === '---' || rua.toLowerCase() === 'xxx') return '---';
+  return v(idCampo);
+}
+
 function buildDataRow() {
   sincronizarObservacoesPadrao();
   const garantia = v('garantia');
@@ -5398,12 +5410,12 @@ function buildDataRow() {
     temPessoa2Lct ? vTelefoneCompleto('lct2_tel') : '---',
     temPessoa2Lct ? v('lct2_email') : '---',
 
-    v('fins')==='COMERCIAIS' ? v('lct_rua_com') : '---',
-    v('fins')==='COMERCIAIS' ? v('lct_bairro_com') : '---',
-    v('fins')==='COMERCIAIS' ? v('lct_cidade_com') : '---',
-    v('fins')==='COMERCIAIS' ? v('lct_rua_com2') : '---',                  // Endereço 2 (opcional) Locatário
-    v('fins')==='COMERCIAIS' ? v('lct_bairro_com2') : '---',
-    v('fins')==='COMERCIAIS' ? v('lct_cidade_com2') : '---',
+    enderecoLctExcel('lct_rua_com', 'lct_rua_com'),
+    enderecoLctExcel('lct_rua_com', 'lct_bairro_com'),
+    enderecoLctExcel('lct_rua_com', 'lct_cidade_com'),
+    enderecoLctExcel('lct_rua_com2', 'lct_rua_com2'),                  // Endereço 2 (opcional) Locatário
+    enderecoLctExcel('lct_rua_com2', 'lct_bairro_com2'),
+    enderecoLctExcel('lct_rua_com2', 'lct_cidade_com2'),
     v('num_lct'), lct_casados,
     lct_casados==='Sim' ? v('lct_regime') : '---',
     lct_casados==='Sim' ? v('lct_data_casamento') : '---',
