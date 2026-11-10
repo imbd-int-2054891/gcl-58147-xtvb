@@ -915,7 +915,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v96</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v97</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -4396,6 +4396,9 @@ function paragrafosParaRemoverAssinaturas(fiador1, fiador2) {
   if (!fiador2) {
     remover.push('#Fdr_Und', '#Fdr_1', '#Fdr_RG', '#Fdr_CPF');
   }
+  // Fiador que "Não Tem RG": some a linha de RG da assinatura (fica só o CPF)
+  if (fiador1 && naoTemRG(fiador1.rg)) remover.push('#FdrRG', '#Fdr5');
+  if (fiador2 && naoTemRG(fiador2.rg)) remover.push('#Fdr_RG', '#Fdr_5');
   return remover;
 }
 
@@ -5074,11 +5077,15 @@ function montarAssinaturaGrupo(grupo, dadosGrupo) {
     resultado.substituicoes[`#${cap(grupo)}5`] = dadosGrupo.pessoa1.rg;
     resultado.substituicoes[`#${cap(grupo)}6`] = dadosGrupo.pessoa1.cpf;
     Object.assign(resultado.substituicoes, montarAssinaturas(cap(grupo), dadosGrupo.pessoa2));
+    // Quem "Não Tem RG" não ganha a linha de RG na assinatura (só o CPF)
+    if (naoTemRG(dadosGrupo.pessoa1.rg)) resultado.paragrafosParaRemover.push(`#${cap(grupo)}5`);
+    if (naoTemRG(dadosGrupo.pessoa2.rg)) resultado.paragrafosParaRemover.push(`#${cap(grupo)}_RG`, `#${cap(grupo)}_5`);
   } else {
     resultado.substituicoes[`#${cap(grupo)}1`] = (dadosGrupo.pessoa1.nome || '').toUpperCase();
     resultado.substituicoes[`#${cap(grupo)}5`] = dadosGrupo.pessoa1.rg;
     resultado.substituicoes[`#${cap(grupo)}6`] = dadosGrupo.pessoa1.cpf;
     Object.assign(resultado.substituicoes, montarAssinaturas(cap(grupo), null));
+    if (naoTemRG(dadosGrupo.pessoa1.rg)) resultado.paragrafosParaRemover.push(`#${cap(grupo)}5`);
   }
   return resultado;
 }
