@@ -915,7 +915,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v97</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v100</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1131,6 +1131,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
         <div class="opcoes-grupo">
           <div class="opcao-btn" data-for="garantia" data-valor="FIADOR" onclick="selecionarOpcao('garantia','FIADOR',toggleGarantia)">Fiador</div>
           <div class="opcao-btn" data-for="garantia" data-valor="CAUÇÃO" onclick="selecionarOpcao('garantia','CAUÇÃO',toggleGarantia)">Caução</div>
+          <div class="opcao-btn" data-for="garantia" data-valor="SEM GARANTIA" onclick="selecionarOpcao('garantia','SEM GARANTIA',toggleGarantia)">Sem garantia</div>
         </div>
         <input type="hidden" id="garantia" value="">
       </div>
@@ -1292,7 +1293,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Telefone</label><input id="lcd1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd1_tel_naotem_pill"><input type="checkbox" id="lcd1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lcd1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lcd1_email_naotem_pill"><input type="checkbox" id="lcd1_email_naotem" onchange="handleSemDadoGenerico(&quot;lcd1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label id="lcd1_cpf_label">CPF</label><input id="lcd1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCpfOuCnpj(this); sincronizarRG(&quot;lcd1&quot;)" inputmode="numeric"></div>
-          <div class="field"><label id="lcd1_rg_label">RG</label><input id="lcd1_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lcd1_rg_naotem_pill"><input type="checkbox" id="lcd1_rg_naotem" onchange="handleRgNaoTem(&quot;lcd1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label id="lcd1_rg_label">RG</label><input id="lcd1_rg" value="" placeholder="Digite o RG como está no documento"><label class="confirm-pill" id="lcd1_rg_naotem_pill"><input type="checkbox" id="lcd1_rg_naotem" onchange="handleRgNaoTem(&quot;lcd1&quot;)"> Não tem RG</label></div>
         </div>
 
       </div>
@@ -1314,7 +1315,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Telefone</label><input id="lcd2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lcd2_tel_naotem_pill"><input type="checkbox" id="lcd2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lcd2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lcd2_email_naotem_pill"><input type="checkbox" id="lcd2_email_naotem" onchange="handleSemDadoGenerico(&quot;lcd2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>CPF</label><input id="lcd2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lcd2&quot;)" inputmode="numeric"></div>
-          <div class="field"><label id="lcd2_rg_label">RG</label><input id="lcd2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label id="lcd2_rg_label">RG</label><input id="lcd2_rg" value="" placeholder="Digite o RG como está no documento"><label class="confirm-pill" id="lcd2_rg_naotem_pill"><input type="checkbox" id="lcd2_rg_naotem" onchange="handleRgNaoTem(&quot;lcd2&quot;)"> Não tem RG</label></div>
         </div>
 
       </div>
@@ -1402,7 +1403,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Telefone</label><input id="lct1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct1_tel_naotem_pill"><input type="checkbox" id="lct1_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lct1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lct1_email_naotem_pill"><input type="checkbox" id="lct1_email_naotem" onchange="handleSemDadoGenerico(&quot;lct1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label id="lct1_cpf_label">CPF</label><input id="lct1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCpfOuCnpj(this); sincronizarRG(&quot;lct1&quot;)" inputmode="numeric"></div>
-          <div class="field"><label id="lct1_rg_label">RG</label><input id="lct1_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lct1_rg_naotem_pill"><input type="checkbox" id="lct1_rg_naotem" onchange="handleRgNaoTem(&quot;lct1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label id="lct1_rg_label">RG</label><input id="lct1_rg" value="" placeholder="Digite o RG como está no documento"><label class="confirm-pill" id="lct1_rg_naotem_pill"><input type="checkbox" id="lct1_rg_naotem" onchange="handleRgNaoTem(&quot;lct1&quot;)"> Não tem RG</label></div>
         </div>
 
       </div>
@@ -1424,7 +1425,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Telefone</label><input id="lct2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="lct2_tel_naotem_pill"><input type="checkbox" id="lct2_tel_naotem" onchange="handleSemDadoGenerico(&quot;lct2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="lct2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="lct2_email_naotem_pill"><input type="checkbox" id="lct2_email_naotem" onchange="handleSemDadoGenerico(&quot;lct2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>CPF</label><input id="lct2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;lct2&quot;)" inputmode="numeric"></div>
-          <div class="field"><label id="lct2_rg_label">RG</label><input id="lct2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label id="lct2_rg_label">RG</label><input id="lct2_rg" value="" placeholder="Digite o RG como está no documento"><label class="confirm-pill" id="lct2_rg_naotem_pill"><input type="checkbox" id="lct2_rg_naotem" onchange="handleRgNaoTem(&quot;lct2&quot;)"> Não tem RG</label></div>
         </div>
 
       </div>
@@ -1512,7 +1513,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Telefone</label><input id="fdr1_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr1_tel_naotem_pill"><input type="checkbox" id="fdr1_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr1_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="fdr1_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr1_email_naotem_pill"><input type="checkbox" id="fdr1_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr1_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label id="fdr1_cpf_label">CPF</label><input id="fdr1_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCpfOuCnpj(this); sincronizarRG(&quot;fdr1&quot;)" inputmode="numeric"></div>
-          <div class="field"><label id="fdr1_rg_label">RG</label><input id="fdr1_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="fdr1_rg_naotem_pill"><input type="checkbox" id="fdr1_rg_naotem" onchange="handleRgNaoTem(&quot;fdr1&quot;)"> Não tem RG</label></div>
+          <div class="field"><label id="fdr1_rg_label">RG</label><input id="fdr1_rg" value="" placeholder="Digite o RG como está no documento"><label class="confirm-pill" id="fdr1_rg_naotem_pill"><input type="checkbox" id="fdr1_rg_naotem" onchange="handleRgNaoTem(&quot;fdr1&quot;)"> Não tem RG</label></div>
         </div>
 
       </div>
@@ -1534,7 +1535,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
           <div class="field"><label>Telefone</label><input id="fdr2_tel" value="" placeholder="Ex.: (19) 9.9090-9090" oninput="formatarTelefone(this)" inputmode="numeric"><label class="confirm-pill" id="fdr2_tel_naotem_pill"><input type="checkbox" id="fdr2_tel_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_tel&quot;,&quot;tel&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>E-mail</label><input id="fdr2_email" value="" placeholder="Ex.: joaodasilva@gmail.com"><label class="confirm-pill" id="fdr2_email_naotem_pill"><input type="checkbox" id="fdr2_email_naotem" onchange="handleSemDadoGenerico(&quot;fdr2_email&quot;,&quot;email&quot;)"> Não tenho esse dado</label></div>
           <div class="field"><label>CPF</label><input id="fdr2_cpf" value="" placeholder="Ex.: 100.200.300-40" oninput="formatarCPF(this); sincronizarRG(&quot;fdr2&quot;)" inputmode="numeric"></div>
-          <div class="field"><label id="fdr2_rg_label">RG</label><input id="fdr2_rg" value="" placeholder="Ex.: 00.123.456-8"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
+          <div class="field"><label id="fdr2_rg_label">RG</label><input id="fdr2_rg" value="" placeholder="Digite o RG como está no documento"><label class="confirm-pill" id="fdr2_rg_naotem_pill"><input type="checkbox" id="fdr2_rg_naotem" onchange="handleRgNaoTem(&quot;fdr2&quot;)"> Não tem RG</label></div>
         </div>
 
       </div>
@@ -1906,16 +1907,8 @@ function formatarTelefone(el) {
 }
 
 // RG: 00.000.000-0
-function formatarRG(el) {
-  const v = el.value.replace(/\D/g, '').slice(0, 9);
-  let out = '';
-  if (v.length > 0) out += v.slice(0, 2);
-  if (v.length > 2) out += '.' + v.slice(2, 5);
-  if (v.length > 5) out += '.' + v.slice(5, 8);
-  if (v.length > 8) out += '-' + v.slice(8, 9);
-  el.value = out;
-}
-
+// RG: SEM máscara — é sempre texto puro, exatamente como digitado/importado
+// (cada UF tem um formato; o Excel de controle precisa do texto original, ex.: "11.222.333-4" ou "123456")
 // CPF: 000.000.000-00
 function formatarCPF(el) {
   const v = el.value.replace(/\D/g, '').slice(0, 11);
@@ -3158,7 +3151,7 @@ function obterCamposObrigatorios() {
     add('caucao_extenso', 'Caução — Valor por Extenso');
     add('caucao_banco', 'Caução — Banco');
     add('caucao_conta', 'Caução — Conta Bancária');
-  } else {
+  } else if (garantia !== 'SEM GARANTIA') {
     add('imgrt_descricao', 'Imóvel Garantia — Descrição');
     add('imgrt_rua', 'Imóvel Garantia — Rua e nº');
     add('imgrt_bairro', 'Imóvel Garantia — Bairro');
@@ -4048,6 +4041,19 @@ function montarDadosGarantia(garantia, contaCaucaoCompleta, caucaoValor, caucaoE
   const TEXTO_CAUCAO = '#Lct_maio #Locatário #Lct_deposita a título de caução, a importância mencionada no QUADRO RESUMO (ITEM 9), no banco: #Cau3, sendo vetada sua retirada ou utilização enquanto perdurar o presente instrumento, posto que, #Lct_lhe será restituída na rescisão contratual, após vistoria do bem locado, e, somente quando não confirmado qualquer avaria, prejuízo ou perda patrimonial, hipótese em que, será dito valor restituído com os devidos acréscimos percebidos pela correção da caderneta de poupança, bem como com os descontos de reparação do imóvel se necessários.';
   const TEXTO_FIADOR = 'Como garantia #Fdr_assina também na qualidade de #Fiador e #Fdr_principal #Fdr_pagador, #Fdr_omi #Fdr_qualificado no QUADRO RESUMO (ITEM 9), sendo #Fdr_solidário com #Lct_omi #Locatário em todas as obrigações aqui assumidas.';
 
+  if (garantia === GARANTIA_SEM) {
+    // O modelo "sem garantia" não tem #Texto_Garantia/#Grt1/Parágrafos de Fiador —
+    // só precisa dos trechos soltos (foro e entrega das chaves), sem citar garantia
+    return {
+      textoGarantia: '',
+      partesGrt1: [],
+      cau3: null,
+      foroContratantes: 'contratantes.',
+      textoChaves: 'as importâncias apuradas serão cobradas #Lct_do #Locatário.',
+      paragrafosParaRemover: [],
+      textosParagrafos: {},
+    };
+  }
   if (garantia === 'CAUÇÃO') {
     return {
       textoGarantia: TEXTO_CAUCAO,
@@ -4968,6 +4974,10 @@ function montarSubstituicoesConcordancia(tabela, forma) {
 
 // URL do modelo .docx no GitHub Pages (mesma origem do app — fetch relativo)
 const URL_TEMPLATE_CONTRATO = './contrato_padrao.docx';
+// Modelo usado quando o tipo de garantia é "SEM GARANTIA": sem item de garantia no
+// Quadro Resumo, sem cláusula de garantia e já com as cláusulas renumeradas
+const URL_TEMPLATE_CONTRATO_SEM_GARANTIA = './contrato_sem_garantia.docx';
+const GARANTIA_SEM = 'SEM GARANTIA';
 
 // Lê os dados de UMA pessoa física a partir do prefixo (ex.: 'lcd1', 'fdr2')
 function lerPessoaFisica(prefixo) {
@@ -5168,7 +5178,10 @@ async function gerarContratoWord() {
     };
 
     // ---------- Garantia (Cláusula 8ª) ----------
-    const dadosGarantia = isFiador
+    const semGarantia = garantia === GARANTIA_SEM;
+    const dadosGarantia = semGarantia
+      ? montarDadosGarantia(GARANTIA_SEM)
+      : isFiador
       ? montarDadosGarantia(garantia, null, null, null, dadosFdr.texto, TABELA_CONCORDANCIA_FDR['#Fiador'][dadosFdr.forma], document.getElementById('obs_sem_garantia')?.checked)
       : montarDadosGarantia(garantia, contaCaucaoCompleta(), v('caucao_valor'), v('caucao_extenso'));
 
@@ -5193,7 +5206,7 @@ async function gerarContratoWord() {
       '#Data': v('data_contrato'),
       '#Texto_Garantia': textoGarantiaPartes,
       '#Foro_contratantes': dadosGarantia.foroContratantes,
-      '#Texto_chaves': dadosGarantia.textoChaves,
+      '#Texto_chaves': semGarantia ? resolverPlaceholdersEmTexto(dadosGarantia.textoChaves, concordancia) : dadosGarantia.textoChaves,
       '#Comercial': 'afins, não cabendo qualquer indenização ou compensação pelo tempo e formação de fundo de comércio.',
       ...(isFiador ? {
         '#Fdr_imóvel': v('imgrt_descricao'),
@@ -5276,8 +5289,10 @@ async function gerarContratoWord() {
     // ---------- Cláusulas condicionais (Inundação / Desconto-Carência) ----------
     if (v('obs_area_inundacao') === 'Sim') {
       const partesResto = montarPartesComNegritoEmSubstantivos(TEXTO_CLAUSULA_INUNDACAO.replace('CLÁUSULA 24ª) ', ''), concordancia, ['#Locatário']);
-      insercoes.push({ marcador: 'CLÁUSULA 23ª)', partes: [{ negrito: 'CLÁUSULA 24ª) ' }, ...partesResto] });
-      substituicoes['CLÁUSULA 24ª) Para dirimir'] = 'CLÁUSULA 25ª) Para dirimir';
+      // O modelo sem garantia tem 1 cláusula a menos (a de garantia): tudo anda 1 casa pra trás
+      const nAnt = semGarantia ? 22 : 23, nNova = nAnt + 1, nForo = nAnt + 2;
+      insercoes.push({ marcador: `CLÁUSULA ${nAnt}ª)`, partes: [{ negrito: `CLÁUSULA ${nNova}ª) ` }, ...partesResto] });
+      substituicoes[`CLÁUSULA ${nNova}ª) Para dirimir`] = `CLÁUSULA ${nForo}ª) Para dirimir`;
     }
     const tipoDesconto = v('tipo_desconto');
     if (tipoDesconto === 'Desconto' || tipoDesconto === 'Carência') {
@@ -5292,7 +5307,7 @@ async function gerarContratoWord() {
     const nomeArquivoSeguro = s => (s || '').replace(/[\\/:*?"<>|]/g, '').trim();
     const nomeArquivo = `${nomeArquivoSeguro(v('lcd1_nome'))} - ${nomeArquivoSeguro(v('lct1_nome'))}.docx`;
     await gerarContratoDocx(
-      URL_TEMPLATE_CONTRATO, substituicoes, nomeArquivo,
+      semGarantia ? URL_TEMPLATE_CONTRATO_SEM_GARANTIA : URL_TEMPLATE_CONTRATO, substituicoes, nomeArquivo,
       { '#Imv1': 1700 }, paragrafosParaRemover, insercoes, null,
       ajustesRgRnmTotal, ajustesPJTotal
     );
@@ -5371,9 +5386,9 @@ function buildDataRow() {
     vEncargoCompleto('enc_condominio'),      // T  - Condomínio
     vEncargoCompleto('enc_iptu'),            // U  - IPTU
     garantia,                                // V  - Garantia
-    isFiador ? '---' : v('caucao_valor'),    // W  - Caução R$
-    isFiador ? '---' : v('caucao_extenso'),  // X
-    isFiador ? '---' : contaCaucaoCompleta(),// Y
+    garantia === 'CAUÇÃO' ? v('caucao_valor') : '---',    // W  - Caução R$
+    garantia === 'CAUÇÃO' ? v('caucao_extenso') : '---',  // X
+    garantia === 'CAUÇÃO' ? contaCaucaoCompleta() : '---',// Y
     isFiador ? v('imgrt_descricao') : '---', // Z  - Imóv Grt Desc
     isFiador ? v('imgrt_rua') : '---',       // AA
     isFiador ? imgrtBairroCidadeCompleto() : '---', // AB
@@ -6147,18 +6162,7 @@ function reformatarCamposImportados(dados) {
     const el = document.getElementById(id);
     if (!el) return;
     if (/_tel$/.test(id)) formatarTelefone(el);
-    else if (/_rg$/.test(id)) {
-      // Só reformata como RG brasileiro (00.000.000-0) quando a pessoa NÃO é
-      // PJ (nesse caso o campo é NIRE), NÃO é estrangeira (nesse caso é RNM,
-      // alfanumérico) e o valor não é o texto literal "Não Tem RG" — senão
-      // a formatação numérica-só apaga tudo isso sem querer
-      const prefixo = id.replace(/_rg$/, '');
-      const nacEl = document.getElementById(prefixo + '_nacionalidade');
-      const nac = nacEl ? nacEl.value : '';
-      const ehPJEsseGrupo = typeof ehModoPJ === 'function' && ehModoPJ(prefixo);
-      const naoTemRGTexto = /^n[ãa]o tem rg$/i.test((el.value || '').trim());
-      if (!ehPJEsseGrupo && !nac.startsWith('estrang') && !naoTemRGTexto) formatarRG(el);
-    }
+    // RG: nunca reformatar (texto puro)
     else if (/_cpf$/.test(id)) formatarCpfOuCnpj(el);
   });
 }
@@ -6435,7 +6439,7 @@ function processarLinhaCadastro(row) {
   const nomeFiador2 = semPlaceholder(row[100]);
   const nomeGarantia = /fiador/i.test(garantiaRaw)
     ? [nomeFiador1, nomeFiador2].filter(Boolean).join(' e ')
-    : 'Caução';
+    : (garantiaRaw.trim().toUpperCase() === GARANTIA_SEM ? 'Sem garantia' : 'Caução');
 
   if (!enderecoImovel && !nomeLocador && !nomeLocatario) return null; // linha sem nada útil
 
@@ -6771,7 +6775,7 @@ function ieConstruirIndice(contratos) {
   (contratos || []).forEach(item => {
     const c = item.campos || {};
     ['lcd', 'lct', 'fdr'].forEach(grp => {
-      if (grp === 'fdr' && /cau[çc]/i.test(c.garantia || '')) return; // Caução: não tem fiador
+      if (grp === 'fdr' && /cau[çc]|sem garantia/i.test(c.garantia || '')) return; // Caução / sem garantia: não tem fiador
       const num = c['num_' + grp] || '';
       [1, 2].forEach(n => {
         const pref = grp + n;
@@ -7170,7 +7174,7 @@ function ieImportar() {
   if (ocupante) confirmar.push(`${rotuloSlot} já está preenchido com "${ocupante}" — será substituído.`);
   if (!e.ehEmpresa && nD === 1 && numAtual === 'PJ') confirmar.push(`O grupo de ${IE_ROTULOS[grpD].plural} está como Pessoa Jurídica — importar uma pessoa física na 1ª posição desfaz o modo PJ.`);
   if (e.ehEmpresa && numAtual && numAtual !== 'PJ' && (ocupante || ieOcupanteAtual(grpD + '2'))) confirmar.push(`O grupo de ${IE_ROTULOS[grpD].plural} tem pessoa(s) física(s) preenchida(s) — importar a empresa troca o grupo para Pessoa Jurídica.`);
-  if (grpD === 'fdr' && document.getElementById('garantia').value === 'CAUÇÃO') confirmar.push('A garantia deste contrato está como CAUÇÃO — importar um fiador troca a garantia para FIADOR.');
+  if (grpD === 'fdr' && ['CAUÇÃO', GARANTIA_SEM].includes(document.getElementById('garantia').value)) confirmar.push('A garantia deste contrato está como ' + document.getElementById('garantia').value + ' — importar um fiador troca a garantia para FIADOR.');
   if (confirmar.length && !confirm('Atenção:\n\n• ' + confirmar.join('\n• ') + '\n\nContinuar?')) return;
 
   // --- quantidade de pessoas do grupo de destino ---
@@ -7217,7 +7221,7 @@ function ieImportarPar() {
   const o1 = ieOcupanteAtual(grpD + '1'), o2 = ieOcupanteAtual(grpD + '2');
   if (o1 || o2) confirmar.push(`${rotuloGrupo} já estão preenchidos com ${[o1, o2].filter(Boolean).map(n => '"' + n + '"').join(' e ')} — serão substituídos.`);
   if (document.getElementById('num_' + grpD).value === 'PJ') confirmar.push(`O grupo de ${rotuloGrupo} está como Pessoa Jurídica — será trocado por duas pessoas físicas.`);
-  if (grpD === 'fdr' && document.getElementById('garantia').value === 'CAUÇÃO') confirmar.push('A garantia deste contrato está como CAUÇÃO — importar fiadores troca a garantia para FIADOR.');
+  if (grpD === 'fdr' && ['CAUÇÃO', GARANTIA_SEM].includes(document.getElementById('garantia').value)) confirmar.push('A garantia deste contrato está como ' + document.getElementById('garantia').value + ' — importar fiadores troca a garantia para FIADOR.');
   if (confirmar.length && !confirm('Atenção:\n\n• ' + confirmar.join('\n• ') + '\n\nContinuar?')) return;
 
   const dados = {};
