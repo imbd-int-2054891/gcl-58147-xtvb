@@ -391,6 +391,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 
 .opcoes-grupo { display: flex; gap: 8px; flex-wrap: wrap; }
 .opcao-btn {
+  white-space: nowrap;
   padding: 9px 16px;
   border: 1.5px solid var(--fundo3);
   border-radius: 8px;
@@ -402,8 +403,8 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
   user-select: none;
   transition: all 0.15s;
   text-align: center;
-  flex: 1;
-  min-width: 60px;
+  flex: 1 1 auto;
+  min-width: max-content;   /* o botão cresce para caber o texto (ex.: "Sem garantia") */
 }
 .opcao-btn:hover { border-color: var(--primario2); }
 .opcao-btn.selecionada {
@@ -915,7 +916,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v100</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v102</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1126,7 +1127,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       <span class="toggle-icon">▾</span>
     </div>
     <div class="section-body grid-4">
-      <div class="field">
+      <div class="field" style="grid-column: 1 / -1;">
         <label>Tipo de Garantia</label>
         <div class="opcoes-grupo">
           <div class="opcao-btn" data-for="garantia" data-valor="FIADOR" onclick="selecionarOpcao('garantia','FIADOR',toggleGarantia)">Fiador</div>
