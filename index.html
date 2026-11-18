@@ -916,7 +916,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
 <header>
   <div class="icon-badge">📋</div>
   <div>
-    <h1>Gerador de Contratos de Locação <span class="versao">v102</span></h1>
+    <h1>Gerador de Contratos de Locação <span class="versao">v103</span></h1>
     <p>Preencha os campos e gere o Excel no formato "Contratos Locação"</p>
   </div>
 </header>
@@ -1542,7 +1542,10 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
       </div>
 
       <div id="fdr-endereco-block" style="display:none;grid-column:1/-1;border-top:1px dashed var(--fundo3);padding-top:16px;margin-top:6px">
-        <div class="sublabel" style="margin-bottom:8px" id="fdr_endereco_titulo">Endereço Residencial</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <div class="sublabel" style="margin:0" id="fdr_endereco_titulo">Endereço Residencial</div>
+          <div class="chip-atalho" style="margin:0" title="Copia Rua, Bairro e Município do Imóvel Garantia" onclick="copiarEnderecoGarantiaParaFiador('')">🏠 Usar o mesmo endereço do imóvel garantia</div>
+        </div>
         <div class="grid-4" style="gap:14px">
           <div class="field col-span-2"><label id="fdr_rua_label">Endereço Residencial (Rua e nº)</label><input id="fdr_rua" value="" placeholder="Ex.: Avenida Jânio Quadros, nº 444"></div>
           <div class="field"><label>Bairro</label><input id="fdr_bairro" value="" placeholder="Ex.: Centro"></div>
@@ -1558,6 +1561,7 @@ header p { font-size: 0.75rem; color: #a8bce8; font-weight: 300; margin-top: 2px
               <div class="field"><label>Bairro</label><input id="fdr_bairro2" value="" placeholder="Ex.: Centro"></div>
               <div class="field"><label>Município/UF</label><div style="display:flex;gap:6px;align-items:center"><input id="fdr_cidade2" value="" placeholder="Ex.: Monte Mor/SP" style="flex:1;min-width:0"><div class="chip-atalho" style="margin-top:0;flex:none" onclick="document.getElementById(&quot;fdr_cidade2&quot;).value=&quot;Monte Mor/SP&quot;; document.getElementById(&quot;fdr_cidade2&quot;).dispatchEvent(new Event(&quot;input&quot;,{bubbles:true}));">📍 Monte Mor/SP</div></div></div>
             </div>
+            <div class="chip-atalho" style="margin:10px 0 0" title="Copia Rua, Bairro e Município do Imóvel Garantia" onclick="copiarEnderecoGarantiaParaFiador('2')">🏠 Usar o mesmo endereço do imóvel garantia</div>
             <button type="button" class="endereco2-desfazer" id="fdr_endereco2_desfazer_btn" onclick="fecharEndereco2('fdr')">↺ Marcar como "Não Possui"</button>
           </div>
         </div>
@@ -5483,7 +5487,7 @@ function buildDataRow() {
     tipoDesconto === 'Desconto' ? v('desconto_valor') : '---',    // Valor
     temInundacao ? 'Sim' : 'Não',                                 // Inundação?
 
-    v('observacoes'),                        // Observações Gerais
+    "'" + v('observacoes'),                 // Observações Gerais (apóstrofo na frente = texto no Excel de controle)
   ];
 }
 
@@ -6158,6 +6162,24 @@ function mapearTextoPDF(texto) {
 }
 
 // Reaplica a máscara (telefone/RG/CPF) nos campos que vieram do PDF com valores "crus"
+// Fiador mora no imóvel dado em garantia: copia Rua, Bairro e Município/UF do Imóvel Garantia
+function copiarEnderecoGarantiaParaFiador(sufixo) {
+  const g = id => (document.getElementById(id)?.value || '').trim();
+  const semDado = t => !t || t === '---' || /^x+$/i.test(t);
+  const rua = g('imgrt_rua'), bairro = g('imgrt_bairro'), cidade = g('imgrt_cidade');
+  if (semDado(rua) && semDado(bairro) && semDado(cidade)) {
+    alert('O endereço do Imóvel Garantia ainda não foi preenchido. Preencha-o na aba Garantia e tente de novo.');
+    return;
+  }
+  [['rua', rua], ['bairro', bairro], ['cidade', cidade]].forEach(([campo, valor]) => {
+    const el = document.getElementById('fdr_' + campo + sufixo);
+    if (!el) return;
+    el.value = semDado(valor) ? '' : valor;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  mostrarToast('🏠 Endereço do imóvel garantia copiado para o fiador!');
+}
+
 function reformatarCamposImportados(dados) {
   Object.keys(dados).forEach(id => {
     const el = document.getElementById(id);
@@ -6263,6 +6285,8 @@ function processarLinhaCadastro(row) {
   COLUNAS_CADASTRO.forEach((id, idx) => {
     if (!id) return;
     let valor = (row[idx] || '').toString().trim();
+    // Observações exportadas levam um ' na frente (para o Excel tratar como texto): tira ao importar
+    if (id === 'observacoes' && valor.startsWith("'")) valor = valor.slice(1);
 
     // RGI / Fornecimento (SABESP): "---" significa que o imóvel realmente não
     // tem RGI (preenche assim mesmo, ao pé da letra); já "???" ou "XXX" significa
